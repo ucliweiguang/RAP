@@ -59,7 +59,11 @@
     "switchVersion":"$projectContext/workspace/switchVersion.action",
     "lock":"$projectContext/workspace/lock.action",
     "unlock":"$projectContext/workspace/unlock.action",
-    "export":"$projectContext/workspace/export.action"
+    "export":"$projectContext/workspace/export.action",
+    "generateJsonSchema":"$projectContext/workspace/generateJsonSchema.action",
+    "saveJsonSchema":"$projectContext/workspace/saveJsonSchema.action",
+    "getJsonSchema":"$projectContext/workspace/getJsonSchema.action",
+    "validateJsonSchema":"$projectContext/workspace/validateJsonSchema.action"
 })
 #set($platformUrl = {
     "home":"$projectContext/platform/home.action",

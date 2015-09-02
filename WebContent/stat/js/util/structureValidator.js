@@ -56,7 +56,7 @@
                 eventName = isReverse ? '未在接口文档中未定义。' : '缺失';
             } else if (item.type === EMPTY_ARRAY) {
                 eventName = '数组为空，无法判断其内部的结构。';
-                return; // 暂时忽略此种情况
+                //return; // 暂时忽略此种情况
             } else if (item.type === TYPE_NOT_EQUAL) {
                 eventName = '数据类型与接口文档中的定义不符';
             }
@@ -68,6 +68,11 @@
         var result = [];
 
         function typeEqual(a, b) {
+        	//added by liwg
+        	if (a == null || b ==null){//对于null不判断，留给数据校验逻辑
+        		return true;
+        	}
+        	//end by liwg
             if (typeof a != typeof b) {
                 return false;
             }

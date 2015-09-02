@@ -894,6 +894,8 @@ function deepCopy(o) {
         p.parameterList = obj.parameterList;
         p.remark = obj.remark;
         p.validator = obj.validator;
+        //added by liwg 20150831
+        //p.required = obj.required;
     };
 
     /**
@@ -1285,7 +1287,7 @@ function deepCopy(o) {
             "FATAL_ERROR"                       : "发生严重错误，请联系维护人员并保留现场。",
             "SESSION_DELAY_ERROR"               : "Session延时发生异常，建议您立即保存工作区并联系维护人员."
         },
-        TEMPLATE = {            // static template
+        TEMPLATE = {            // static template //modified by liwg 20150831:<td>必填</td>
 
             "REQUEST_BEGIN"                 : "<h2>请求参数列表</h2><table class=\"table-a\"><tr class=\"head\"><td class=\"head-expander\"></td><td class=\"head-identifier\">变量名</td><td class=\"head-name\">含义</td><td class=\"head-type\">类型</td><td class=\"head-remark\">备注</td></tr>",
             "REQUEST_BEGIN_EDIT"            : "<h2>请求参数列表</h2><table class=\"table-a\"><tr class=\"head\"><td class=\"head-expander\"></td><td class=\"head-op\">OP</td><td class=\"head-identifier\">变量名</td><td class=\"head-name\">含义</td><td class=\"head-type\">类型</td><td class=\"head-remark\">备注</td></tr>",
@@ -3934,14 +3936,120 @@ function deepCopy(o) {
             if (a.description) {
                 body += "<div class='item'><b>接口描述 </b>" + processTextarea(a.description) + "</div>";
             }
-
+            //added by liwg 2015-08-31
+            body += "<div class='item'><a href='#' onclick='ws.doGenerateJsonSchema(" + a.id + "); return false;'>生成数据校验规则</a>&nbsp;&nbsp;";
+            body += "<a href='#' onclick='ws.doGetJsonSchema(" + a.id + "); return false;'>查看数据校验规则</a></div>";	
+           		
 
             if (!body) {
                 body += "no info";
             }
             return head + body + foot;
         }
+        //added by liwg,the whole function 2015-08-31
+        //一键创建接口的jsonschema内容，不包含校验规则
+        ws.doGenerateJsonSchema = function(actionId) {
+        	var r=confirm("该操作将覆盖该接口原有校验规则，确定吗？");
+        	if (r==false) {
+        	  return;
+        	}
+            var q = "actionId=" + actionId;
+                showMessage(CONST.LOADING, ELEMENT_ID.WORKSPACE_MESSAGE, MESSAGE.SAVING);
+                //console.log("ws.doGenerateJsonSchema：" + q);
+                //if (!processing(ELEMENT_ID.WORKSPACE_MESSAGE)) return;
+                b.ajax.post(URL.generateJsonSchema, q, function(xhr, response) {
+                try {                	
+                    var obj = eval("(" + response + ")");
+                    if (obj.isOk) {
+                        /*storeViewState(obj.actionIdMap);
+                        p.init(obj.projectData);
+                        _data.projectDataOriginal = b.object.clone(obj.projectData);
+                        _data.checkList = obj.checkList;
+                        initVersionPanel();
+                        switchToViewModeSub();
+                        ws.cancelSaveVSS();
+                        recoverViewState();*/
+                        showMessage(CONST.LOAD, ELEMENT_ID.WORKSPACE_MESSAGE, MESSAGE.SAVED);
+                    } else {
+                        showMessage(CONST.WARN, ELEMENT_ID.WORKSPACE_MESSAGE, obj.errMsg);
+                    }
+                } catch(e) {
+                	console.log("ws.doGenerateJsonSchema：e" + e);
+                    showMessage(CONST.WARN, ELEMENT_ID.WORKSPACE_MESSAGE, MESSAGE.FATAL_ERROR);
+                } finally {
+                    processed();
+                }
+            });
 
+        }
+        
+      //added by liwg 2015-09-01 start
+      ws.doGetJsonSchema = function(actionId) {
+          //var action = p.getAction(actionId);
+          //initEditAFloater();
+    	  var q = "actionId=" + actionId;
+    	  b.g("getJsonSchemaFloater-actionId").value = actionId;
+          b.ajax.post(URL.getJsonSchema, q, function(xhr, response) {
+              try {
+                  var obj = eval("(" + response + ")");
+                  //console.log(obj);
+                  b.g("getJsonSchemaFloater-text").value = JSON.stringify(obj.jsonSchema);
+              } catch(e) {
+                  showMessage(CONST.ERROR, ELEMENT_ID.WORKSPACE_MESSAGE, MESSAGE.FATAL_ERROR);
+              }
+          });          
+          e.get("getJsonSchemaFloater").setTitle("编辑JsonSchema");          
+          ecFloater.show("getJsonSchemaFloater");            
+        };
+        
+        //关闭或保存jsonschema
+        ws.closeJsonSchemaFloater = function(save) {
+        	b.g("Canvas").innerHTML ="";
+        	b.g("getJsonSchemaFloater-tips").innerHTML ="";
+            e.get("getJsonSchemaFloater").hide();
+            
+            if (save) {
+                //var ele = $('#divRelatedIds');
+            	var actionId = b.g("getJsonSchemaFloater-actionId").value;
+                var q = "actionId=" + actionId + "&newJsonSchema=" + b.g("getJsonSchemaFloater-text").value;
+                showMessage(CONST.LOAD, ELEMENT_ID.WORKSPACE_MESSAGE, MESSAGE.SAVING);
+                b.ajax.post(URL.saveJsonSchema, q, function(xhr, response) {
+                    try {
+                        var obj = eval("(" + response + ")");
+                        if (obj.isOk) {
+                        	showMessage(CONST.LOAD, ELEMENT_ID.WORKSPACE_MESSAGE, MESSAGE.SAVED);	
+                        }else {
+                            showMessage(CONST.WARN, ELEMENT_ID.WORKSPACE_MESSAGE, obj.errMsg);
+                        }                        
+                    } catch(e) {
+                        showMessage(CONST.ERROR, ELEMENT_ID.WORKSPACE_MESSAGE, MESSAGE.FATAL_ERROR);
+                    }
+                });
+            }
+        };    
+        
+        //校验修改后的jsonschema内容是否符合格式
+        ws.validateJsonSchema = function() {         
+          var q = "newJsonSchema=" + b.g("getJsonSchemaFloater-text").value;
+          //console.log("validateJsonSchema q:" + q);
+            b.ajax.post(URL.validateJsonSchema, q, function(xhr, response) {
+                try {
+                	//console.log("run in try..."+response);                    
+                    var obj = eval("(" + response + ")");                   
+                    if (obj.isOk) {
+                    	var result = JSON.stringify(obj.result);
+                    	b.g("getJsonSchemaFloater-tips").innerHTML = result.replace(/\|/g,"<br>");
+                    }else {
+                        showMessage(CONST.WARN, ELEMENT_ID.WORKSPACE_MESSAGE, obj.errMsg);
+                    }                        
+                } catch(e) {
+                	console.log("ws.validateJsonSchema e:" + e);
+                    showMessage(CONST.ERROR, ELEMENT_ID.WORKSPACE_MESSAGE, MESSAGE.FATAL_ERROR);
+                }
+            });
+          };
+    //added by liwg 2015-09-01 end    
+        
     /**
      * process text area, using @code @end commands
      * to make text area more colorful and readable
@@ -4032,6 +4140,9 @@ function deepCopy(o) {
             str += getPTDHtml(param.id, util.escaper.escapeInH(param.identifier), "identifier", level);
             str += getPTDHtml(param.id, util.escaper.escapeInH(param.name), "name");
             str += getDataTypeEditSelectHtml(param.id, param.dataType);
+            //added by liwg 2015-08-31
+            //str += getCHECKEDHtml(param.id, param.required);
+            
             // for remarkFilter, escape after filter processed...
             str += getPTDHtml(param.id, param.remark, "remark");
             str += "</tr>";
@@ -4043,6 +4154,33 @@ function deepCopy(o) {
             return str;
         }
 
+        //added by liwg :the whole function  2015-08-31
+       /* function getCHECKEDHtml(id, value) {           
+            str += "<td id='td-param-checked-"+ id +"' >";
+            if (_isEditMode) {
+            	str += "<input type='checkbox' id='select-dataType-"+ id + "' checked=";
+            	if(check==1){
+            		str += "true ";
+            	} else {
+            		str += "false ";
+            	}
+                str += "onchange='ws.requiredCheckChanged(" + id + ", this.value);/>";
+            } else {
+            	if (value){
+            		str += "Y";	
+            	} else {
+            		str += "N";
+            	}               
+            }
+            str += "</td>";
+            return str;
+        }*/
+        //added by liwg :the whole function  2015-08-31
+       /* ws.requiredCheckChanged = function(parameterId, value) {
+            p.setParameter(parameterId, value, "required");
+        };*/
+        
+        
         /**
          * get parameter td html
          * value must be processed by escapeInH !!!

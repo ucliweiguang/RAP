@@ -26,6 +26,9 @@
 		<property name="responseTemplate">
 			<column name="response_template" />
 		</property>
+		<property name="jsonschema">
+			<column name="jsonschema" />
+		</property>		
 		<set name="pageList" order-by="page_id asc" inverse="true"
 			table="tb_action_and_page">
 			<key column="action_id" not-null="true" />

@@ -12,6 +12,7 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath*:applicationContext.xml</param-value>
 	</context-param>
+	
 	<filter>
 		<filter-name>ssoFilter</filter-name>
 		<filter-class>com.alibaba.buc.sso.client.filter.SSOFilter</filter-class>
@@ -35,7 +36,7 @@
 			<param-name>EXCLUSIONS</param-name>
 			<param-value>*</param-value>
 		</init-param>
-	</filter>
+	</filter> 
 	<filter>
 		<filter-name>UrlRewriteFilter</filter-name>
 		<filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>

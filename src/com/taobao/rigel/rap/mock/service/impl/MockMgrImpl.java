@@ -1,5 +1,6 @@
 package com.taobao.rigel.rap.mock.service.impl;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.google.gson.Gson;
 import com.taobao.rigel.rap.common.*;
 import com.taobao.rigel.rap.mock.bo.Rule;
@@ -21,6 +23,7 @@ import com.taobao.rigel.rap.project.bo.Action;
 import com.taobao.rigel.rap.project.bo.Parameter;
 import com.taobao.rigel.rap.project.dao.ProjectDao;
 import com.taobao.rigel.rap.project.service.ProjectMgr;
+import com.taobao.rigel.rap.validation.service.ValidationMgr;
 
 public class MockMgrImpl implements MockMgr {
     private final String ERROR_PATTERN = "{\"isOk\":false,\"msg\":\"路径为空，请查看是否接口未填写URL.\"}";
@@ -29,6 +32,7 @@ public class MockMgrImpl implements MockMgr {
     private MockDao mockDao;
     private int uid = 10000;
     private Map<String, List<String>> requestParams;
+    private ValidationMgr validationMgr;
     /**
      * random seed
      */
@@ -83,8 +87,16 @@ public class MockMgrImpl implements MockMgr {
     public void setProjectMgr(ProjectMgr projectMgr) {
         this.projectMgr = projectMgr;
     }
+    
+    public ValidationMgr getValidationMgr() {
+		return validationMgr;
+	}
 
-    private boolean isPatternLegal(String pattern) {
+	public void setValidationMgr(ValidationMgr validationMgr) {
+		this.validationMgr = validationMgr;
+	}
+
+	private boolean isPatternLegal(String pattern) {
         if (pattern == null || pattern.isEmpty()) {
             return false;
         }
@@ -204,7 +216,8 @@ public class MockMgrImpl implements MockMgr {
 
     @Override
     public String validateAPI(int projectId, String pattern, Map<String, Object> options, String jsonToCompare)
-            throws UnsupportedEncodingException {
+            throws UnsupportedEncodingException,IOException, ProcessingException {
+    	//UnsupportedEncodingException
         String mockjsData = generateRuleData(projectId, pattern, options);
         StringBuilder jsCode = new StringBuilder();
 
@@ -219,7 +232,17 @@ public class MockMgrImpl implements MockMgr {
                 .append(";\n")
                 .append("var validator = new StructureValidator(o2, o1);")
                 .append("JSON.stringify({result : validator.getResult(), resultStr : validator.getResultStr()});");
-        return new JSRunner().run(jsCode.toString());
+        //return new JSRunner().run(jsCode.toString());
+        
+        StringBuilder result = new StringBuilder();
+        String tmpResult = new JSRunner().run(jsCode.toString());
+        //整合数据校验的结果
+        tmpResult = tmpResult.substring(0, tmpResult.length()-1);
+        result.append(tmpResult);
+        result.append(",\"validationDataResult\":\"");
+        result.append(validationMgr.validateAPIData(projectId, pattern, jsonToCompare));
+        result.append("\"}");
+        return result.toString();
     }
 
     @Override

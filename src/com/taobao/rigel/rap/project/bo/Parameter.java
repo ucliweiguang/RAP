@@ -145,6 +145,17 @@ public class Parameter implements java.io.Serializable {
 		this.remark = remark;
 	}
 
+	//added by ucliweiguang 2015-08-20
+	private int required;	
+	
+	public int getRequired() {
+		return required;
+	}
+
+	public void setRequired(int required) {
+		this.required = required;
+	}
+
 	private Set<Action> actionRequestList = new HashSet<Action>();
 
 	public Set<Action> getActionRequestList() {

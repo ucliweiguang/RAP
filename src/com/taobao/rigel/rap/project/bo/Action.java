@@ -215,6 +215,17 @@ public class Action implements java.io.Serializable {
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
+	
+	//added by ucliweiguang 2015-08-20
+	private String jsonschema;	
+	
+	public String getJsonschema() {
+		return jsonschema;
+	}
+
+	public void setJsonschema(String jsonschema) {
+		this.jsonschema = jsonschema;
+	}
 
 	/**
 	 * get request parameter list HTML for file exporting reason: velocity

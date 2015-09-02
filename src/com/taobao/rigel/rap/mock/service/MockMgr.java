@@ -1,7 +1,10 @@
 package com.taobao.rigel.rap.mock.service;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
+
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 
 public interface MockMgr {
 	/**
@@ -82,5 +85,5 @@ public interface MockMgr {
      * @param jsonToCompare
      * @return
      */
-	public String validateAPI(int projectId, String pattern, Map<String, Object> options, String jsonToCompare) throws UnsupportedEncodingException;
+	public String validateAPI(int projectId, String pattern, Map<String, Object> options, String jsonToCompare) throws UnsupportedEncodingException,IOException, ProcessingException;
 }

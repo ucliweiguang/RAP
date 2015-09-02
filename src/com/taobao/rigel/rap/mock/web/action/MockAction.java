@@ -1,11 +1,13 @@
 package com.taobao.rigel.rap.mock.web.action;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.google.gson.Gson;
 import com.taobao.rigel.rap.common.ActionBase;
 import com.taobao.rigel.rap.common.SystemVisitorLog;
@@ -386,7 +388,7 @@ public class MockAction extends ActionBase {
 		}
 	}
 
-	public String validateAPI() throws UnsupportedEncodingException {
+	public String validateAPI() throws UnsupportedEncodingException,IOException, ProcessingException {
         boolean isJSON = false;
         SystemVisitorLog.mock(id, "createRule", pattern, getCurAccount(), projectMgr);
         Map<String, Object> options = new HashMap<String, Object>();

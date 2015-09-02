@@ -1,12 +1,14 @@
 package com.taobao.rigel.rap.workspace.web.action;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.google.gson.Gson;
 import com.taobao.rigel.rap.common.SystemConstant;
 import org.apache.velocity.Template;
@@ -24,6 +26,7 @@ import com.taobao.rigel.rap.common.MapUtils;
 import com.taobao.rigel.rap.project.bo.Module;
 import com.taobao.rigel.rap.project.bo.Project;
 import com.taobao.rigel.rap.project.service.ProjectMgr;
+import com.taobao.rigel.rap.validation.service.ValidationMgr;
 import com.taobao.rigel.rap.workspace.bo.CheckIn;
 import com.taobao.rigel.rap.workspace.bo.Save;
 import com.taobao.rigel.rap.workspace.bo.Workspace;
@@ -356,6 +359,17 @@ public class WorkspaceAction extends ActionBase {
 	public void setProjectMgr(ProjectMgr projectMgr) {
 		this.projectMgr = projectMgr;
 	}
+	
+	private ValidationMgr validationMgr;
+	
+
+	public ValidationMgr getValidationMgr() {
+		return validationMgr;
+	}
+
+	public void setValidationMgr(ValidationMgr validationMgr) {
+		this.validationMgr = validationMgr;
+	}
 
 	public String ping() {
 		setJson("{\"isOk\":true}");
@@ -625,5 +639,113 @@ public class WorkspaceAction extends ActionBase {
         }
         return SUCCESS;
     }
+    
+    /**
+     * 
+     * 功能描述：generate JsonSchema for every API
+     * @return 
+     * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+     * created on: 2015-8-31
+     */
+    public String generateJsonSchema() {
+		long curUserId = getCurUserId();
+		if (curUserId <= 0) {
+			setIsOk(false);
+			setErrMsg(LOGIN_WARN_MSG);
+			return JSON_ERROR;
+		}
 
+		boolean isOk = false;
+		//System.out.println("ActionId():" + this.actionId);		
+		validationMgr.saveJsonSchema(this.actionId, validationMgr.generateJsonSchema(this.actionId));
+		isOk = true;
+		
+		if (isOk) {
+			setJson("{\"isOk\":true}");
+		}
+		return SUCCESS;
+	}
+    /**
+     * 
+     * 功能描述：保存修改好的jsonschema内容
+     * @return 
+     * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+     * created on: 2015-9-1
+     */
+    public String getJsonSchema(){
+    	//System.out.println("getJsonSchema()this.actionId:" + actionId);
+    	long curUserId = getCurUserId();
+		if (curUserId <= 0) {
+			setIsOk(false);
+			setErrMsg(LOGIN_WARN_MSG);
+			return JSON_ERROR;
+		}
+
+		boolean isOk = false;
+		String jsonSchema = validationMgr.getJsonSchemaByActionId(actionId);		
+		isOk = true;
+		
+		if (isOk) {
+			setJson("{\"isOk\":true,\"jsonSchema\":" + jsonSchema + "}");
+		}
+		return SUCCESS;
+    }
+    
+    private String newJsonSchema;    
+	public String getNewJsonSchema() {
+		return newJsonSchema;
+	}
+	public void setNewJsonSchema(String newJsonSchema) {
+		this.newJsonSchema = newJsonSchema;
+	}
+
+	/**
+     * 
+     * 功能描述：保存修改好的jsonschema内容
+     * @return 
+     * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+     * created on: 2015-9-1
+     */
+    public String saveJsonSchema(){
+    	long curUserId = getCurUserId();
+		if (curUserId <= 0) {
+			setIsOk(false);
+			setErrMsg(LOGIN_WARN_MSG);
+			return JSON_ERROR;
+		}
+
+		boolean isOk = false;
+		//System.out.println("actionId:" + actionId);
+		//System.out.println("newJsonSchema:" + newJsonSchema);
+		validationMgr.saveJsonSchema(actionId, newJsonSchema);
+		isOk = true;
+		
+		if (isOk) {
+			setJson("{\"isOk\":true}");
+		}
+		return SUCCESS;
+    }
+    /**
+     * 
+     * 功能描述：校验改动过的jsonschema
+     * @return 
+     * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+     * created on: 2015-9-2
+     * @throws IOException 
+     * @throws ProcessingException 
+     */
+    public String validateJsonSchema() throws ProcessingException, IOException{
+		boolean isOk = false;
+		//System.out.println("newJsonSchema:" + newJsonSchema);
+		String result = validationMgr.validateJsonSchema(newJsonSchema);
+		if ("".equals(result)){
+			result="JsonSchema内容格式没有错误，可放心保存.";
+		}
+		isOk = true;
+		System.out.println("result:" + result.replaceAll("\"", "'"));
+		if (isOk) {
+			setJson("{\"isOk\":true,\"result\":\"" + result.replaceAll("\"", "'") + "\"}");
+		}
+		return SUCCESS;
+    }
 }
