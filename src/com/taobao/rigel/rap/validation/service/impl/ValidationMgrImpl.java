@@ -196,11 +196,11 @@ public class ValidationMgrImpl implements ValidationMgr {
 		}
 		
 		ProcessingReport report = syntaxValidator.validateSchema(schema);		
-		System.out.println("report:" + report);
+		//System.out.println("report:" + report);
 		Iterator<ProcessingMessage> iter = report.iterator();
 		while (iter.hasNext()) {
-			ProcessingMessage pm = (ProcessingMessage)iter.next();			
-			result.append(pm.getMessage());	
+			ProcessingMessage pm = (ProcessingMessage)iter.next();
+			result.append(pm.getMessage()+" 字段路径："+ pm.asJson().get("schema").get("pointer"));	
 			result.append("|");
 		}       
 		return result.toString();

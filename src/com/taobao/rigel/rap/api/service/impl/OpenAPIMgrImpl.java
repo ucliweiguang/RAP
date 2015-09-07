@@ -96,7 +96,7 @@ public class OpenAPIMgrImpl implements OpenAPIMgr {
 		return model;
 	}
 
-	@Override
+	/*@Override
 	public Object getSchema(int actionId, Action.TYPE type, String ver, int projectId) {
 		Action action;
         if (ver != null && !ver.isEmpty() && projectId > 0) {
@@ -123,7 +123,7 @@ public class OpenAPIMgrImpl implements OpenAPIMgr {
 		schema.put("properties", properties);
 
 		return schema;
-	}
+	}*/
 
 	@Override
 	public String modifyMockRules(String rules, int actionId) {
@@ -202,6 +202,12 @@ public class OpenAPIMgrImpl implements OpenAPIMgr {
 			pMap.put("properties", properties);
 		}
 		return pMap;
+	}
+
+	@Override
+	public String getSchema(int actionId) {		
+		Action action = projectMgr.getAction(actionId);;
+		return action.getJsonschema();
 	}
 
 }

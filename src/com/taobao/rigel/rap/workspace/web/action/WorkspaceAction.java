@@ -742,7 +742,7 @@ public class WorkspaceAction extends ActionBase {
 			result="JsonSchema内容格式没有错误，可放心保存.";
 		}
 		isOk = true;
-		System.out.println("result:" + result.replaceAll("\"", "'"));
+		//System.out.println("result:" + result.replaceAll("\"", "'"));
 		if (isOk) {
 			setJson("{\"isOk\":true,\"result\":\"" + result.replaceAll("\"", "'") + "\"}");
 		}

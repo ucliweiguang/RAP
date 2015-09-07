@@ -1,0 +1,417 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>自定义校验规则指南</title>
+<link type="text/css" rel="stylesheet" href="myWorkspace.css" />
+ <link type="text/css" rel="stylesheet" href="../stat/css/json-s.css" type="text/css" rel="stylesheet"></link>
+
+</head>
+<body>
+<div><b>先说重点：</b><br>
+<ul>
+<li>1.校验前，<b>先要获取指定接口的jsonschema的内容</b>，蜂鸟服务接口：<b>http://{rap-domain}/api/querySchema.do?actionId={actionId}</b>;{rap-domain}是你使用RAP系统的域名,{actionId}是该接口在RAP中的id，可从接口管理界面直接看到. Example: <a href="http://10.20.33.69:8080/api/querySchema.do?actionId=2" target="_blank">http://10.20.33.69:8080/api/querySchema.do?actionId=2</a><br></li>
+<li>2.业务研发方需对<b>自定义format自行编写代码实现。</b><br></li>
+<li>3.自定义规则可用Java、javascript、PHP、Python等实现。<b>建议优先选择Java来实现</b>。原因：<BR>
+A.Java可实现支持v4的基本校验、复杂自定义校验；<br>
+B.javascript次之，支持v4的基本校验、一般自定义校验。局限性：不能拿测试数据参与规则的构建，如实现不了A属性值由B属性值决定;<br>
+C.PHP比较弱，仅支持v4的基本校验，不支持自定义校验规则，以及对部分有\号的正则表达式、format格式（如ipv4）等不支持。<br>
+D.Python未具体研究，详细情况参考：https://github.com/Julian/jsonschema<br></li>
+</ul></div>
+<div id="sample-schema" style="float:left; margin-right:15px;margin-top:15px;"><b>校验规则:</b><br>
+<textarea style="width: 730px; height: 450px; font-size: 12px; line-height: 1.5;"  readonly="readonly">
+{	
+    "title": "my json-schema demo",
+    "type": "array",  
+    "items": {
+        "type": "object",
+        "required": [ "id", "name" ,"age"],  
+        "additionalProperties": true,        
+        "properties": {
+            "id": {
+                "type": "string",
+                "format":"uuid"         
+            },
+            "name": {
+                "type": "string",  
+                "minLength": 5,          
+                "maxLength": 10,   
+                "default": "no name"   
+            },
+            "age":{
+            	"type": "number",
+            	"minimum": 18,      
+            	"maximum": 60,      
+            	"exclusiveMinimum": true,  
+            	"exclusiveMaximum": false,
+            	"default": 20               
+            },
+            "phone":{
+            	 "type": "string",
+   				 "pattern": "^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"  
+            },
+            "createdate":{
+            	"type": "string",
+            	"pattern": "^(?:(?!0000)[0-9]{4}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)$"
+            },
+            "color":{
+            	"type": "string",
+            	"enum": ["red", "amber", "green"]    
+            },
+            "formatstr":{
+            	"type": "string",
+            	"format" : "ipv4"            					               	
+            },
+            "complex":{
+            	"type": "string",
+            	"format" : "myformat"  
+            }
+        }
+    }
+}
+</textarea>
+</div>
+<div id="sample-data" style="margin-top:30px;"><b>对应的数据：</b><br>
+<textarea style="width: 400px; height: 450px; font-size: 12px; line-height: 1.5;" cols="25" rows="20" readonly="readonly">
+[
+    {
+        "id": "5aacaa7e-15f5-4798-9857-7c34a0d8fda0",
+        "name": "foofoo",
+        "age" : 20,
+        "phone": "(888)555-1212",
+        "createdate": "2015-08-18",
+        "color": "green",
+        "complex": "foofoo20",
+        "formatstr" : "192.168.1.2",
+        "additional": "ok"
+    },
+    {
+        "id": "5aacaa7e-15f5-4798-9857-7c34a0d8fda1",
+        "name": "liweiguang",
+        "age" : 40
+    }
+]
+</textarea>
+</div><br>
+<div id="sample-code-java"><b>自定义数据校验代码例子（Java版）:</b><br>
+
+<textarea style="width: 1150px; height: 450px; font-size: 12px; line-height: 1.5;" readonly="readonly">
+pom.xml增加以下代码片段:
+<dependency>
+	<groupId>com.github.fge</groupId>
+	<artifactId>json-schema-validator</artifactId>
+	<version>2.2.6</version>
+</dependency>
+		
+/**
+ * 功能描述：自定义校验format。规则如下：
+ * 字段值必须 = "name"+"age" 字符串组合
+ * 
+ * @author 李伟光 
+ * created on: 2015-8-19
+ */
+public class MyFormatAttribute extends AbstractFormatAttribute {
+	private static final FormatAttribute INSTANCE = new MyFormatAttribute();
+
+	private MyFormatAttribute() {
+		super("myformat", NodeType.STRING);
+	}
+
+	public static FormatAttribute getInstance() {
+		return INSTANCE;
+	}
+
+	@Override
+	public void validate(final ProcessingReport report, final MessageBundle bundle,
+			final FullData data) throws ProcessingException {
+		final String value = data.getInstance().getNode().textValue();
+		
+		final int age = data.getInstance().getBaseNode().findValue("age").intValue();
+		final String name = data.getInstance().getBaseNode().findValue("name").textValue();
+		if (!(name+age).equals(value)){
+			report.error(newMsg(data, bundle, "invalidMyformat").setMessage("'" + value + "' is not match 'name+age'."));
+		}
+	}
+}
+
+
+//下面的代码例子支持了uuid和myformat两个自定义规则
+public class MyExample {
+	public static void main(final String... args) throws IOException, ProcessingException {
+		//获取api对应的jsonschema内容。
+		//下面是从文件读取的例子，实际上可通过JsonLoader.fromString直接读取jsonschema内容。
+		//而jsonschema内容可通过接口：http://{rap-domain}/api/querySchema.do?actionId={actionId}获取
+		final JsonNode customSchema = Utils.loadResource("/my-schema.json");
+		//获取api对应的测试数据内容.同样，实际上可通过自己的逻辑获取待测试的内容
+		final JsonNode good = Utils.loadResource("/my-data.json");
+		
+		Library library = DraftV4Library.get().thaw()
+				.addFormatAttribute("uuid", UUIDFormatAttribute.getInstance()).freeze();
+		//add myformat attribute
+		library = DraftV4Library.get().thaw().addFormatAttribute("myformat", MyFormatAttribute.getInstance()).freeze();
+		//add myformat attribute end		
+	
+		/*
+		 * Build a new message bundle with our added error message
+		 */
+		final String key = "invalidUUID";
+		final String value = "id value is not a valid UUID!";
+		final MessageSource source = MapMessageSource.newBuilder().put(key, value).build();
+		 MessageBundle bundle = MessageBundles.getBundle(JsonSchemaValidationBundle.class)
+				.thaw().appendSource(source).freeze();
+
+		//add myformat message
+		final String mykey = "invalidMyformat";
+		final String myvalue = "value is invalidMyformat!";
+		final MessageSource mysource = MapMessageSource.newBuilder().put(mykey, myvalue).build();
+		bundle = MessageBundles.getBundle(JsonSchemaValidationBundle.class)
+				.thaw().appendSource(mysource).freeze();
+		//add myformat message end
+		
+		/*
+		 * Build our dedicated validation configuration
+		 */
+		final ValidationConfiguration cfg = ValidationConfiguration.newBuilder()
+				.setDefaultLibrary("http://uc.cn/nav/myschema#", library)
+				.setValidationMessages(bundle).freeze();
+		
+		final JsonSchemaFactory factory = JsonSchemaFactory.newBuilder()
+				.setValidationConfiguration(cfg).freeze();
+
+		final JsonSchema schema = factory.getJsonSchema(customSchema);
+
+		ProcessingReport report;
+		
+		report = schema.validate(good,true);
+
+		System.out.println(report.isSuccess());
+		Iterator<ProcessingMessage> iter = report.iterator();
+		while (iter.hasNext()) {
+			ProcessingMessage pm = (ProcessingMessage)iter.next();
+			System.out.println(pm.getMessage());			
+		}
+	}
+
+	private static final class UUIDFormatAttribute extends AbstractFormatAttribute {
+		private static final FormatAttribute INSTANCE = new UUIDFormatAttribute();
+
+		private UUIDFormatAttribute() {
+			super("uuid", NodeType.STRING);
+		}
+
+		public static FormatAttribute getInstance() {
+			return INSTANCE;
+		}
+
+		@Override
+		public void validate(final ProcessingReport report, final MessageBundle bundle,
+				final FullData data) throws ProcessingException {
+			final String value = data.getInstance().getNode().textValue();
+			try {
+				UUID.fromString(value);
+			} catch (IllegalArgumentException ignored) {
+				report.error(newMsg(data, bundle, "invalidUUID").setMessage("id: '" + value + "' is not a valid UUID!"));
+			}
+		}
+	}
+}
+</textarea>
+</div><br>
+<div id="sample-code-js"><b>自定义数据校验代码例子（Js版）:</b><br>
+
+<textarea style="width: 1150px; height: 450px; font-size: 12px; line-height: 1.5;" readonly="readonly">
+需要引用：jsen.min.js库
+//可通过：https://github.com/bugventure/jsen/blob/master/dist/jsen.min.js下载
+//校验规则的内容
+var schema = {	
+    'title': 'my json-schema demo',
+    'type': 'array',  
+    'items': {
+        'type': 'object',
+        'required': [ 'id', 'name' ,'age'],  
+        'additionalProperties': true,        
+        'properties': {
+            'id': {
+                'type': 'string' ,
+                'format': 'uuid'       
+            },
+            'name': {
+                'type': 'string',  
+                'minLength': 5,          
+                'maxLength': 10,   
+                'default': 'no name'   
+            },
+            'age':{
+            	'type': 'number',
+            	'minimum': 18,      
+            	'maximum': 60,      
+            	'exclusiveMinimum': true,  
+            	'exclusiveMaximum': false,
+            	'default': 20               
+            },
+            'phone':{
+            	 'type': 'string',
+   				 'pattern': '^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$'  
+            },
+            'createdate':{
+            	'type': 'string',
+            	'pattern': '^(?:(?!0000)[0-9]{4}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)$'
+            },
+            'color':{
+            	'type': 'string',
+            	'enum': ['red', 'amber', 'green']    
+            },
+            'formatstr':{
+            	'type': 'string',
+            	'format' : 'ipv4'            					               	
+            },
+            "complex":{
+            	"type": "string",
+            	"format" : "myformat"  
+            }
+        }
+    }
+};
+
+//校验数据
+var testdata = [
+    {
+        'id': '5aacaa7e-15f5-4798-9857-7c34a0d8fda0',
+        'name': 'foofoo',
+        'age' : 20,
+        'phone': '(888)555-1212',
+        'createdate': '2015-08-18',
+        'color': "green",        
+        'formatstr' : '192.168.1.200',
+        "complex": "foofoo20",
+        'additional': 'ok'
+    },
+    {
+        "id": "5aacaa7e-15f5-4798-9857-7c34a0d8fda1",
+        "name": "liweiguang",
+        "age" : 40
+    }
+];
+
+//通过定义formats来实现自定义校验规则，比如以下的uuid和myformat规则.
+//局限性：不能拿测试数据参与规则的构建，如实现不了A属性值由B属性值决定.这种情况下建议使用后端语言（如Java）实现自定义规则。
+var validate = jsen(schema, { greedy: true,
+			formats: {
+	            uuid: '^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}$',
+	            myformat :  function (value, schema) {
+	            	//value 是对应字段测试数据的值	            	
+	            	if (value.indexOf("30")==-1){
+	            		return false;	
+	            	}else{
+	            		return true;
+	            	}	            	
+	            }
+	        } 
+    	}); 
+
+validate(testdata);
+
+//console.log(validate.errors);
+var result = new Array();
+result = validate.errors;
+for(var i=0;i < result.length;i++){
+	console.log(result[i]);	
+}
+</textarea>
+</div>
+
+<br>
+<div id="sample-code-php"><b>自定义数据校验代码例子（PHP版）:</b><br>
+
+<textarea style="width: 1150px; height: 450px; font-size: 12px; line-height: 1.5;" readonly="readonly">
+需要引用库：jsv4.php
+该类库可从这里获取：https://github.com/geraintluff/jsv4-php/blob/master/jsv4.php
+用法：Jsv4::validate($data, $schema); 
+其中，$data, $schema都是数组类型。 
+
+<?php
+require_once('jsv4.php');
+$data ='[
+    {
+        "id": "5aacaa7e-15f5-4798-9857-7c34a0d8fda0",
+        "name": "foofoo",
+        "age" : 20,
+        "phone": "(888)555-1212",
+        "createdate": "2015-08-18",
+        "color": "green2",
+        "complex": "foofoo20",
+        "formatstr" : "192.168.1.20",
+        "additional": "ok"
+    },
+    {
+        "id": "5aacaa7e-15f5-4798-9857-7c34a0d8fda1",
+        "name": "liweiguang",
+        "age" : 40
+    }
+]';
+
+$schema = '{	
+    "title": "my json-schema demo",
+    "type": "array",  
+    "items": {
+        "type": "object",
+        "required": [ "id", "name" ,"age"],  
+        "additionalProperties": true,        
+        "properties": {
+            "id": {
+                "type": "string"     
+            },
+            "name": {
+                "type": "string",  
+                "minLength": 5,          
+                "maxLength": 10,   
+                "default": "no name"   
+            },
+            "age":{
+            	"type": "number",
+            	"minimum": 18,      
+            	"maximum": 60,      
+            	"exclusiveMinimum": true,  
+            	"exclusiveMaximum": false,
+            	"default": 20               
+            },
+            "phone":{
+            	 "type": "string" 
+            },
+            "createdate":{
+            	"type": "string",
+            	"pattern": "^(?:(?!0000)[0-9]{4}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)$"
+            },
+            "color":{
+            	"type": "string",
+            	"enum": ["red", "amber", "green"]    
+            },
+            "formatstr":{
+            	"type": "string",
+            	"format" : "ipv4"            					               	
+            }
+        }
+    }
+}';
+
+$resultObj = Jsv4::validate(json_decode($data), json_decode($schema));
+//打印校验错误信息。如果校验数据没有问题，则errors数组信息为空
+//而且校验功能较弱，不支持自定义校验规则，以及对部分有\号的正则表达式、format格式（如ipv4）等不支持。
+//建议考虑使用其他较强的后端语言，如Java
+//print_r($resultObj->errors);
+foreach ($resultObj->errors as $value) {
+   echo $value . "<br>";
+}
+?>
+</textarea>
+</div>
+
+<div id="moreinfo" style="clear:left"><b>更多信息</b>：
+<ul>
+<li><b>http://{rap-domain}/api/querySchema.do?actionId={actionId}</b>;{rap-domain}是你使用RAP系统的域名,{actionId}是该接口在RAP中的id，可从接口管理界面直接看到. Example: http://10.20.33.69:8080/api/querySchema.do?actionId=2</li>
+<li>更多的开发语言支持，请查阅:<a href="http://json-schema.org/implementations.html" target="_blank">我要用其他语言自定义校验</a></li>
+<li>json-schema的v4版本内容可在这里下载：<a href="http://json-schema.org/draft-04/schema#"target="_blank">jsonschem v4</a></li>
+<li>更多的帮助信息请参考这里：<a href="http://json-schema.org/examples.html" target="_blank">jsonschem.org</a></li>
+</ul>
+</div>
+</body>
+</html>

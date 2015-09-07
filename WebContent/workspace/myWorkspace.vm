@@ -416,7 +416,9 @@
 							  <span id="CollapsibleViewDetail">
 							    <a href="javascript:void(0);" onclick="ExpandAllClicked()">展开</a>
 							    <a href="javascript:void(0);" onclick="CollapseAllClicked()">叠起</a>
-							  </span>
+							  </span>&nbsp;
+							  <span><a href="jsonschema-help.html" target="_blank">不知如何修改规则？</a></span>&nbsp;
+							  <span><a href="customschema-help.html" target="_blank">需要自定义校验规则？</a></span>
 							</div>
 							
 							<div style="float:left;margin-right:10px"><textarea id="getJsonSchemaFloater-text" style="width: 400px; height: 350px; font-size: 12px; line-height: 1.5;" cols="25" rows="20"></textarea></div>

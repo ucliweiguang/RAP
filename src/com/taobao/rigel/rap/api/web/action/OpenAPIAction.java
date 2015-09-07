@@ -114,7 +114,7 @@ public class OpenAPIAction extends ActionBase {
         return SUCCESS;
     }
 
-    public String querySchema() {
+/*    public String querySchema() {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         Gson g = new Gson();
         resultMap.put("schema",
@@ -132,6 +132,12 @@ public class OpenAPIAction extends ActionBase {
         }
 
         setJson(resultJson);
+        return SUCCESS;
+    }*/
+    
+    //overrided  by liweiguang 2015-09-06 
+    public String querySchema() {
+        setJson(openAPIMgr.getSchema(actionId));
         return SUCCESS;
     }
 

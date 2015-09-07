@@ -22,8 +22,18 @@ public interface OpenAPIMgr {
      * @param ver optional
 	 * @return
 	 */
-	Object getSchema(int actionId, Action.TYPE type, String ver, int projectId);
-
+	//Object getSchema(int actionId, Action.TYPE type, String ver, int projectId);
+	
+	//redefined by liweiguang 2015-9-6
+	/**
+	 * 
+	 * 功能描述：通过actionId获取对应的jsonschema的内容
+	 * @param actionId
+	 * @return jsonschema的内容
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2015-9-6
+	 */
+	String getSchema(int actionId);
 	/**
 	 * modify mock rules
 	 *

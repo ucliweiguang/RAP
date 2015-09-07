@@ -1,0 +1,93 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>编辑jsonschema快速上手指南</title>
+<link type="text/css" rel="stylesheet" href="myWorkspace.css" />
+ <link type="text/css" rel="stylesheet" href="../stat/css/json-s.css" type="text/css" rel="stylesheet"></link>
+
+</head>
+<body>
+<div id="sample-schema" style="float:left; margin-right:15px;">校验规则例子:<br>
+<textarea style="width: 730px; height: 450px; font-size: 12px; line-height: 1.5;"  readonly="readonly">
+{	
+    "title": "my json-schema demo",
+    "type": "array",  //表示整个json是一个数组，一般情况下，最外层的type是object
+    "items": {
+        "type": "object",    //既可以是对象，也可以是数组
+        "required": [ "id", "name" ,"age"],  //指定哪些字段是必须有值的
+        "additionalProperties": true,        //是否允许json数据对象中出现本schema定义意外的属性出现
+        "properties": {
+            "id": {
+                "type": "string"                
+            },
+            "name": {
+                "type": "string",  //指定该属性类型，包括：string,number,integer,boolean,object,array,any,null
+                "minLength": 5,    //指定该属性最小长度      
+                "maxLength": 10,   //指定该属性最大长度
+                "default": "no name"  //指定该属性默认值 
+            },
+            "age":{
+            	"type": "number",
+            	"minimum": 18,      //指定该属性最小值
+            	"maximum": 60,      //指定该属性最大值
+            	"exclusiveMinimum": true,  //指定该属性最小值是否包含边界值，默认是包含的
+            	"exclusiveMaximum": false, //指定该属性最大值是否包含边界值，默认是包含的
+            	"default": 20              //指定该属性默认值 
+            },
+            "phone":{
+            	 "type": "string",
+                 "pattern": "^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"  //支持正则表达式 	
+            },
+            "createdate":{
+            	"type": "string",
+            	"pattern": "^(?:(?!0000)[0-9]{4}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)$"
+            },
+            "color":{
+            	"type": "string",
+            	"enum": ["red", "amber", "green"]    //指定该字段的枚举值
+            },
+            "formatstr":{
+            	"type": "string",
+            	"format" : "ipv4" //该字段的格式。如果找不到对应的支持格式，可自行写正则表达式
+            	//内置支持的有：email,ipv6,ipv4,json-pointer,sha256,date-time,hostname,mac,sha1,uri,sha512,base64,md5             	
+            },
+            "complex":{
+            	"type": "string",
+            	"format" : "myformat"  //支持自定义负责校验规则。需根据接口服务或SDK编写业务校验逻辑。
+            }
+        }
+    }
+}
+</textarea>
+</div>
+<div id="sample-data">对应的数据：<br>
+<textarea style="width: 400px; height: 450px; font-size: 12px; line-height: 1.5;" cols="25" rows="20" readonly="readonly">
+[
+    {
+        "id": "5aacaa7e-15f5-4798-9857-7c34a0d8fda0",
+        "name": "foofoo",
+        "age" : 20,
+        "phone": "(888)555-1212",
+        "createdate": "2015-08-18",
+        "color": "green",
+        "complex": "foofoo20",
+        "formatstr" : "192.168.1.2",
+        "additional": "ok"
+    },
+    {
+        "id": "5aacaa7e-15f5-4798-9857-7c34a0d8fda1",
+        "name": "liweiguang",
+        "age" : 40
+    }
+]
+</textarea>
+</div>
+
+<div id="moreinfo" style="clear:left">更多信息：
+<ul>
+<li>json-schema的v4版本内容可在这里下载：<a href="http://json-schema.org/draft-04/schema#"target="_blank">jsonschem v4</a></li>
+<li>更多的帮助信息请参考这里：<a href="http://json-schema.org/examples.html" target="_blank">jsonschem.org</a></li>
+</ul>
+</div>
+</body>
+</html>
