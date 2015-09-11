@@ -1,10 +1,12 @@
 package com.taobao.rigel.rap.api.web.action;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.google.gson.Gson;
 import com.taobao.rigel.rap.api.service.OpenAPIMgr;
 import com.taobao.rigel.rap.common.ActionBase;
@@ -12,11 +14,20 @@ import com.taobao.rigel.rap.mock.service.MockMgr;
 import com.taobao.rigel.rap.project.bo.Action;
 import com.taobao.rigel.rap.project.bo.Project;
 import com.taobao.rigel.rap.project.service.ProjectMgr;
+import com.taobao.rigel.rap.validation.service.ValidationMgr;
 
 public class OpenAPIAction extends ActionBase {
 
     private static final long serialVersionUID = -1786553279434025468L;
+	private ValidationMgr validationMgr;
 
+	public ValidationMgr getValidationMgr() {
+		return validationMgr;
+	}
+
+	public void setValidationMgr(ValidationMgr validationMgr) {
+		this.validationMgr = validationMgr;
+	}
     private OpenAPIMgr openAPIMgr;
 
     public void setOpenAPIMgr(OpenAPIMgr openAPIMgr) {
@@ -190,5 +201,34 @@ public class OpenAPIAction extends ActionBase {
         setJson(json);
         return SUCCESS;
     }
+    
+
+
+	private String requestUrl;
+
+	public String getRequestUrl() {
+		return requestUrl;
+	}
+
+	public void setRequestUrl(String requestUrl) {
+		this.requestUrl = requestUrl;
+	}
+	private String jsonData;
+	
+	public String getJsonData() {
+		return jsonData;
+	}
+
+	public void setJsonData(String jsonData) {
+		this.jsonData = jsonData;
+	}
+
+	public String validateAPIData()
+			throws IOException, ProcessingException {
+		Map<String,String> result = validationMgr.validateAPIData(projectId, requestUrl, jsonData);
+		Gson g = new Gson();
+		setJson(g.toJson(result));
+		return SUCCESS;
+	}
 
 }

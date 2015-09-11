@@ -27,5 +27,10 @@
 				class="com.taobao.rigel.rap.api.web.action.OpenAPIAction" method="resetMockRules">
 			<result name="success" type="velocity">/bcom/json.cb.vm</result>
 		</action>
+		
+		<action name="validateAPIData"
+				class="com.taobao.rigel.rap.api.web.action.OpenAPIAction" method="validateAPIData">
+			<result name="success" type="velocity">/bcom/json.cb.vm</result>
+		</action>
 	</package>
 </struts>

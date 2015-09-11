@@ -1,6 +1,7 @@
 package com.taobao.rigel.rap.validation.service;
 
 import java.io.IOException;
+import java.util.Map;
 
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 
@@ -20,11 +21,12 @@ public interface ValidationMgr {
 	 * @param projectId   项目id
 	 * @param requestUrl  API的请求路径
 	 * @param jsonData    要校验的数据（json格式）
-	 * @return 校验结果
+	 * @return 校验结果  由code和message构成的Map，方便前端转换成json
+	 * code: 200--无错误；400--测试数据为空；401--接口的jsonSchema数据为空；500-接口数据有错误
 	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
 	 * created on: 2015-8-20
 	 */
-	public String validateAPIData(int projectId,String requestUrl,String jsonData) throws IOException, ProcessingException;
+	public Map<String, String> validateAPIData(int projectId,String requestUrl,String jsonData) throws IOException, ProcessingException;
 	/**
 	 * 
 	 * 功能描述：为对应的API生成json schema(无校验规则)，仅根据action的response parameters来生产

@@ -142,4 +142,6 @@ public interface ProjectDao {
     long getMockNumInTotal();
 
     List<Project> selectMockNumTopNProjectList(int limit);
+    
+    public Action getActionByUrlAndProjectid(int projectId,String requestUrl);
 }

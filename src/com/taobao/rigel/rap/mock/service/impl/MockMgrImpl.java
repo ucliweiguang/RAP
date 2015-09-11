@@ -217,7 +217,6 @@ public class MockMgrImpl implements MockMgr {
     @Override
     public String validateAPI(int projectId, String pattern, Map<String, Object> options, String jsonToCompare)
             throws UnsupportedEncodingException,IOException, ProcessingException {
-    	//UnsupportedEncodingException
         String mockjsData = generateRuleData(projectId, pattern, options);
         StringBuilder jsCode = new StringBuilder();
 
@@ -232,9 +231,9 @@ public class MockMgrImpl implements MockMgr {
                 .append(";\n")
                 .append("var validator = new StructureValidator(o2, o1);")
                 .append("JSON.stringify({result : validator.getResult(), resultStr : validator.getResultStr()});");
-        //return new JSRunner().run(jsCode.toString());
+        return new JSRunner().run(jsCode.toString());
         
-        StringBuilder result = new StringBuilder();
+/*        StringBuilder result = new StringBuilder();
         String tmpResult = new JSRunner().run(jsCode.toString());
         //整合数据校验的结果
         tmpResult = tmpResult.substring(0, tmpResult.length()-1);
@@ -242,7 +241,7 @@ public class MockMgrImpl implements MockMgr {
         result.append(",\"validationDataResult\":\"");
         result.append(validationMgr.validateAPIData(projectId, pattern, jsonToCompare));
         result.append("\"}");
-        return result.toString();
+        return result.toString();*/
     }
 
     @Override
