@@ -145,6 +145,14 @@ $(function() {
         var projId = box.data('projid');
         window.location = ($.route('workspace.mine') + '?projectId=' + projId);
     }
+    
+    //进入自动化测试数据、用例和数据管理的入口
+    function handleAutoTestProjectClick() {
+        var box = $(this);
+        box = box.parents('.box');
+        var projId = box.data('projid');
+        window.location = ('http://localhost:5000/#!/admin/home?projectId=' + projId);
+    }
 
     function handleEditProjectClick() {
         var id = $(this).data('id');
@@ -378,7 +386,8 @@ $(function() {
         .delegate('.box .glyphicon-export', 'click', handleRapPluginClick)
         .delegate('.create-productline', 'click', handleCreateProductline)
         .delegate('.create-group', 'click', handleCreateGroup)
-        .delegate('.box .glyphicon-trash', 'click', handleDeleteClick);
+        .delegate('.box .glyphicon-trash', 'click', handleDeleteClick)
+        .delegate('.box .glyphicon-cog', 'click', handleAutoTestProjectClick);        
     }
 
     function fillSelectAsync(route, params, tmpl, target, callback) {
