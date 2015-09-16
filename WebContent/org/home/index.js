@@ -7,7 +7,10 @@ $(function() {
     if (!-[1,]) { // IE 6-8
         $('#browserCheckAlert').show();
     }
-
+    
+    //访问蜂鸟管理后台的地址
+    var ATA_DOMAIN = "http://localhost:5000/#!/admin/home";
+    
     var NAME_MAP = {
         'user': '我的项目',
         'star': '重要项目',
@@ -151,7 +154,7 @@ $(function() {
         var box = $(this);
         box = box.parents('.box');
         var projId = box.data('projid');
-        window.location = ('http://localhost:5000/#!/admin/home?projectId=' + projId);
+        window.location = (ATA_DOMAIN + '?projectId=' + projId);
     }
 
     function handleEditProjectClick() {
