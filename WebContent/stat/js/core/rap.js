@@ -1313,7 +1313,7 @@ function deepCopy(o) {
         },
         CONFIG = {
             "SAVE_LIST_MAX_LENGTH"       : 10,
-            "DEFAULT_MAX_LENGTH"         : 50,
+            "DEFAULT_MAX_LENGTH"         : 500,
             "REMARK_MAX_LENGTH"          : 9999,
             "DEFAULT_INPUT_WIDTH"        : 100,
             "MODULE_NAME_WIDTH"          : 100,

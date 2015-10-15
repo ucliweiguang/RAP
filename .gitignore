@@ -16,3 +16,8 @@ buc.sso*.jar
 out
 .idea
 *.iml
+classes
+.settings
+*.zip
+*.jar
+myib

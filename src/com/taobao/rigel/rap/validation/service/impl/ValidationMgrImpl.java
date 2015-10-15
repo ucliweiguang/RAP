@@ -274,6 +274,9 @@ public class ValidationMgrImpl implements ValidationMgr {
 				if ("object".equals(p.getDataType())) {//对象类型字段					
 					result.append(removeMockForField(p.getIdentifier()));
 					result.append("\":{\"type\":\"object\",");
+					result.append("\"description\":\"");
+					result.append(p.getName());
+					result.append("\",");
 					result.append(generateFieldsSchema(subparameters));
 					result.append("}");
 				} else {//数组类型的字段
@@ -291,8 +294,23 @@ public class ValidationMgrImpl implements ValidationMgr {
 				result.append(removeMockForField(p.getIdentifier()));
 				result.append("\":{\"type\":\"");
 				result.append(convertDataType(p.getDataType()));
-				result.append("\",\"description\":\"");
-				result.append(p.getName());
+				result.append("\",");
+				//插入校验表达式，如"minimum": 18,"maximum": 60"
+				String description = p.getName();
+				String extra = getExtraRuleExpression(description);				
+				if (!"".equals(extra)){				
+					result.append(extra);
+					result.append(",");
+					//将extra##的内容去掉
+					description = description.substring(0,description.indexOf("extra#")-1);
+					//如果description没有其他自定义规则，将最右边的@v也去掉
+					if ("@v".equals(description.substring(description.length()-2))){
+						description = description.substring(0, description.length()-2);
+					}					
+				}
+				//插入校验表达式结束
+				result.append("\"description\":\"");
+				result.append(description);
 				if (iter.hasNext()) {
 					result.append("\"},");
 				} else {
@@ -318,7 +336,24 @@ public class ValidationMgrImpl implements ValidationMgr {
 
 		return result.toString();
 	}
-
+	//获取额外的校验表达式，比如"minimum": 18,"maximum": 60,"exclusiveMinimum": true"
+	//方便用户在友好的界面定义校验表达式，该内容将写入jsonschema对应的字段中
+	private String getExtraRuleExpression(String description){		
+		String result = "";
+		if(description.indexOf("extra#")==-1){
+			return result;
+		}
+		String rule = description.substring(description.indexOf("@v"), description.length()).substring(3);
+		String[] rules = rule.split(";");		
+		for(int i=0;i<rules.length;i++){
+			if(rules[i].indexOf("extra#")==0){
+				result = rules[i].substring(5,rules[i].length()).replace("#", "");				
+				//System.out.println(result);
+				break;
+			}
+		}
+		return result;
+	}
 	//由于json schema的数据类似于json接口的数据数据类型有一定差异，需转换
 	private String convertDataType(String dataType) {
 		if (dataType.contains("array")) {
