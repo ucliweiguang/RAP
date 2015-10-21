@@ -369,6 +369,61 @@
             </div>
         </form>
         #endFloater
+        
+        #startFloater("importPBFloater" "PB格式协议导入" 600 350)
+        <form name="formImportPBFloater">
+            <div id="div-importPB-floater-message" style="display:none;" class="label"></div>
+            <div class="myfloater">
+                <table class="table">
+                    <tr>
+                        <td>
+                            <textarea placeholder="请输入PB格式协议" id="importPBFloater-text" style="width: 510px; height: 200px; font-size: 12px; line-height: 1.5;" cols="20" rows="20"></textarea>
+                        </td>
+                    </tr>
+                </table>
+                <div class="div-floater-control">
+                    <button type="button" class="btn btn-primary" onclick="ws.doImportPB();">
+                        <span class="glyphicon glyphicon-ok"></span>
+                        导入
+                    </button>
+                    <button type="button" class="btn btn-default" onclick="ws.cancelImportPB();">
+                        <span class="glyphicon glyphicon-remove"></span>
+                        取消
+                    </button>
+                </div>
+            </div>
+        </form>
+        #endFloater
+        
+        #startFloater("showPBFloater" "查看/更新PB协议内容" 800 350)
+        <form name="showPBFloater">
+            <div id="div-showPB-floater-message" style="display:none;" class="label"></div>
+            <div class="myfloater">
+                <table class="table">
+                    <tr>
+                        <td>请求参数内容：
+                            <textarea placeholder="请求参数内容" id="requestPBFloater-text" style="width: 350px; height: 250px; font-size: 12px; line-height: 1.5;" cols="25" rows="25"></textarea>
+                        </td>
+                        <td>响应参数内容：
+                            <textarea placeholder="响应参数内容" id="responsePBFloater-text" style="width: 350px; height: 250px; font-size: 12px; line-height: 1.5;" cols="25" rows="25"></textarea>
+                        </td>
+                    </tr>                  
+                </table>
+                <div class="div-floater-control">
+                	<input type="hidden" id="showPBFloater-actionId" />
+                    <button type="button" class="btn btn-primary" onclick="ws.doUpdatePB();">
+                        <span class="glyphicon glyphicon-ok"></span>
+                        保存
+                    </button>
+                    <button type="button" class="btn btn-default" onclick="ws.cancelUpdatePB();">
+                        <span class="glyphicon glyphicon-remove"></span>
+                        取消
+                    </button>
+                </div>
+            </div>
+        </form>
+        #endFloater
+        
         #startFloater("exportRAPDataFloater" "JSON导入" 600 350)
         <form name="formImportJSONFloater">
             <div class="myfloater">
@@ -539,7 +594,10 @@
                 "generateJsonSchema": "$workspaceUrl.generateJsonSchema",
                 "saveJsonSchema"    : "$workspaceUrl.saveJsonSchema",
                 "getJsonSchema"     : "$workspaceUrl.getJsonSchema",
-                "validateJsonSchema": "$workspaceUrl.validateJsonSchema"
+                "validateJsonSchema": "$workspaceUrl.validateJsonSchema",
+                "savePB"            : "$workspaceUrl.savePB",
+                "getPB"             : "$workspaceUrl.getPB",
+                "updatePB"          : "$workspaceUrl.updatePB",
             },
             ws = rap.workspace,
             data = $workspaceJsonString,

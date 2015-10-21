@@ -226,6 +226,26 @@ public class Action implements java.io.Serializable {
 	public void setJsonschema(String jsonschema) {
 		this.jsonschema = jsonschema;
 	}
+	
+	private String pbrequest;
+	private String pbresponse;
+	
+
+	public String getPbrequest() {
+		return pbrequest;
+	}
+
+	public void setPbrequest(String pbrequest) {
+		this.pbrequest = pbrequest;
+	}
+
+	public String getPbresponse() {
+		return pbresponse;
+	}
+
+	public void setPbresponse(String pbresponse) {
+		this.pbresponse = pbresponse;
+	}
 
 	/**
 	 * get request parameter list HTML for file exporting reason: velocity

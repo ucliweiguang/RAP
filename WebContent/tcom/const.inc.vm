@@ -63,7 +63,10 @@
     "generateJsonSchema":"$projectContext/workspace/generateJsonSchema.action",
     "saveJsonSchema":"$projectContext/workspace/saveJsonSchema.action",
     "getJsonSchema":"$projectContext/workspace/getJsonSchema.action",
-    "validateJsonSchema":"$projectContext/workspace/validateJsonSchema.action"
+    "validateJsonSchema":"$projectContext/workspace/validateJsonSchema.action",
+    "savePB":"$projectContext/workspace/savePB.action",
+    "getPB":"$projectContext/workspace/getPB.action",
+    "updatePB":"$projectContext/workspace/updatePB.action"
 })
 #set($platformUrl = {
     "home":"$projectContext/platform/home.action",

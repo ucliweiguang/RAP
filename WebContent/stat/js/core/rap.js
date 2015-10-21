@@ -1292,12 +1292,14 @@ function deepCopy(o) {
             "REQUEST_BEGIN"                 : "<h2>请求参数列表</h2><table class=\"table-a\"><tr class=\"head\"><td class=\"head-expander\"></td><td class=\"head-identifier\">变量名</td><td class=\"head-name\">含义</td><td class=\"head-type\">类型</td><td class=\"head-remark\">备注</td></tr>",
             "REQUEST_BEGIN_EDIT"            : "<h2>请求参数列表</h2><table class=\"table-a\"><tr class=\"head\"><td class=\"head-expander\"></td><td class=\"head-op\">OP</td><td class=\"head-identifier\">变量名</td><td class=\"head-name\">含义</td><td class=\"head-type\">类型</td><td class=\"head-remark\">备注</td></tr>",
             "REQUEST_END"                   : "</table>",
-            "REQUEST_PARAMETER_ADD_BUTTON"  : "<div class='btns-container'><a href=\"#\" class=\"btn btn-info btn-xs\" onclick=\"ws.addParam('request'); return false;\"><i class='glyphicon glyphicon-plus'></i>添加参数</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href\"#\" class='btn btn-default btn-xs' onclick=\"ws.importJSON(true); return false;\"><i class='glyphicon glyphicon-transfer'></i>导入JSON</a></div>",
+            "REQUEST_PARAMETER_ADD_BUTTON"  : "<div class='btns-container'><a href=\"#\" class=\"btn btn-info btn-xs\" onclick=\"ws.addParam('request'); return false;\"><i class='glyphicon glyphicon-plus'></i>添加参数</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href\"#\" class='btn btn-default btn-xs' onclick=\"ws.importJSON(true); return false;\"><i class='glyphicon glyphicon-transfer'></i>导入JSON</a>" + 
+            								  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href\"#\" class='btn btn-default btn-xs' onclick=\"ws.importPB(true); return false;\"><i class='glyphicon glyphicon-transfer'></i>导入PB</a></div>",
 
             "RESPONSE_BEGIN"                : "<h2>响应参数列表</h2><table class=\"table-a\"><tr class=\"head\"><td class=\"head-expander\"></td><td class=\"head-identifier\">变量名</td><td class=\"head-name\">含义</td><td class=\"head-type\">类型</td><td class=\"head-remark\">备注</td></tr>",
             "RESPONSE_BEGIN_EDIT"           : "<h2>响应参数列表</h2><table class=\"table-a\"><tr class=\"head\"><td class=\"head-expander\"></td><td class=\"head-op\">OP</td><td class=\"head-identifier\">变量名</td><td class=\"head-name\">含义</td><td class=\"head-type\">类型</td><td class=\"head-remark\">备注</td></tr>",
             "RESPONSE_END"                  : "</table>",
-            "RESPONSE_PARAMETER_ADD_BUTTON" : "<div class='btns-container'><a href=\"#\" class=\"btn btn-info btn-xs\" onclick=\"ws.addParam('response'); return false;\"><i class='glyphicon glyphicon-plus'></i>添加参数</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href\"#\" class='btn btn-default btn-xs' onclick=\"ws.importJSON(); return false;\"><i class='glyphicon glyphicon-transfer'></i>导入JSON</a></div>",
+            "RESPONSE_PARAMETER_ADD_BUTTON" : "<div class='btns-container'><a href=\"#\" class=\"btn btn-info btn-xs\" onclick=\"ws.addParam('response'); return false;\"><i class='glyphicon glyphicon-plus'></i>添加参数</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href\"#\" class='btn btn-default btn-xs' onclick=\"ws.importJSON(); return false;\"><i class='glyphicon glyphicon-transfer'></i>导入JSON</a>" +
+            								  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href\"#\" class='btn btn-default btn-xs' onclick=\"ws.importPB(); return false;\"><i class='glyphicon glyphicon-transfer'></i>导入PB</a></div>",
 
             "SAVE_PANEL_BEGIN"              : "<div id=\"div-save-panel\">",
             "SAVE_PANEL_END"                : "</div>",
@@ -1350,7 +1352,9 @@ function deepCopy(o) {
             "VSS_PANEL_MESSAGE"      : "div-saveVSS-floater-message",
             "WORKSPACE_MESSAGE"      : "div-w-message",
             "EDIT_INPUT"             : "txtMTName" ,
-            "IMPORT_JSON_MESSAGE"    : "div-importJSON-floater-message"
+            "IMPORT_JSON_MESSAGE"    : "div-importJSON-floater-message",
+            "IMPORT_PB_MESSAGE"      : "div-importPB-floater-message",
+            "SHOW_PB_MESSAGE"        : "div-showPB-floater-message"
         },
         PREFIX = {
             "SAVE" : "radio-save-"
@@ -2084,9 +2088,184 @@ function deepCopy(o) {
             showMessage(CONST.ERROR, ELEMENT_ID.IMPORT_JSON_MESSAGE, 'JSON解析错误: ' + e.message);
          }
      };
+     
+     ////////////////////////start pb proto import//////////////////////////////
+     /**
+      * do import PB
+      */
+     ws.doImportPB = function() {
+         if (!validate('formImportPBFloater')) return;
+         var ele = b.g('importPBFloater-text');
+         var txt = ele.value;   //大文本框中输入的内容，要导入到PB协议内容
+         try {        	 
+        	 console.log("_curActionId:" + _curActionId);
+        	 //保存导入的PB协议内容
+        	 if (ws._doesImportToRequest){  //request
+        		 savePB(_curActionId,txt,1);
+        	 }else{//response
+        		 savePB(_curActionId,txt,0);
+        	 }
+        	 
+             ele.value = '';
+             var jsontxt = generateJSONfromPB(txt);
+             
+             var data = eval("(" + jsontxt + ")");
+             processJSONImport(data);             
+             this.switchA(_curActionId);
+             this.cancelImportPB();
+          } catch (e) {
+             showMessage(CONST.ERROR, ELEMENT_ID.IMPORT_PB_MESSAGE, 'PB解析错误: ' + e.message);
+          }
+      };
+      //保存导入的PB协议内容 flag:1--request;0--response
+      function savePB(_curActionId,pbtxt,reflag) {    	
+          var q = "actionId=" + _curActionId + "&pbtxt=" + pbtxt + "&reflag=" + reflag;
+              showMessage(CONST.LOADING, ELEMENT_ID.WORKSPACE_MESSAGE, MESSAGE.SAVING);
+              if (!processing(ELEMENT_ID.WORKSPACE_MESSAGE)) return;
+              b.ajax.post(URL.savePB, q, function(xhr, response) {
+              try {
+                  var obj = eval("(" + response + ")");
+                  if (obj.isOk) {
+                      showMessage(CONST.LOAD, ELEMENT_ID.WORKSPACE_MESSAGE, MESSAGE.SAVED);
+                  } else {
+                      showMessage(CONST.WARN, ELEMENT_ID.WORKSPACE_MESSAGE, obj.errMsg);
+                  }
+              } catch(e) {
+                  showMessage(CONST.WARN, ELEMENT_ID.WORKSPACE_MESSAGE, MESSAGE.FATAL_ERROR);
+              } finally {
+                  processed();
+              }
+          });
 
-
-
+      };
+      //将pb协议内容转换成json格式
+      function generateJSONfromPB(pbtxt){
+    	  var objs = new Array();  //对象的数组
+    	  var names = new Array();  //对象的名称
+    	  var objCount =pbtxt.match(/message/g).length; //获取对象个数    	  
+    	  var pb = pbtxt.replace(new RegExp("//.*","gm"),"");//去掉注释内容
+    	  //console.log("pb:" + pb);
+    	  
+    	  for(var i=0;i<objCount;i++){
+    		  //第一个message的位置
+    		  var firstpos = pb.indexOf("message");
+    		  var tmpstr = pb.substring(pb.indexOf("message")+6);
+    		  //下一个message的位置
+    		  var nextpos =  tmpstr.indexOf("message");
+    		  if (nextpos!=-1){//还有下一个message
+    			  nextpos = nextpos + 6;
+    			  //截第i个message
+    			  objs[i] = pb.substring(firstpos,nextpos);    			  
+    			  pb = pb.substring(nextpos);
+    		  }else{
+    			  objs[i] = pb;
+    		  }
+    		  names[i] = objs[i].replace(" ","").substring(7,objs[i].indexOf("{")-1).replace(/(^\s*)|(\s*$)/g, "");
+    		  //console.log("names[i]:" + names[i]);
+    		  //console.log("objs[i]:" + objs[i]);
+    	  }
+    	  
+    	  //从第一个对象开始构造
+    	  var paras = getParasByObj(objs[0]);
+    	  var jsonstr = constructJsonStr(names,objs,paras);
+    	  jsonstr = "{" + jsonstr + "}";
+    	  //console.log("jsonstr:" + jsonstr);
+    	  return jsonstr;    	 
+      }
+      //用于generateJSONfromPB
+      //names:对象名称数组
+      //objs：对象内容数组
+      //paras：当前要处理对象的参数数组
+      function constructJsonStr(names,objs,paras){
+    	  var jsonstr = "";
+    	  //console.log("dealing paras:" + paras);
+		  for(var j=0;j<paras.length-1;j++){//逐个参数进行构造处理
+			  //console.log("para:" + paras[j]);
+			  var words = new Array();
+			  words = paras[j].replace(/(^\s*)|(\s*$)/g, "").split(" ");  //去掉前后空格
+			  // required（限定修饰符:required\optional\repeated） string（字段类型） action（字段名称）
+			  if (words[0]=="repeated"){  //数组				 
+				  //console.log("objName：" + words[1]);
+				  //console.log("names:" + names);
+				  var subParas = new Array();
+				  //找到对应的子对象
+				  for(var i=0;i<names.length;i++){
+					  if(words[1]==names[i]){//找到了
+						  //console.log("found name objs[i]:" + objs[i]);
+						  subParas = getParasByObj(objs[i]);
+						  break;
+					  }
+				  }				 
+				  ///console.log("subParas:" + subParas);
+				  if(subParas.length==0){//找不到匹配对象名，就不是自定义对象,是一般类型的数组
+					  jsonstr += "\"" +  words[2] + "\":[";				  
+					  if (words[1]=="bool"){
+						  jsonstr += "true";
+					  } else if (words[1]=="string" || words[1]=="bytes"){
+						  jsonstr += "\"\"";
+					  } else if (words[1]=="double" || words[1]=="float"|| words[1]=="int32"|| words[1]=="uin32"
+						  || words[1]=="int64"|| words[1]=="uint64"|| words[1]=="sint32"|| words[1]=="sing64"
+						  || words[1]=="fixed32"|| words[1]=="fixed64"|| words[1]=="sfixed32"|| words[1]=="sfixed64"){
+						  jsonstr += "0";
+					  }
+					  jsonstr += "],";  
+				  }else{ //自定义对象数组
+					  jsonstr += "\"" +  words[2] + "\":[{";				  
+					  jsonstr += constructJsonStr(names,objs,subParas);
+					  jsonstr += "}],";
+				  }
+				  		
+			  } else if (words[0]=="optional" || words[0]=="required"){  //单个值或对象
+				  if (words[1]=="bool"){
+					  jsonstr += "\"" + words[2] + "\":true,";
+				  } else if (words[1]=="string" || words[1]=="bytes"){
+					  jsonstr += "\"" + words[2] + "\":\"\",";
+				  } else if (words[1]=="double" || words[1]=="float"|| words[1]=="int32"|| words[1]=="uin32"
+					  || words[1]=="int64"|| words[1]=="uint64"|| words[1]=="sint32"|| words[1]=="sing64"
+					  || words[1]=="fixed32"|| words[1]=="fixed64"|| words[1]=="sfixed32"|| words[1]=="sfixed64"){
+					  jsonstr += "\"" + words[2] + "\":0,";
+				  }else { //剩下的都是自定义对象					  
+					  var subParas = new Array();
+					  //找到对应的子对象
+					  for(var i=0;i<names.length;i++){
+						  if(words[1]==names[i]){//找到了
+							  subParas = getParasByObj(objs[i]);
+							  break;
+						  }
+					  }
+					  if(subParas.length==0){//找不到匹配对象名，是枚举类型
+						  jsonstr += "\"" + words[2] + "\":[\"\"],";
+					  }else{
+						  jsonstr += "\"" + words[2] + "\":{";
+						  jsonstr += constructJsonStr(names,objs,subParas);
+						  //jsonstr = jsonstr.substring(0,jsonstr.length-1);//去掉该对象描述内容的最后一个逗号
+						  jsonstr += "},";						  
+					  }
+				  }				   
+			  } else {
+				  //枚举情况
+			  }			  
+		  }    		 
+    	  return jsonstr.substring(0,jsonstr.length-1);
+      }
+      //获取整个对象的参数字符串数组
+      function getParasByObj(obj){
+    	  var paraStr = obj.substring(obj.indexOf("{") +1,obj.length-1);//整个对象的属性描述字符串
+		 
+		  if(paraStr.indexOf("enum")!=-1){//处理枚举类型
+			  var enumstr =paraStr.substring( paraStr.indexOf("{"),paraStr.indexOf("}")+1);    			  
+			  var newEnumstr = enumstr.replace(/;/g,",").replace("}","};");
+			  //console.log("newEnumstr:" + newEnumstr);
+			  paraStr = paraStr.replace(enumstr,newEnumstr);
+			  //console.log("new paraStr:" + paraStr);
+		  }
+		  var paras = new Array();//将单个属性的描绘内容分解保存，如   required string action = 1;
+		  //console.log("paraStr:" + paraStr);
+		  paras = paraStr.split(";");
+		  return paras;
+      }
+      ////////////////////////end pb proto import//////////////////////////////
+      
     /**
      * get action response JSON format
      * array => [{},{},{}]
@@ -2300,6 +2479,19 @@ function deepCopy(o) {
         this._doesImportToRequest = !!doesImportToRequest;
      };
 
+/////////////IMPORT PB//////////////     
+     /**
+      * cancel import PB
+      */
+      ws.cancelImportPB = function() {
+          ecui.get('importPBFloater').hide();
+      };
+
+      ws.importPB = function(doesImportToRequest) {
+         ecFloater.show("importPBFloater");
+         this._doesImportToRequest = !!doesImportToRequest;
+      };     
+///////////////////////////
     /**
      * cancel save in VSS mode
      */
@@ -2366,7 +2558,7 @@ function deepCopy(o) {
         }
     };
 
-    ws.quickSave = function() {
+    ws.quickSave = function() {    	
         var q = "id=" + p.getId() + "&projectData=" + util.escaper.escapeInU(getProjectDataJson()) +
             "&deletedObjectListData=" + util.escaper.escapeInU(b.json.stringify(_deletedObjectList)) +
             "&versionPosition=4&description=quick save";
@@ -3938,7 +4130,8 @@ function deepCopy(o) {
             }
             //added by liwg 2015-08-31
             body += "<div class='item'><a href='#' onclick='ws.doGenerateJsonSchema(" + a.id + "); return false;'>生成数据校验规则</a>&nbsp;&nbsp;";
-            body += "<a href='#' onclick='ws.doGetJsonSchema(" + a.id + "); return false;'>查看数据校验规则</a></div>";	
+            body += "<a href='#' onclick='ws.doGetJsonSchema(" + a.id + "); return false;'>查看数据校验规则</a>&nbsp;&nbsp;";
+            body += "<br><br>如果该接口是PB协议，你可<a href='#' onclick='ws.doShowPB(" + a.id + "); return false;'>查看/更新PB协议内容</a></div>";	
            		
 
             if (!body) {
@@ -3982,7 +4175,55 @@ function deepCopy(o) {
             });
 
         }
-        
+      //added by liwg 2015-10-20 start
+        ws.doShowPB = function(actionId) {
+      	  var q = "actionId=" + actionId;
+      	  b.g("showPBFloater-actionId").value = actionId;
+            b.ajax.post(URL.getPB, q, function(xhr, response) {
+                try {
+                	//console.log("response:" + response);
+                    var obj = eval("(" + response + ")");
+                    //console.log(obj);
+                    b.g("requestPBFloater-text").value = obj.pbrequest;
+                    b.g("responsePBFloater-text").value = obj.pbresponse;
+                } catch(e) {
+                    showMessage(CONST.ERROR, ELEMENT_ID.WORKSPACE_MESSAGE, MESSAGE.FATAL_ERROR);
+                    console.log(e.toString());
+                }
+            });          
+            e.get("showPBFloater").setTitle("查看/更新PB协议内容");          
+            ecFloater.show("showPBFloater");            
+          };
+          
+          //关闭ShowPB窗口
+          ws.cancelUpdatePB = function() {
+        	  b.g("requestPBFloater-text").value ="";
+              b.g("responsePBFloater-text").value = "";
+              e.get("showPBFloater").hide();
+          }    
+          //保存pb更新的内容
+          ws.doUpdatePB = function() {
+        	  var actionId = b.g("showPBFloater-actionId").value;
+        	  var q = "actionId=" + actionId +"&pbrequest=" +b.g("requestPBFloater-text").value + "&pbresponse=" + b.g("responsePBFloater-text").value;
+        	  showMessage(CONST.LOAD, ELEMENT_ID.WORKSPACE_MESSAGE, MESSAGE.SAVING);
+              b.ajax.post(URL.updatePB, q, function(xhr, response) {
+                    try {
+                        var obj = eval("(" + response + ")");
+                        if (obj.isOk) {
+                        	showMessage(CONST.LOAD, ELEMENT_ID.WORKSPACE_MESSAGE, MESSAGE.SAVED);	
+                        }else {
+                            showMessage(CONST.WARN, ELEMENT_ID.WORKSPACE_MESSAGE, obj.errMsg);
+                        }  
+
+                    } catch(e) {
+                        showMessage(CONST.ERROR, ELEMENT_ID.WORKSPACE_MESSAGE, MESSAGE.FATAL_ERROR);
+                    }
+                });          
+        	  b.g("requestPBFloater-text").value ="";
+              b.g("responsePBFloater-text").value = ""; 
+              e.get("showPBFloater").hide();
+           };
+              
       //added by liwg 2015-09-01 start
       ws.doGetJsonSchema = function(actionId) {
           //var action = p.getAction(actionId);
@@ -4000,8 +4241,8 @@ function deepCopy(o) {
           });          
           e.get("getJsonSchemaFloater").setTitle("编辑JsonSchema");          
           ecFloater.show("getJsonSchemaFloater");            
-        };
-        
+        };        
+
         //关闭或保存jsonschema
         ws.closeJsonSchemaFloater = function(save) {
         	b.g("Canvas").innerHTML ="";

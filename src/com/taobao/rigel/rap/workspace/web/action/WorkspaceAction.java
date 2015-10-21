@@ -394,7 +394,7 @@ public class WorkspaceAction extends ActionBase {
 		project.setProjectData(projectData);
 		projectMgr.updateProject(project);
 		return SUCCESS;
-	}
+	}	
 
 	public String checkIn() throws Exception {
 		User curUser = getCurUser();
@@ -411,7 +411,12 @@ public class WorkspaceAction extends ActionBase {
             logger.error("User %s trying to checkedin project(id=$d) and denied.", getCurAccount(), getId());
 			return JSON_ERROR;
 		}
-
+		/*//save pb content
+		String requestPBParameters = getRequestPBParameters();
+		String responsePBParameters = getResponsePBParameters();
+		System.out.println("requestPBParameters:"+ requestPBParameters);
+		System.out.println("responsePBParameters:"+ responsePBParameters);*/
+		
 		// update project
 		Map<Long, Long> actionIdMap = new HashMap<Long, Long>();
 		projectMgr.updateProject(getId(), getProjectData(),
@@ -745,6 +750,100 @@ public class WorkspaceAction extends ActionBase {
 		//System.out.println("result:" + result.replaceAll("\"", "'"));
 		if (isOk) {
 			setJson("{\"isOk\":true,\"result\":\"" + result.replaceAll("\"", "'") + "\"}");
+		}
+		return SUCCESS;
+    }
+    
+    private String pbtxt;
+    private int reflag;    
+    public String getPbtxt() {
+		return pbtxt;
+	}
+	public void setPbtxt(String pbtxt) {
+		this.pbtxt = pbtxt;
+	}
+	public int getReflag() {
+		return reflag;
+	}
+	public void setReflag(int reflag) {
+		this.reflag = reflag;
+	}
+    private String pbrequest;
+    private String pbresponse;    
+    public String getPbrequest() {
+		return pbrequest;
+	}
+
+	public void setPbrequest(String pbrequest) {
+		this.pbrequest = pbrequest;
+	}
+
+	public String getPbresponse() {
+		return pbresponse;
+	}
+
+	public void setPbresponse(String pbresponse) {
+		this.pbresponse = pbresponse;
+	}
+	/**
+     * 
+     * 功能描述：保存用户提交的PB协议的文本内容(用户导入pb的时候)
+     * @return 
+     * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+     * created on: 2015-10-20
+     */
+    public String savePB(){
+    	long curUserId = getCurUserId();
+		if (curUserId <= 0) {
+			setIsOk(false);
+			setErrMsg(LOGIN_WARN_MSG);
+			return JSON_ERROR;
+		}
+
+		boolean isOk = false;
+		validationMgr.savePB(actionId, pbtxt, reflag);
+		isOk = true;
+		
+		if (isOk) {
+			setJson("{\"isOk\":true}");
+		}
+		return SUCCESS;
+    }
+    
+    //查看PB协议的内容
+    public String getPB(){
+		boolean isOk = false;
+		Map<String,String> result = validationMgr.getPB(actionId);
+		String pbrequest = result.get("pbrequest");
+		String pbresponse = result.get("pbresponse");
+		if(pbrequest==null) pbrequest="";
+		if(pbresponse==null) pbresponse="";
+		
+		isOk = true;
+		//System.out.println("result:" + result.replaceAll("\"", "'"));
+		//System.out.println("result:" + result);
+		if (isOk) {
+			setJson("{\"isOk\":true,\"pbrequest\":\"" + pbrequest.replaceAll("\\n", "\\\\n") + "\","+
+				"\"pbresponse\":\"" + pbresponse.replaceAll("\\n", "\\\\n") + "\"}");
+		}
+		return SUCCESS;    	
+    }
+     
+    //在查看PB协议内容后执行更新内容操作
+	public String updatePB(){
+    	long curUserId = getCurUserId();
+		if (curUserId <= 0) {
+			setIsOk(false);
+			setErrMsg(LOGIN_WARN_MSG);
+			return JSON_ERROR;
+		}
+
+		boolean isOk = false;
+		validationMgr.updatePB(actionId, pbrequest,pbresponse);
+		isOk = true;
+		
+		if (isOk) {
+			setJson("{\"isOk\":true}");
 		}
 		return SUCCESS;
     }

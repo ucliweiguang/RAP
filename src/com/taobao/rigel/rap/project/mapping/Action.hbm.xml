@@ -29,6 +29,12 @@
 		<property name="jsonschema">
 			<column name="jsonschema" />
 		</property>		
+		<property name="pbrequest">
+			<column name="pbrequest" />
+		</property>	
+		<property name="pbresponse">
+			<column name="pbresponse" />
+		</property>					
 		<set name="pageList" order-by="page_id asc" inverse="true"
 			table="tb_action_and_page">
 			<key column="action_id" not-null="true" />

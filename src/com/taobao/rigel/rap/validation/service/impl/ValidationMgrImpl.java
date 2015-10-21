@@ -408,4 +408,29 @@ public class ValidationMgrImpl implements ValidationMgr {
 		}
 		return result.toString();
 	}
+	
+	public void savePB(long actionId,String pbtxt,int reflag){
+		Action action = getProjectDao().getAction(actionId);
+		if(reflag==1){
+			action.setPbrequest(pbtxt);
+		}else{
+			action.setPbresponse(pbtxt);
+		}
+		action.update(action);
+	}
+	
+	public  Map<String,String> getPB(long actionId){
+		Map<String,String> result = new HashMap<String,String>();
+		Action action = getProjectDao().getAction(actionId);
+		result.put("pbrequest", action.getPbrequest());
+		result.put("pbresponse", action.getPbresponse());
+		return result;
+	}
+	
+	public void updatePB(long actionId,String pbrequest,String pbresponse){
+		Action action = getProjectDao().getAction(actionId);
+		action.setPbrequest(pbrequest);
+		action.setPbresponse(pbresponse);
+		action.update(action);
+	}
 }

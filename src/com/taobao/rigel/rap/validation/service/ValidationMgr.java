@@ -63,4 +63,33 @@ public interface ValidationMgr {
 	 * created on: 2015-9-2
 	 */
 	public String validateJsonSchema(String jsonSchema) throws ProcessingException, IOException;
+	/**
+	 * 
+	 * 功能描述：保存用户提交的PB协议的文本内容
+	 * @param actionId 对应的API的id
+	 * @param pbtxt  PB协议的文本内容
+	 * @param reflag 1--request;0--response
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2015-10-20
+	 */
+	public void savePB(long actionId,String pbtxt,int reflag);
+	/**
+	 * 
+	 * 功能描述：获取action对应的PB协议的内容
+	 * @param actionId
+	 * @return PB协议的内容，包含请求参数和响应参数
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2015-10-20
+	 */
+	public Map<String,String> getPB(long actionId);	
+	/**
+	 * 
+	 * 功能描述：保存更新pb协议的内容
+	 * @param actionId
+	 * @param pbrequest  pb协议请求参数
+	 * @param pbresponse pb协议响应参数
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2015-10-20
+	 */
+	public void updatePB(long actionId,String pbrequest,String pbresponse);
 }
