@@ -87,7 +87,8 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="/doc/${projectId}" target="_blank">
+                                <!--<a href="/doc/${projectId}" target="_blank">-->
+                                <a href="$!workspaceUrl.onlineDocs?projectId=$!projectId" target="_blank">
                                 <span class="glyphicon glyphicon-new-window"></span>
                                 Online Docs
                                 </a>
@@ -598,6 +599,7 @@
                 "savePB"            : "$workspaceUrl.savePB",
                 "getPB"             : "$workspaceUrl.getPB",
                 "updatePB"          : "$workspaceUrl.updatePB",
+                "onlineDocs"        : "$workspaceUrl.onlineDocs"
             },
             ws = rap.workspace,
             data = $workspaceJsonString,

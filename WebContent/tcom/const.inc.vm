@@ -66,7 +66,8 @@
     "validateJsonSchema":"$projectContext/workspace/validateJsonSchema.action",
     "savePB":"$projectContext/workspace/savePB.action",
     "getPB":"$projectContext/workspace/getPB.action",
-    "updatePB":"$projectContext/workspace/updatePB.action"
+    "updatePB":"$projectContext/workspace/updatePB.action",
+    "onlineDocs":"$projectContext/workspace/onlineDocs.action"
 })
 #set($platformUrl = {
     "home":"$projectContext/platform/home.action",

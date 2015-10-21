@@ -104,6 +104,11 @@
 			method="updatePB">
 			<result name="success" type="velocity">/bcom/json.cb.vm</result>
 		</action>
+		<action name="onlineDocs"
+			class="com.taobao.rigel.rap.workspace.web.action.WorkspaceAction"
+			method="onlineDocs">
+			<result name="success" type="velocity">/resource/export.vm</result>
+		</action>		
 	</package>
 
 </struts>

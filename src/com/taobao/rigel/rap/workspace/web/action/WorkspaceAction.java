@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import com.taobao.rigel.rap.common.SystemConstant;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
@@ -606,6 +607,29 @@ public class WorkspaceAction extends ActionBase {
 		return SUCCESS;
 	}
 
+	public String onlineDocs() throws Exception {
+		project = projectMgr.getProject(projectId);
+		velocityEngine.init();
+		VelocityContext context = new VelocityContext();
+		context.put("project", project);
+		Template template = null;
+		try {
+			template = velocityEngine.getTemplate("resource/export.vm", "UTF8");
+		} catch (ResourceNotFoundException rnfe) {
+			rnfe.printStackTrace();
+		} catch (ParseErrorException pee) {
+			pee.printStackTrace();
+		} catch (MethodInvocationException mie) {
+			mie.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		StringWriter sw = new StringWriter();
+		template.merge(context, sw);
+		
+		return SUCCESS;
+	}
+	
 	@SuppressWarnings("rawtypes")
 	private boolean isLocked(int projectId) {
 		Map app = ContextManager.getApplication();

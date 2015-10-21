@@ -45,11 +45,20 @@
                             #set($actionNo = $velocityCount)
                             <div class="action">
                             <h3>$moduleNo.$pageNo.$actionNo&nbsp;$action.name</h3>
-                            <h3>Description</h3>
+                            <h3>请求类型:</h3><div>
+                            #if($action.requestType ==1)  
+								  GET
+							#else if($action.requestType ==2)
+								  POST
+							#end  
+                            </div>
+                            <h3>请求路径:</h3>
+                            <div>$action.requestUrl</div>
+                            <h3>描述:</h3>
                             <div>$action.description</div>
-                            <h3>Request Param List</h3>
+                            <h3>请求参数列表:</h3>
                             $action.requestParameterListHTML
-                            <h3>Response Param List</h3>
+                            <h3>响应参数列表:</h3>
                             $action.responseParameterListHTML
                             </div>
                         #end
