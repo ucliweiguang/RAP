@@ -125,7 +125,7 @@ public class ValidationMgrImpl implements ValidationMgr {
 			}
 			if ("".equals(tmpResult.toString())) {//校验的数据没有错误
 				result.put("code", "200");
-				result.put("message", "本接口的数据未发现错误。");
+				result.put("message", "本接口数据结构和字段规则校验完毕，未发现问题。");
 				return result;
 				//message.append("本接口的数据未发现错误。");
 			} else {//校验数据有错误		
