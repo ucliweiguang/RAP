@@ -266,6 +266,8 @@
                         <label for="editAFloater-type-3">PUT</label>
                         <input type="radio" id="editAFloater-type-4" name="editAFloater-type"  value="4"/>
                         <label for="editAFloater-type-4">DELETE</label>
+						<input type="radio" id="editAFloater-type-5" name="editAFloater-type"  value="5"/>
+                        <label for="editAFloater-type-5">PATCH</label>                        
                     </td>
                 </tr>
                 <tr>
@@ -370,7 +372,32 @@
             </div>
         </form>
         #endFloater
-        
+
+        #startFloater("importURLFloater" "URL导入" 600 350)
+        <form name="formImportURLFloater">
+            <div id="div-importURL-floater-message" style="display:none;" class="label"></div>
+            <div class="myfloater">
+                <table class="table">
+                    <tr>
+                        <td>
+                            <textarea placeholder="请输入URL" id="importURLFloater-text" style="width: 510px; height: 200px; font-size: 12px; line-height: 1.5;" cols="20" rows="20"></textarea>
+                        </td>
+                    </tr>
+                </table>
+                <div class="div-floater-control">
+                    <button type="button" class="btn btn-primary" onclick="ws.doImportURL();">
+                        <span class="glyphicon glyphicon-ok"></span>
+                        导入
+                    </button>
+                    <button type="button" class="btn btn-default" onclick="ws.cancelImportURL();">
+                        <span class="glyphicon glyphicon-remove"></span>
+                        取消
+                    </button>
+                </div>
+            </div>
+        </form>
+        #endFloater
+                
         #startFloater("importPBFloater" "PB格式协议导入" 600 350)
         <form name="formImportPBFloater">
         	<div class="label"><font color="red">请将根对象（主对象）放在最前面</font></div>

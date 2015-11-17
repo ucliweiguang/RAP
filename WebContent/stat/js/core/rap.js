@@ -1292,7 +1292,8 @@ function deepCopy(o) {
             "REQUEST_BEGIN"                 : "<h2>请求参数列表</h2><table class=\"table-a\"><tr class=\"head\"><td class=\"head-expander\"></td><td class=\"head-identifier\">变量名</td><td class=\"head-name\">含义</td><td class=\"head-type\">类型</td><td class=\"head-remark\">备注</td></tr>",
             "REQUEST_BEGIN_EDIT"            : "<h2>请求参数列表</h2><table class=\"table-a\"><tr class=\"head\"><td class=\"head-expander\"></td><td class=\"head-op\">OP</td><td class=\"head-identifier\">变量名</td><td class=\"head-name\">含义</td><td class=\"head-type\">类型</td><td class=\"head-remark\">备注</td></tr>",
             "REQUEST_END"                   : "</table>",
-            "REQUEST_PARAMETER_ADD_BUTTON"  : "<div class='btns-container'><a href=\"#\" class=\"btn btn-info btn-xs\" onclick=\"ws.addParam('request'); return false;\"><i class='glyphicon glyphicon-plus'></i>添加参数</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href\"#\" class='btn btn-default btn-xs' onclick=\"ws.importJSON(true); return false;\"><i class='glyphicon glyphicon-transfer'></i>导入JSON</a>" + 
+            "REQUEST_PARAMETER_ADD_BUTTON"  : "<div class='btns-container'><a href=\"#\" class=\"btn btn-info btn-xs\" onclick=\"ws.addParam('request'); return false;\"><i class='glyphicon glyphicon-plus'></i>添加参数</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href\"#\" class='btn btn-default btn-xs' onclick=\"ws.importJSON(true); return false;\"><i class='glyphicon glyphicon-transfer'></i>导入JSON</a>" +
+            								  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href\"#\" class='btn btn-default btn-xs' onclick=\"ws.importURL(true); return false;\"><i class='glyphicon glyphicon-transfer'></i>导入URL</a>" +
             								  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href\"#\" class='btn btn-default btn-xs' onclick=\"ws.importPB(true); return false;\"><i class='glyphicon glyphicon-transfer'></i>导入PB</a></div>",
 
             "RESPONSE_BEGIN"                : "<h2>响应参数列表</h2><table class=\"table-a\"><tr class=\"head\"><td class=\"head-expander\"></td><td class=\"head-identifier\">变量名</td><td class=\"head-name\">含义</td><td class=\"head-type\">类型</td><td class=\"head-remark\">备注</td></tr>",
@@ -2089,6 +2090,46 @@ function deepCopy(o) {
          }
      };
      
+     /**
+      * do import URL
+      */
+     ws.doImportURL = function() {
+         if (!validate('formImportURLFloater')) return;
+         var ele = b.g('importURLFloater-text');
+         var txt = ele.value;
+         try {
+        	 var jsontxt = "";
+        	 //根据文本框的URL构造json
+        	 var params = getUrlParams(txt);
+        	 //console.log(params);
+        	 var jsontxt = JSON.stringify(params);
+        	 
+             var data = eval("(" + jsontxt + ")");
+             if (data instanceof Array) {
+                 data = data[0];
+             }
+
+             ele.value = '';
+             processJSONImport(data);
+             this.switchA(_curActionId);
+             this.cancelImportURL();
+          } catch (e) {
+             showMessage(CONST.ERROR, ELEMENT_ID.IMPORT_JSON_MESSAGE, 'JSON解析错误: ' + e.message);
+          }
+      };
+      
+    //解析URL，将参数串转换成json数据字符串
+  	function getUrlParams(url) {  
+	    var result = {};  
+	    var params = (url.split('?')[1] || '').split('&');  
+	    for(var param in params) {  
+	        if (params.hasOwnProperty(param)) {  
+	            paramParts = params[param].split('=');  
+	            result[paramParts[0]] = decodeURIComponent(paramParts[1] || "");  
+	        }  
+	    }  
+	    return result;  
+  	} 
      ////////////////////////start pb proto import//////////////////////////////
      /**
       * do import PB
@@ -2478,7 +2519,17 @@ function deepCopy(o) {
         ecFloater.show("importJSONFloater");
         this._doesImportToRequest = !!doesImportToRequest;
      };
-
+     /**
+      * cancel import URL
+      */
+      ws.cancelImportURL = function() {
+          ecui.get('importURLFloater').hide();
+      };
+     ws.importURL = function(doesImportToRequest) {
+         ecFloater.show("importURLFloater");
+         this._doesImportToRequest = !!doesImportToRequest;
+      };
+      
 /////////////IMPORT PB//////////////     
      /**
       * cancel import PB
@@ -4349,6 +4400,8 @@ function deepCopy(o) {
                     return "put";
                 case 4:
                     return "delete";
+                case 5:
+                    return "patch";
                 default: return "unknown";
             }
         }

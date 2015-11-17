@@ -50,6 +50,12 @@
 								  GET
 							#else if($action.requestType ==2)
 								  POST
+							#else if($action.requestType ==3)
+								  PUT
+							#else if($action.requestType ==4)
+								  DELETE
+							#else if($action.requestType ==5)
+								  PATCH							  								  								  
 							#end  
                             </div>
                             <h3>请求路径:</h3>
