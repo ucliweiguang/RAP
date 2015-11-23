@@ -48,13 +48,13 @@
                             <h3>请求类型:</h3><div>
                             #if($action.requestType ==1)  
 								  GET
-							#else if($action.requestType ==2)
+							#elseif($action.requestType ==2)
 								  POST
-							#else if($action.requestType ==3)
+							#elseif($action.requestType ==3)
 								  PUT
-							#else if($action.requestType ==4)
+							#elseif($action.requestType ==4)
 								  DELETE
-							#else if($action.requestType ==5)
+							#else
 								  PATCH							  								  								  
 							#end  
                             </div>

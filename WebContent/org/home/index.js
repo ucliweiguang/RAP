@@ -9,7 +9,7 @@ $(function() {
     }
     
     //访问蜂鸟管理后台的地址
-    var ATA_DOMAIN = "http://10.20.33.69:5000/";
+    var ATA_DOMAIN = "http://fn.ucweb.local:5000/";
     
     var NAME_MAP = {
         'user': '我的项目',
