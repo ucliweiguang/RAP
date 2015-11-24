@@ -282,7 +282,27 @@ public class ValidationMgrImpl implements ValidationMgr {
 				} else {//数组类型的字段
 					result.append(removeMockForField(p.getIdentifier()));
 					//result.append("\":{\"type\":\"array\",\"items\":{");
-					result.append("\":{\"type\":\"array\",\"items\":{\"type\": \"object\",");
+					result.append("\":{\"type\":\"array\",");
+					
+					//插入校验表达式，如"minimum": 18,"maximum": 60"
+					String description = p.getName();
+					String extra = getExtraRuleExpression(description);
+					if (!"".equals(extra)){				
+						result.append(extra);
+						result.append(",");
+						//将extra##的内容去掉
+						description = description.substring(0,description.indexOf("extra#")-1);
+						//如果description没有其他自定义规则，将最右边的@v也去掉
+						if ("@v".equals(description.substring(description.length()-2))){
+							description = description.substring(0, description.length()-2);
+						}					
+					}
+					//插入校验表达式结束					
+					result.append("\"description\":\"");
+					result.append(description);
+					result.append("\",");
+					
+					result.append("\"items\":{\"type\": \"object\",");					
 					result.append(generateFieldsSchema(subparameters));
 					result.append("}}");
 				}
@@ -297,7 +317,7 @@ public class ValidationMgrImpl implements ValidationMgr {
 				result.append("\",");
 				//插入校验表达式，如"minimum": 18,"maximum": 60"
 				String description = p.getName();
-				String extra = getExtraRuleExpression(description);				
+				String extra = getExtraRuleExpression(description);
 				if (!"".equals(extra)){				
 					result.append(extra);
 					result.append(",");
