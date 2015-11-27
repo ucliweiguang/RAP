@@ -78,7 +78,8 @@
                     <li><a href="$accountUrl.myAccount">个人信息</a></li>
                     <li><a href="$accountUrl.mySetting">个人设置</a></li>
                     <li class="divider"></li>
-                    <!--<li><a href="https://$consts.aliLoginUrl/ssoLogout.htm?APP_NAME=rapauto&BACK_URL=$logoutUrlEncoded">退出</a></li>-->
+                    <li><a href="https://$consts.aliLoginUrl/ssoLogout.htm?APP_NAME=hummingbird&BACK_URL=$logoutUrlEncoded">退出阿里账号</a></li>
+                    <li class="divider"></li>
                     <li><a href="$domainUrl/account/doLogout.do">退出</a></li>
                 </ul>
               </li>
@@ -105,6 +106,13 @@
                     <button type="submit" class="btn btn-primary" id="login-btn">登录</button>
                     <button type="button" class="btn btn-default" id="cancel-login-btn" style="margin-left: 10px;">取消</button>
                   </div>
+                  
+                   <li class="divider"></li>
+                  <a href="https://$consts.aliLoginUrl/ssoLogin.htm?APP_NAME=hummingbird&BACK_URL=$!homeUrlEncoded$!returnUrlEncoded&CANCEL_CERT=true&CLIENT_VERSION=0.6.7&CONTEXT_PATH=%2F">
+                  <!--<a href="https://$consts.aliLoginUrl/ssoLogin.htm?APP_NAME=hummingbird&BACK_URL=http://127.0.0.1:8080&CANCEL_CERT=true&CLIENT_VERSION=0.6.7&CONTEXT_PATH=/">-->
+                  <span class="btn btn-warning">阿里账号登录</span>
+                  </a>
+                  
                   <!--<button type="button" onclick="window.location.href = '$accountUrl.register'" class="btn">注册</button>-->
               </form>
           </li>

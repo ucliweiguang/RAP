@@ -73,10 +73,14 @@
 			<result name="success" type="velocity">/bcom/json.cb.vm</result>
 		</action>
 	</package>
-	<package name="root" extends="rap-default" namespace="/root">
+	<package name="root" extends="rap-default" namespace="/">
 		<action name="sendBucSSOToken"
 			class="com.taobao.rigel.rap.account.web.action.AccountAction" method="sendBucSSOToken">
-			<result name="success" type="velocity">/bcom/json.cb.vm</result>
+			<!-- <result name="success" type="velocity">/bcom/json.cb.vm</result>-->
+			<result name="success" type="redirectAction">
+				<param name="actionName">index</param>
+				<param name="namespace">/org</param>
+			</result>
 		</action>
 	</package>
 </struts>

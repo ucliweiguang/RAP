@@ -18,24 +18,34 @@
 		<filter-class>com.alibaba.buc.sso.client.filter.SSOFilter</filter-class>
 		<init-param>
 			<param-name>APP_NAME</param-name>
-			<param-value>rapauto</param-value>
+			<param-value>hummingbird</param-value>
 		</init-param>
 		<init-param>
 			<param-name>SSO_CALLBACK_CLASS</param-name>
-			<param-value>com.alibaba.buc.sso.client.handler.impl.SimpleSSOCallback</param-value>
+			<param-value>com.alibaba.buc.sso.client.handler.impl.BucSSOCallBack</param-value>
 		</init-param>
 		<init-param>
 			<param-name>SSO_SERVER_URL</param-name>
-			<param-value>[TODO]:這裡寫LOGIN_URL</param-value>
+			<param-value>https://login.alibaba-inc.com</param-value>
+			<!-- 日常：https://login-test.alibaba-inc.com，线上：https://login.alibaba-inc.com -->
 		</init-param>
 		<init-param>
 			<param-name>CLIENT_KEY</param-name>
-			<param-value>0e6f43d9-e380-4a7b-88ec-65b5568ce2ee</param-value>
+			<param-value>3023e5c2-cdb0-45b5-af49-557401159209</param-value>
+			<!--prod: 3023e5c2-cdb0-45b5-af49-557401159209-->
+			<!--test: d455bcb3-2bb8-4a89-9141-8381b4309b20-->
 		</init-param>
 		<init-param>
 			<param-name>EXCLUSIONS</param-name>
-			<param-value>*</param-value>
+			<param-value>/index.htm,/org/index.do,/platform/*,/account/*,*/img/*,*/css/*,*/js/*,*/fonts/*,/page.html</param-value>
 		</init-param>
+
+		<init-param>
+		    <!-- 返回完整的用户对象信息 -->
+		    <param-name>RETURN_USER_EXTEND_INFO</param-name>
+		    <param-value>true</param-value>
+		</init-param>
+
 	</filter> 
 	<filter>
 		<filter-name>UrlRewriteFilter</filter-name>

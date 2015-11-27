@@ -4288,8 +4288,9 @@ function deepCopy(o) {
     	  b.g("getJsonSchemaFloater-actionId").value = actionId;
           b.ajax.post(URL.getJsonSchema, q, function(xhr, response) {
               try {
-                  var obj = eval("(" + response + ")");
-                  //console.log(obj);
+            	  //console.log("response:" +response);
+            	  var obj = eval("(" + response + ")");
+                  //console.log("obj:" +obj);
                   b.g("getJsonSchemaFloater-text").value = JSON.stringify(obj.jsonSchema);
               } catch(e) {
                   showMessage(CONST.ERROR, ELEMENT_ID.WORKSPACE_MESSAGE, MESSAGE.FATAL_ERROR);

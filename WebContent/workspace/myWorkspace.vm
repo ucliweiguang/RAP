@@ -224,6 +224,7 @@
 
         #startFloater("versionFloater" "" 600 400)
         <div class="myfloater">
+        	<font color="red"><b>切换版本会将当前版本的所有接口校验规则删除，切换版本前请谨慎决定。</b></font>
             <div id="div-version-floater-message" class="label" style="display:none;">
             </div>
             <div id="div-version-floater-content">

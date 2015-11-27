@@ -1,12 +1,19 @@
 package com.taobao.rigel.rap.account.web.action;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.mail.internet.AddressException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 
+import org.apache.struts2.ServletActionContext;
+
+import com.alibaba.buc.sso.client.util.SimpleUserUtil;
+import com.alibaba.buc.sso.client.vo.BucSSOUser;
 import com.google.gson.Gson;
 import com.taobao.rigel.rap.account.bo.Notification;
 import com.taobao.rigel.rap.account.bo.User;
@@ -322,9 +329,20 @@ public class AccountAction extends ActionBase {
 	 * getEmail(), getPassword(), getNewPassword())) { setIsEditMode(true);
 	 * setErrMsg("旧密码输入错误"); } return SUCCESS; }
 	 */
-
+	
+	//private HttpServletRequest request;
 	public String sendBucSSOToken() {
+		/*this.request = ServletActionContext.getRequest();
+		try {
+			BucSSOUser user = SimpleUserUtil.getBucSSOUser(this.request);
+			System.out.println("sendBucSSOToken user:" + user);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ServletException e) {
+			e.printStackTrace();
+		}*/
 		return SUCCESS;
+		//return "redirect";
 	}
 
 	public String logData() {

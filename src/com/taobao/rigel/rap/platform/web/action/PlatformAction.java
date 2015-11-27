@@ -1,26 +1,19 @@
 package com.taobao.rigel.rap.platform.web.action;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
-import com.google.gson.Gson;
-import com.opensymphony.xwork2.ActionContext;
-import com.taobao.rigel.rap.common.Item;
-import com.taobao.rigel.rap.common.SystemVisitorLog;
-import com.taobao.rigel.rap.platform.service.DataMgr;
-import com.taobao.rigel.rap.project.service.ProjectMgr;
-import org.apache.commons.io.IOUtils;
-
-import com.taobao.rigel.rap.common.ActionBase;
-import com.taobao.rigel.rap.common.SystemConstant;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.google.gson.Gson;
+import com.taobao.rigel.rap.common.ActionBase;
+import com.taobao.rigel.rap.common.Item;
+import com.taobao.rigel.rap.common.SystemVisitorLog;
+import com.taobao.rigel.rap.platform.service.DataMgr;
+import com.taobao.rigel.rap.project.service.ProjectMgr;
 
 public class PlatformAction extends ActionBase {
     private Gson gson = new Gson();

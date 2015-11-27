@@ -1,7 +1,8 @@
 package com.taobao.rigel.rap.common;
 
 import com.alibaba.buc.sso.client.util.SimpleUserUtil;
-import com.alibaba.platform.buc.sso.common.dto.SimpleSSOUser;
+//import com.alibaba.platform.buc.sso.common.dto.SimpleSSOUser;
+import com.alibaba.buc.sso.client.vo.BucSSOUser;
 import com.taobao.rigel.rap.account.bo.User;
 import com.taobao.rigel.rap.account.service.AccountMgr;
 
@@ -59,16 +60,21 @@ public class AuthCheckFilter implements Filter {
 		
 		SystemConstant.README_PATH = session.getServletContext().getRealPath(File.separator + "README.md");
 		SystemConstant.ROOT = session.getServletContext().getRealPath(File.separator);
-
+		
 		if (!logined) {
-			SimpleSSOUser user = SimpleUserUtil
-					.findUser((HttpServletRequest) request);
-
-
+			BucSSOUser user = SimpleUserUtil.getBucSSOUser((HttpServletRequest) request);
+			//System.out.println("user:" + user);
 
 			if (user != null) {
 				SystemConstant.user = user;
-				String emailPrefix = user.getEmailPrefix();
+												
+				//System.out.println("user.getEmpId:" + user.getEmpId());
+				//System.out.println("user.getLastName:" + user.getLastName());
+				//System.out.println("user.emailAddr:" + user.getEmailAddr());
+				//System.out.println("user.loginName:" + user.getLoginName());
+				
+				String emailPrefix = user.getEmailAddr().substring(0, user.getEmailAddr().indexOf("@alibaba"));
+				//System.out.println("emailPrefix:" + emailPrefix);
 				User rapUser = accountMgr.getUser(emailPrefix);
 				if (rapUser == null) {
 					// proceed register

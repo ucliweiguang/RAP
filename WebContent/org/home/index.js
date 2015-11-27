@@ -154,6 +154,7 @@ $(function() {
         var box = $(this);
         box = box.parents('.box');
         var projId = box.data('projid');
+        //console.log("projectId"+projId);
         window.location = (ATA_DOMAIN + '?projectId=' + projId);
     }
 
@@ -390,7 +391,7 @@ $(function() {
         .delegate('.create-productline', 'click', handleCreateProductline)
         .delegate('.create-group', 'click', handleCreateGroup)
         .delegate('.box .glyphicon-trash', 'click', handleDeleteClick)
-        .delegate('.box .glyphicon-cog', 'click', handleAutoTestProjectClick);        
+        .delegate('.box .glyphicon-home', 'click', handleAutoTestProjectClick);        
     }
 
     function fillSelectAsync(route, params, tmpl, target, callback) {
