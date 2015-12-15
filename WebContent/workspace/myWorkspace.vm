@@ -37,10 +37,12 @@
                             </ul>
                         </div>
                     </div>
+		 #if($accessable)                    
                     <button id="btnToMainPage" type="button" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" onclick="location.href='/';" title="返回主页">
                         <span class="glyphicon glyphicon-arrow-left"></span>
                         返回主页
                     </button>
+         #end
                     <button id="btnFastSave" type="button" class="btn btn-warning btn-sm" data-toggle="tooltip" data-placement="bottom" onclick="ws.quickSave(); return false;"  style="display: none" title="一键保存，方便快捷">
                         <span class="glyphicon glyphicon-flash"></span>
                         秒存
@@ -78,7 +80,9 @@
                         <span class="glyphicon glyphicon-wrench"></span>
                         配置
                     </button>
-                    #end
+                    
+                    
+                    
                     <div class="btn-group">
                         <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
                              <span class="glyphicon glyphicon-th-large"></span>
@@ -117,6 +121,8 @@
 
                         </ul>
                     </div>
+                    #end
+                    
                 </div>
 
             </div>
@@ -636,7 +642,7 @@
     <script src="${staticRoot}/js/util/json-m.js" type="text/javascript"></script>
     
     </body>
-    <script type="text/javascript">
+    <script type="text/javascript">    
         var urlObj = {
                 "getModuleHtmlAjax" : "$workspaceUrl.getModuleHtmlAjax",
                 "updateSave"        : "$workspaceUrl.updateSave",
@@ -671,7 +677,13 @@
             data.projectData.moduleList = [{"id":ws.generateId(),"name":"某模块（点击编辑后双击修改）","introduction":"","pageList":[{"moduleId":ws.generateId(),"name":"某页面","introduction":"","id":ws.generateId(),"isIdGenerated":true,"actionList":[{"pageId":ws.generateId(),"name":"某请求","requestType":"1","requestUrl":"","responseTemplate":"","description":"","id":ws.generateId(),"requestParameterList":[{"id":ws.generateId(),"identifier":"reqParam","name":"某请求参数","remark":"","validator":"","dataType":"number","parameterList":[]}],"responseParameterList":[{"id":ws.generateId(),"identifier":"resParam","name":"某响应参数","remark":"","validator":"","dataType":"number","parameterList":[]}]}]}]}];
         }
 
-        ws.init(data, urlObj#if($actionId),$actionId#end, callbackHandler);
+		var accessable = false;
+		#if($accessable)
+			accessable = true;
+		#end
+		//console.log("vm accessable:" + accessable);		
+        ws.init(data, urlObj#if($actionId),$actionId#end, callbackHandler,accessable);
+
 
         function callbackHandler() {
             #if($mock == true)
@@ -684,6 +696,5 @@
         }
 
         $('.btn').tooltip();
-
     </script>
 </html>

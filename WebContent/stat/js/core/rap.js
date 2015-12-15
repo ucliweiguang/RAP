@@ -1,5 +1,7 @@
 var rap = rap || {};
 
+var actionaccessable = true;  //全局变量，当前用户是否有对项目文档的管理权
+
 // console compability
 if (!window.console) {
     window.console = {
@@ -25,7 +27,7 @@ function deepCopy(o) {
  * Util Module
  */
 (function() {
-    rap.util = rap.util || {};
+	rap.util = rap.util || {};
 
     var util = rap.util,
         b = baidu;
@@ -1365,7 +1367,7 @@ function deepCopy(o) {
     /**
      * initialize run when dom ready
      */
-    ws.init = function(workspaceObj, urlObj, actionId) {
+    ws.init = function(workspaceObj, urlObj, actionId,callbackHandler,accessable) {
         var me = this;
         if (typeof actionId !== 'number' || actionId === 0) {
             var hashId = getHash();
@@ -1474,6 +1476,9 @@ function deepCopy(o) {
             }
         });
 
+        //console.log("accessable:"+ accessable);
+        actionaccessable =  accessable;  //设置当前用户的项目管理权
+   	
     };
 
     ws.workspaceSearchResultHandler = function(type, id) {
@@ -1637,8 +1642,7 @@ function deepCopy(o) {
         }
         getDiv(_curModuleId, "a").innerHTML = getAHtml(action);
         renderA();
-
-
+        
         var last = b.g('div-a-tree-node-' + _curActionId);
         var cur = b.g('div-a-tree-node-' + actionId);
 
@@ -3410,7 +3414,7 @@ function deepCopy(o) {
         // initialize data & UI
         p.init(_data.projectData);
 
-        // only rap.project can manage project data
+        // only  can manage project data
         // projectData of _data of workspace only used once
         // when initializing
         delete _data.projectData;
@@ -4185,11 +4189,13 @@ function deepCopy(o) {
                 body += "<div class='item'><b>接口描述 </b>" + processTextarea(a.description) + "</div>";
             }
             //added by liwg 2015-08-31
-            body += "<div class='item'><a href='#' onclick='ws.doGenerateJsonSchema(" + a.id + "); return false;'>生成数据校验规则</a>&nbsp;&nbsp;";
-            body += "<a href='#' onclick='ws.doGetJsonSchema(" + a.id + "); return false;'>查看数据校验规则</a>&nbsp;&nbsp;";
-            body += "<br><br>如果该接口是PB协议，你可<a href='#' onclick='ws.doShowPB(" + a.id + "); return false;'>查看/更新PB协议内容</a></div>";	
-           		
-
+            if(actionaccessable){
+	            body += "<div id='additionalrules' class='item'><a href='#' onclick='ws.doGenerateJsonSchema(" + a.id + "); return false;'>生成数据校验规则</a>&nbsp;&nbsp;";
+	            body += "<a href='#' onclick='ws.doGetJsonSchema(" + a.id + "); return false;'>查看数据校验规则</a>&nbsp;&nbsp;";
+	            body += "<br><br>如果该接口是PB协议，你可<a href='#' onclick='ws.doShowPB(" + a.id + "); return false;'>查看/更新PB协议内容</a></div>";	
+            }
+            //console.log("actionaccessable:" + actionaccessable);	
+            
             if (!body) {
                 body += "no info";
             }

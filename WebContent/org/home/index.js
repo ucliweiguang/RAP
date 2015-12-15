@@ -155,7 +155,7 @@ $(function() {
         box = box.parents('.box');
         var projId = box.data('projid');
         //console.log("projectId"+projId);
-        window.location = (ATA_DOMAIN + '?projectId=' + projId);
+        window.open(ATA_DOMAIN + '?projectId=' + projId);
     }
 
     function handleEditProjectClick() {
