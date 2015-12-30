@@ -4180,7 +4180,7 @@ function deepCopy(o) {
                 body += "<div class='item'><b>请求类型 </b><font color='orange'>" + getRequestTypeStr(a.requestType) + "</font></div>";
             }
             if (a.requestUrl) {
-                body += "<div class='item'><b>请求Url </b><font color='blue'> " + a.requestUrl + "</font></div>";
+                body += "<div class='item'><b>请求路径 </b><font color='blue'> " + a.requestUrl + "</font></div>";
             }
             if (a.responseTemplate) {
                 body += "<div class='item'><b>相关模板 </b><font color='red'>" + a.responseTemplate + "</font></div>";

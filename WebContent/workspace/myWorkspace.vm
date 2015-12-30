@@ -282,9 +282,11 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="title">请求链接</td>
+                    <td class="title">请求路径</td>
                     <td class="input">
+                    <font size="1">注：<b>无需填写域名和问号后的参数串</b>，只填写相对路径，如<font color="red"><b>mobile/page/short/1.1.0</b></font></font>                    	
                         <input type="text" id="editAFloater-requestUrl" />
+                        
                     </td>
                 </tr>
                 <tr style="display:none;">
