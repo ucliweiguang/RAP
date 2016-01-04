@@ -54,8 +54,10 @@
 								  PUT
 							#elseif($action.requestType ==4)
 								  DELETE
+							#elseif($action.requestType ==5)
+								  PATCH
 							#else
-								  PATCH							  								  								  
+								  COPY	  								  								  
 							#end  
                             </div>
                             <h3>请求路径:</h3>

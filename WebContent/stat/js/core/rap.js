@@ -4410,6 +4410,8 @@ function deepCopy(o) {
                     return "delete";
                 case 5:
                     return "patch";
+                case 6:
+                    return "copy";
                 default: return "unknown";
             }
         }

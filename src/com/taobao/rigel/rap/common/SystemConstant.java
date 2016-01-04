@@ -10,7 +10,7 @@ public class SystemConstant {
 	public static String DOMAIN_URL = "";
 	
 	//日常：login-test.alibaba-inc.com，线上：login.alibaba-inc.com
-	public static final String ALI_LOGIN_URL = "login.alibaba-inc.com";
+	public static final String ALI_LOGIN_URL = "login-test.alibaba-inc.com";
     
 	public static final String NODE_SERVER = "localhost:7429";
     public static boolean serviceInitialized = false;

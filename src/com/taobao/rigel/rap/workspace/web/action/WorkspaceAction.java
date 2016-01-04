@@ -265,7 +265,7 @@ public class WorkspaceAction extends ActionBase {
             logger.error("Unexpected project id=%d", getProjectId());
             return ERROR;
         }
-		Workspace workspace = new Workspace();
+		Workspace workspace = new Workspace();		
 		workspace.setProject(p);
 		setWorkspaceJsonString(workspace.toString());
 		setWorkspace(workspace);
