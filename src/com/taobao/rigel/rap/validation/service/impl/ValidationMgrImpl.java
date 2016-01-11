@@ -32,6 +32,15 @@ import com.taobao.rigel.rap.project.bo.Parameter;
  * created on: 2015-8-20
  */
 public class ValidationMgrImpl implements ValidationMgr {
+	//@param url参数  
+	private static final String TAG_PARAM = "@param";
+	//@json body参数
+	private static final String TAG_JSON = "@json";
+	//@header header参数
+	private static final String TAG_HEADER = "@header";
+	//@form form-data参数
+	private static final String TAG_FORMDATA = "@form";
+			
 	private ProjectDao projectDao;
 
 	public ProjectDao getProjectDao() {
@@ -73,6 +82,7 @@ public class ValidationMgrImpl implements ValidationMgr {
 			}
 			JsonNode jsonschema = JsonLoader.fromString(action.getJsonschema());
 			JsonNode data = JsonLoader.fromString(jsonData);
+			//System.out.println("data:" + data);
 			final JsonSchema schema = factory.getJsonSchema(jsonschema);
 			ProcessingReport report = schema.validate(data, true);
 			Iterator<ProcessingMessage> iter = report.iterator();
@@ -452,5 +462,182 @@ public class ValidationMgrImpl implements ValidationMgr {
 		action.setPbrequest(pbrequest);
 		action.setPbresponse(pbresponse);
 		action.update(action);
+	}
+
+	/////////////////////////////////////////////////////////
+	@Override	
+	public String generateCURL(long actionId) {
+		Action action = getProjectDao().getAction(actionId);
+		Set<Parameter> parameters = action.getRequestParameterList();
+		String path = action.getRequestUrl(); //接口请求路径
+		//接口类型：1-GET,2-POST,3-PUT,4-DELETE,5-PATCH,6-COPY
+		String requestType = action.getRequestType();
+		
+		StringBuilder cURL = new StringBuilder("curl 'http://yourdomain.com/");
+		cURL.append(path);
+		//遍历请求参数（递归），解析那几个自定义标签，以便组合curl内容串
+		cURL.append(constructCURL(requestType,parameters));
+		cURL.append(" --compressed");
+		return cURL.toString();
+	}
+
+	//构造curl内容串	
+	private String constructCURL(String requestType,Set<Parameter> parameters){
+		if("1".equals(requestType)||"4".equals(requestType)||"6".equals(requestType)){
+			return constructCURLForGET(parameters);
+		} else {
+			return constructCURLForPOST(parameters);
+		}
+	}
+	
+	//适合于GET,DELETE,COPY类型的请求
+	//@param url参数 @json body参数 @header header参数 @form form-data参数
+	private String constructCURLForGET(Set<Parameter> parameters){
+		StringBuilder params = new StringBuilder("?");
+		StringBuilder headers = new StringBuilder();
+		Iterator<Parameter> iter = parameters.iterator();
+		int i = 0;
+		while (iter.hasNext()) {
+			Parameter p = iter.next();
+			if(p.getName().contains(TAG_HEADER)){
+				headers.append(constructHeaderStr(p));				
+			} else {  //构造其他常规的param参数
+				if (i > 0){
+					params.append("&");
+				}
+				params.append(p.getIdentifier());
+				params.append("=");
+				params.append(getValueFromParamName(p.getName(),p.getName().indexOf(TAG_PARAM)+6));
+				i++;
+			}						
+		}
+		params.append("'");
+		return params.toString() + headers.toString();
+	}
+	
+	//从参数的名称字段获取对应的值，如从字段Accept-Language获取"@header{zh-CN,zh;q=0.8}"
+	private String getValueFromParamName(String name, int beginIndex){
+		if (!name.contains(TAG_JSON)&&!name.contains(TAG_PARAM)&&!name.contains(TAG_HEADER)){
+			return "mockvalue";
+		}
+		StringBuilder value =new StringBuilder(); 
+		String tmp = name.substring(beginIndex);
+		if (tmp.startsWith("{")){
+			char[] cs = tmp.toCharArray();
+			for (char c : cs ){
+				if (c =='{') continue;
+				if (c == '}') break;
+				value.append(c);
+			}
+		}
+		return value.toString();
+	}
+	//构造带有@header标签参数的Header字符串
+	private String constructHeaderStr(Parameter p){
+		StringBuilder header = new StringBuilder();
+		header.append(" -H '");
+		header.append(p.getIdentifier());
+		header.append(":");
+		header.append(getValueFromParamName(p.getName(),p.getName().indexOf(TAG_HEADER)+7));
+		header.append("'");
+		return header.toString();
+	}
+	
+	//构造带有@param标签参数的附加在url参数字符串
+	private String constructParamStr(Parameter p){
+		StringBuilder param = new StringBuilder();
+		param.append(p.getIdentifier());
+		param.append("=");
+		param.append(getValueFromParamName(p.getName(),p.getName().indexOf(TAG_PARAM)+6));
+		return param.toString();
+	}
+	
+	//适合与POST,PUT,PATCH类型的请求
+	private String constructCURLForPOST(Set<Parameter> parameters){
+		Iterator<Parameter> iter = parameters.iterator();
+		StringBuilder cURL = new StringBuilder();
+		StringBuilder headers = new StringBuilder();
+		StringBuilder params = new StringBuilder("?");
+		StringBuilder datas = new StringBuilder(" --data-binary $'{");
+		int i = 0;
+		//boolean first = true;
+		while (iter.hasNext()) {
+			Parameter p = iter.next();
+			//Set<Parameter> subparameters = p.getParameterList();
+			if(p.getName().contains(TAG_HEADER)){
+				headers.append(constructHeaderStr(p));				
+			} else if(p.getName().contains(TAG_PARAM)){
+				if (i > 0){
+					params.append("&");
+				}
+				params.append(constructParamStr(p));
+				i++;				
+			} else {  //body(json) param参数
+				//datas.append(constructBodyJsonStr(p,first));
+				//first = false;
+			}
+		}
+		//独立循环递归构建json的串
+		datas.append(constructBodyJsonStr(parameters));
+		
+		params.append("'");
+		datas.append("}'");
+		
+		cURL.append(params.toString()); //url参数
+		cURL.append(headers.toString());//header参数
+		cURL.append(datas.toString());//body 参数
+		return cURL.toString();
+	}
+	
+	//构造带有@json标签参数的参数结构体
+	//@first 是否第一个参数，也就是循环中的第一个元素
+	private String constructBodyJsonStr(Set<Parameter> parameters){
+		Iterator<Parameter> iter = parameters.iterator();
+		StringBuilder datas = new StringBuilder();
+		while (iter.hasNext()) {
+			Parameter p = iter.next();
+			String paraName = p.getName();
+			if (paraName.contains(TAG_HEADER) || paraName.contains(TAG_PARAM) || paraName.contains(TAG_FORMDATA)){
+				continue;  //如果参数不是json类型的就跳过
+			}
+			Set<Parameter> subparameters = p.getParameterList();
+			if (subparameters.size() > 0) {//如果当前参数下还有子参数，递归构造
+				datas.append("\"");
+				datas.append(p.getIdentifier());
+				datas.append("\":{");
+				datas.append(constructBodyJsonStr(subparameters));
+				datas.append("},");
+			} else {
+				datas.append("\"");
+				datas.append(p.getIdentifier());
+				datas.append("\":");
+				if ("string".equals(p.getDataType())){
+					datas.append("\"");
+				}
+				datas.append(getValueFromParamName(paraName,paraName.indexOf(TAG_JSON)+5));
+				if ("string".equals(p.getDataType())){
+					datas.append("\"");
+				}
+				datas.append(",");
+			}	
+		}
+		//考虑去掉最后一个逗号
+		String result = datas.toString();
+		
+		return result.substring(0, result.length()-1);
+	}
+	
+	@Override
+	public void saveCURL(long actionId, String cURL) {
+		//System.out.println("cURL:" + cURL);
+		Action action = getProjectDao().getAction(actionId);
+		action.setcURL(cURL);
+		action.update(action);		
+	}
+
+	@Override
+	public String getCURLByActionId(long actionId) {
+		Action action = getProjectDao().getAction(actionId);
+		return action.getcURL();
 	}
 }

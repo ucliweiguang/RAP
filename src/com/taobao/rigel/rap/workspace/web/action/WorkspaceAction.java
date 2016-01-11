@@ -36,7 +36,7 @@ import com.taobao.rigel.rap.workspace.service.WorkspaceMgr;
 public class WorkspaceAction extends ActionBase {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private boolean accessable;
 
 	public boolean isAccessable() {
@@ -250,22 +250,22 @@ public class WorkspaceAction extends ActionBase {
 		this.isLocked = isLocked;
 	}
 
-    private static final org.apache.logging.log4j.Logger logger = org.apache.logging.log4j.LogManager.getFormatterLogger(WorkspaceAction.class.getName());
+	private static final org.apache.logging.log4j.Logger logger = org.apache.logging.log4j.LogManager
+			.getFormatterLogger(WorkspaceAction.class.getName());
 
 	public String myWorkspace() {
 		if (!isUserLogined()) {
 			plsLogin();
-			setRelativeReturnUrl("/workspace/myWorkspace.action?projectId="
-					+ projectId);
+			setRelativeReturnUrl("/workspace/myWorkspace.action?projectId=" + projectId);
 			return LOGIN;
 		}
-        Project p = projectMgr.getProject(getProjectId());
-        if (p == null || p.getId() <= 0) {
-            setErrMsg("该项目不存在或已被删除，会不会是亲这个链接保存的太久了呢？0  .0");
-            logger.error("Unexpected project id=%d", getProjectId());
-            return ERROR;
-        }
-		Workspace workspace = new Workspace();		
+		Project p = projectMgr.getProject(getProjectId());
+		if (p == null || p.getId() <= 0) {
+			setErrMsg("该项目不存在或已被删除，会不会是亲这个链接保存的太久了呢？0  .0");
+			logger.error("Unexpected project id=%d", getProjectId());
+			return ERROR;
+		}
+		Workspace workspace = new Workspace();
 		workspace.setProject(p);
 		setWorkspaceJsonString(workspace.toString());
 		setWorkspace(workspace);
@@ -360,9 +360,8 @@ public class WorkspaceAction extends ActionBase {
 	public void setProjectMgr(ProjectMgr projectMgr) {
 		this.projectMgr = projectMgr;
 	}
-	
+
 	private ValidationMgr validationMgr;
-	
 
 	public ValidationMgr getValidationMgr() {
 		return validationMgr;
@@ -378,38 +377,38 @@ public class WorkspaceAction extends ActionBase {
 	}
 
 	public String queryVersion() {
-		setJson(workspaceMgr.getVersion(getVersionId()).toString(
-				CheckIn.ToStringType.COMPLETED));
+		setJson(workspaceMgr.getVersion(getVersionId()).toString(CheckIn.ToStringType.COMPLETED));
 		return SUCCESS;
 	}
 
 	public String switchVersion() {
 		CheckIn check = workspaceMgr.getVersion(getVersionId());
 		workspaceMgr.prepareForVersionSwitch(check);
-		projectMgr.updateProject(check.getProject().getId(),
-				check.getProjectData(), "[]", new HashMap<Long, Long>());
+		projectMgr.updateProject(	check.getProject().getId(), check.getProjectData(), "[]",
+									new HashMap<Long, Long>());
 		Project project = projectMgr.getProject(check.getProject().getId());
-		String projectData = project
-				.toString(Project.TO_STRING_TYPE.TO_PARAMETER);
+		String projectData = project.toString(Project.TO_STRING_TYPE.TO_PARAMETER);
 		setJson("{\"projectData\":" + projectData + ", \"isOk\":true}");
 		project.setProjectData(projectData);
 		projectMgr.updateProject(project);
 		return SUCCESS;
-	}	
+	}
 
 	public String checkIn() throws Exception {
 		User curUser = getCurUser();
 		if (curUser == null) {
 			setErrMsg(LOGIN_WARN_MSG);
 			setIsOk(false);
-            logger.error("Unlogined user trying to checkin and failed.");
+			logger.error("Unlogined user trying to checkin and failed.");
 			return JSON_ERROR;
 		}
 
 		if (!getAccountMgr().canUserManageProject(getCurUserId(), getId())) {
 			setErrMsg("access deny");
 			setIsOk(false);
-            logger.error("User %s trying to checkedin project(id=$d) and denied.", getCurAccount(), getId());
+			logger.error(	"User %s trying to checkedin project(id=$d) and denied.",
+							getCurAccount(),
+							getId());
 			return JSON_ERROR;
 		}
 		/*//save pb content
@@ -417,12 +416,11 @@ public class WorkspaceAction extends ActionBase {
 		String responsePBParameters = getResponsePBParameters();
 		System.out.println("requestPBParameters:"+ requestPBParameters);
 		System.out.println("responsePBParameters:"+ responsePBParameters);*/
-		
+
 		// update project
 		Map<Long, Long> actionIdMap = new HashMap<Long, Long>();
-		projectMgr.updateProject(getId(), getProjectData(),
-				getDeletedObjectListData(), actionIdMap);
-
+		projectMgr
+				.updateProject(getId(), getProjectData(), getDeletedObjectListData(), actionIdMap);
 
 		project = projectMgr.getProject(getId());
 
@@ -431,8 +429,7 @@ public class WorkspaceAction extends ActionBase {
 		checkIn.setCreateDate(new Date());
 		checkIn.setDescription(getDescription());
 		checkIn.setProject(project);
-		checkIn.setProjectData(project
-				.toString(Project.TO_STRING_TYPE.TO_PARAMETER));
+		checkIn.setProjectData(project.toString(Project.TO_STRING_TYPE.TO_PARAMETER));
 		checkIn.setTag(getTag());
 		checkIn.setUser(curUser);
 		checkIn.setVersion(project.getVersion());
@@ -456,9 +453,7 @@ public class WorkspaceAction extends ActionBase {
 			}
 		}
 		Gson g = new Gson();
-		stringBuilder
-				.append("],\"actionIdMap\":")
-				.append(g.toJson(actionIdMap))
+		stringBuilder.append("],\"actionIdMap\":").append(g.toJson(actionIdMap))
 				.append(",\"isOk\":true}");
 		setJson(stringBuilder.toString());
 
@@ -469,50 +464,50 @@ public class WorkspaceAction extends ActionBase {
 		// unlock the workspace
 		unlock();
 
-        // notification for doc change
-        for (User user : project.getUserList()) {
-            Notification notification = new Notification();
-            notification.setParam1(new Integer(id).toString());
-            notification.setParam2(project.getName());
-            notification.setTypeId((short) 1);
-            notification.setTargetUser(getCurUser());
-            notification.setUser(user);
-            if (notification.getUser().getId() != getCurUserId())
-                getAccountMgr().addNotification(notification);
-        }
+		// notification for doc change
+		for (User user : project.getUserList()) {
+			Notification notification = new Notification();
+			notification.setParam1(new Integer(id).toString());
+			notification.setParam2(project.getName());
+			notification.setTypeId((short) 1);
+			notification.setTargetUser(getCurUser());
+			notification.setUser(user);
+			if (notification.getUser().getId() != getCurUserId())
+				getAccountMgr().addNotification(notification);
+		}
 
-        Notification notification = new Notification();
-        notification.setParam1(new Integer(id).toString());
-        notification.setParam2(project.getName());
-        notification.setTypeId((short) 1);
-        notification.setTargetUser(getCurUser());
-        notification.setUser(project.getUser());
-        if (notification.getUser().getId() != getCurUserId())
-            getAccountMgr().addNotification(notification);
+		Notification notification = new Notification();
+		notification.setParam1(new Integer(id).toString());
+		notification.setParam2(project.getName());
+		notification.setTypeId((short) 1);
+		notification.setTargetUser(getCurUser());
+		notification.setUser(project.getUser());
+		if (notification.getUser().getId() != getCurUserId())
+			getAccountMgr().addNotification(notification);
 
 		// unfinished
 
-        Callable<String> taskSub = new Callable<String>() {
+		Callable<String> taskSub = new Callable<String>() {
 
-            @Override
-            public String call() throws Exception {
-                try {
-                    // async update doc
-                    // projectMgr.updateDoc(id);
-                    // async update disableCache
-                    projectMgr.updateCache(id);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+			@Override
+			public String call() throws Exception {
+				try {
+					// async update doc
+					// projectMgr.updateDoc(id);
+					// async update disableCache
+					projectMgr.updateCache(id);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
 
-                return null;
-            }
-        };
+				return null;
+			}
+		};
 
-        FutureTask<String> futureTask = new FutureTask<String>(taskSub);
-        Thread asyncThread = new Thread(futureTask);
-        asyncThread.start();
-        logger.info("Future task CHECK_IN running...");
+		FutureTask<String> futureTask = new FutureTask<String>(taskSub);
+		Thread asyncThread = new Thread(futureTask);
+		asyncThread.start();
+		logger.info("Future task CHECK_IN running...");
 
 		return SUCCESS;
 	}
@@ -531,8 +526,7 @@ public class WorkspaceAction extends ActionBase {
 			// if the project is locked, find the locker
 			User user = getLocker(getId());
 			if (!user.getAccount().equals(getCurAccount())) {
-				setJson("{\"isOk\":false, \"errMsg\":\"该项目目前正被"
-						+ user.getName() + "锁定.\"}");
+				setJson("{\"isOk\":false, \"errMsg\":\"该项目目前正被" + user.getName() + "锁定.\"}");
 			} else {
 				// user request lock a locked project
 				// which is locked by himself, so let him go
@@ -545,8 +539,7 @@ public class WorkspaceAction extends ActionBase {
 			if (app.get(ContextManager.KEY_PROJECT_LOCK_LIST) == null) {
 				app.put(ContextManager.KEY_PROJECT_LOCK_LIST, new HashMap());
 			}
-			Map projectLockList = (Map) app
-					.get(ContextManager.KEY_PROJECT_LOCK_LIST);
+			Map projectLockList = (Map) app.get(ContextManager.KEY_PROJECT_LOCK_LIST);
 			if (projectLockList.get(curUserId) == null) {
 				projectLockList.put(curUserId, getId());
 				// System.out.println("user[" + curUserId + "] locked project["+
@@ -565,8 +558,7 @@ public class WorkspaceAction extends ActionBase {
 	public String unlock() {
 		if (isLocked(getId())) {
 			Map app = ContextManager.getApplication();
-			Map projectLockList = (Map) app
-					.get(ContextManager.KEY_PROJECT_LOCK_LIST);
+			Map projectLockList = (Map) app.get(ContextManager.KEY_PROJECT_LOCK_LIST);
 			if (projectLockList == null)
 				return SUCCESS;
 			long userId = super.getCurUserId();
@@ -602,8 +594,7 @@ public class WorkspaceAction extends ActionBase {
 		}
 		StringWriter sw = new StringWriter();
 		template.merge(context, sw);
-		fileInputStream = new ByteArrayInputStream(sw.toString().getBytes(
-				"UTF8"));
+		fileInputStream = new ByteArrayInputStream(sw.toString().getBytes("UTF8"));
 		return SUCCESS;
 	}
 
@@ -626,57 +617,54 @@ public class WorkspaceAction extends ActionBase {
 		}
 		StringWriter sw = new StringWriter();
 		template.merge(context, sw);
-		
+
 		return SUCCESS;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	private boolean isLocked(int projectId) {
 		Map app = ContextManager.getApplication();
-		Map projectLockList = (Map) app
-				.get(ContextManager.KEY_PROJECT_LOCK_LIST);
-		return projectLockList != null
-				&& projectLockList.containsValue(projectId) ? true : false;
+		Map projectLockList = (Map) app.get(ContextManager.KEY_PROJECT_LOCK_LIST);
+		return projectLockList != null && projectLockList.containsValue(projectId) ? true : false;
 	}
 
 	@SuppressWarnings("rawtypes")
 	private User getLocker(int projectId) {
 		Map app = ContextManager.getApplication();
-		Map projectLockList = (Map) app
-				.get(ContextManager.KEY_PROJECT_LOCK_LIST);
+		Map projectLockList = (Map) app.get(ContextManager.KEY_PROJECT_LOCK_LIST);
 		if (projectLockList != null) {
-			long userId = (Long) MapUtils.getKeyByValue(projectLockList,
-					projectId);
+			long userId = (Long) MapUtils.getKeyByValue(projectLockList, projectId);
 			User user = getAccountMgr().getUser(userId);
 			return user;
 		}
 		return null;
 	}
 
-    public String __init__() {
-        // prevent repeated intialization of servcie
+	public String __init__() {
+		// prevent repeated intialization of servcie
 
-        if (SystemConstant.serviceInitialized) {
-            return SUCCESS;
-        }
+		if (SystemConstant.serviceInitialized) {
+			return SUCCESS;
+		}
 
-        SystemConstant.serviceInitialized = true;
+		SystemConstant.serviceInitialized = true;
 
-        List<Project> list = projectMgr.getProjectList();
-        for (Project p : list) {
-            projectMgr.updateDoc(p.getId());
-        }
-        return SUCCESS;
-    }
-    
-    /**
-     * 
-     * 功能描述：generate JsonSchema for every API
-     * @return 
-     * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
-     * created on: 2015-8-31
-     */
-    public String generateJsonSchema() {
+		List<Project> list = projectMgr.getProjectList();
+		for (Project p : list) {
+			projectMgr.updateDoc(p.getId());
+		}
+		return SUCCESS;
+	}
+
+	////////////////////////CURL///////////
+	/**
+	 * 
+	 * 功能描述：generate curl for API
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-1-11
+	 */
+	public String generateCURL() {
 		long curUserId = getCurUserId();
 		if (curUserId <= 0) {
 			setIsOk(false);
@@ -686,24 +674,24 @@ public class WorkspaceAction extends ActionBase {
 
 		boolean isOk = false;
 		//System.out.println("ActionId():" + this.actionId);		
-		validationMgr.saveJsonSchema(this.actionId, validationMgr.generateJsonSchema(this.actionId));
+		validationMgr.saveCURL(this.actionId, validationMgr.generateCURL(this.actionId));
 		isOk = true;
-		
+
 		if (isOk) {
 			setJson("{\"isOk\":true}");
 		}
 		return SUCCESS;
 	}
-    /**
-     * 
-     * 功能描述：保存修改好的jsonschema内容
-     * @return 
-     * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
-     * created on: 2015-9-1
-     */
-    public String getJsonSchema(){
-    	//System.out.println("getJsonSchema()this.actionId:" + actionId);
-    	long curUserId = getCurUserId();
+
+	/**
+	 * 
+	 * 功能描述：保存修改好的cURL内容
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-1-11
+	 */
+	public String getCURL() {
+		long curUserId = getCurUserId();
 		if (curUserId <= 0) {
 			setIsOk(false);
 			setErrMsg(LOGIN_WARN_MSG);
@@ -711,32 +699,165 @@ public class WorkspaceAction extends ActionBase {
 		}
 
 		boolean isOk = false;
-		String jsonSchema = validationMgr.getJsonSchemaByActionId(actionId);		
-		isOk = true;
+		//先生成最新的CURL
+		validationMgr.saveCURL(this.actionId, validationMgr.generateCURL(this.actionId));
 		
+		String cURL = validationMgr.getCURLByActionId(actionId);
+		isOk = true;
+
+		if (isOk) {
+			setJson("{\"isOk\":true,\"cURL\":\"" + string2Json(cURL) + "\"}");
+		}
+		return SUCCESS;
+	}
+
+	private String string2Json(String s) {
+		if(s==null) return "";
+    	StringBuffer sb = new StringBuffer ();       
+	    for (int i=0; i<s.length(); i++) {    	     
+	        char c = s.charAt(i);       
+	        switch (c) {       
+	        case '\"':       
+	            sb.append("\\\"");       
+	            break;       
+	        case '\\':       
+	            sb.append("\\\\");       
+	            break;       
+	        case '/':       
+	            sb.append("\\/");       
+	            break;       
+	        case '\b':       
+	            sb.append("\\b");       
+	            break;       
+	        case '\f':       
+	            sb.append("\\f");       
+	            break;       
+	        case '\n':       
+	            sb.append("\\n");       
+	            break;       
+	        case '\r':       
+	            sb.append("\\r");       
+	            break;       
+	        case '\t':       
+	            sb.append("\\t");       
+	            break;       
+	        default:       
+	            sb.append(c);       
+	        }    	
+	    }
+	    return sb.toString();
+	}
+
+	private String newCURL;
+
+	public String getNewCURL() {
+		return newCURL;
+	}
+
+	public void setNewCURL(String newCURL) {
+		this.newCURL = newCURL;
+	}
+
+	/**
+	 * 
+	 * 功能描述：保存修改好的curl内容
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-1-11
+	 */
+	public String saveCURL() {
+		long curUserId = getCurUserId();
+		if (curUserId <= 0) {
+			setIsOk(false);
+			setErrMsg(LOGIN_WARN_MSG);
+			return JSON_ERROR;
+		}
+
+		boolean isOk = false;
+		//System.out.println("actionId:" + actionId);
+		//System.out.println("newCURL:" + newCURL);
+		validationMgr.saveCURL(actionId, newCURL);
+		isOk = true;
+
+		if (isOk) {
+			setJson("{\"isOk\":true}");
+		}
+		return SUCCESS;
+	}
+
+	////////////////////////JsonSchema///////////
+	/**
+	 * 
+	 * 功能描述：generate JsonSchema for every API
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2015-8-31
+	 */
+	public String generateJsonSchema() {
+		long curUserId = getCurUserId();
+		if (curUserId <= 0) {
+			setIsOk(false);
+			setErrMsg(LOGIN_WARN_MSG);
+			return JSON_ERROR;
+		}
+
+		boolean isOk = false;
+		//System.out.println("ActionId():" + this.actionId);		
+		validationMgr
+				.saveJsonSchema(this.actionId, validationMgr.generateJsonSchema(this.actionId));
+		isOk = true;
+
+		if (isOk) {
+			setJson("{\"isOk\":true}");
+		}
+		return SUCCESS;
+	}
+
+	/**
+	 * 
+	 * 功能描述：获取jsonschema内容
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2015-9-1
+	 */
+	public String getJsonSchema() {
+		//System.out.println("getJsonSchema()this.actionId:" + actionId);
+		long curUserId = getCurUserId();
+		if (curUserId <= 0) {
+			setIsOk(false);
+			setErrMsg(LOGIN_WARN_MSG);
+			return JSON_ERROR;
+		}
+
+		boolean isOk = false;
+		String jsonSchema = validationMgr.getJsonSchemaByActionId(actionId);
+		isOk = true;
+
 		if (isOk) {
 			setJson("{\"isOk\":true,\"jsonSchema\":" + jsonSchema + "}");
 		}
 		return SUCCESS;
-    }
-    
-    private String newJsonSchema;    
+	}
+
+	private String newJsonSchema;
+
 	public String getNewJsonSchema() {
 		return newJsonSchema;
 	}
+
 	public void setNewJsonSchema(String newJsonSchema) {
 		this.newJsonSchema = newJsonSchema;
 	}
 
 	/**
-     * 
-     * 功能描述：保存修改好的jsonschema内容
-     * @return 
-     * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
-     * created on: 2015-9-1
-     */
-    public String saveJsonSchema(){
-    	long curUserId = getCurUserId();
+	 * 
+	 * 功能描述：保存修改好的jsonschema内容
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2015-9-1
+	 */
+	public String saveJsonSchema() {
+		long curUserId = getCurUserId();
 		if (curUserId <= 0) {
 			setIsOk(false);
 			setErrMsg(LOGIN_WARN_MSG);
@@ -748,27 +869,28 @@ public class WorkspaceAction extends ActionBase {
 		//System.out.println("newJsonSchema:" + newJsonSchema);
 		validationMgr.saveJsonSchema(actionId, newJsonSchema);
 		isOk = true;
-		
+
 		if (isOk) {
 			setJson("{\"isOk\":true}");
 		}
 		return SUCCESS;
-    }
-    /**
-     * 
-     * 功能描述：校验改动过的jsonschema
-     * @return 
-     * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
-     * created on: 2015-9-2
-     * @throws IOException 
-     * @throws ProcessingException 
-     */
-    public String validateJsonSchema() throws ProcessingException, IOException{
+	}
+
+	/**
+	 * 
+	 * 功能描述：校验改动过的jsonschema
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2015-9-2
+	 * @throws IOException 
+	 * @throws ProcessingException 
+	 */
+	public String validateJsonSchema() throws ProcessingException, IOException {
 		boolean isOk = false;
 		//System.out.println("newJsonSchema:" + newJsonSchema);
 		String result = validationMgr.validateJsonSchema(newJsonSchema);
-		if ("".equals(result)){
-			result="JsonSchema内容格式没有错误，可放心保存.";
+		if ("".equals(result)) {
+			result = "JsonSchema内容格式没有错误，可放心保存.";
 		}
 		isOk = true;
 		//System.out.println("result:" + result.replaceAll("\"", "'"));
@@ -776,25 +898,31 @@ public class WorkspaceAction extends ActionBase {
 			setJson("{\"isOk\":true,\"result\":\"" + result.replaceAll("\"", "'") + "\"}");
 		}
 		return SUCCESS;
-    }
-    
-    private String pbtxt;
-    private int reflag;    
-    public String getPbtxt() {
+	}
+
+	private String pbtxt;
+	private int reflag;
+
+	public String getPbtxt() {
 		return pbtxt;
 	}
+
 	public void setPbtxt(String pbtxt) {
 		this.pbtxt = pbtxt;
 	}
+
 	public int getReflag() {
 		return reflag;
 	}
+
 	public void setReflag(int reflag) {
 		this.reflag = reflag;
 	}
-    private String pbrequest;
-    private String pbresponse;    
-    public String getPbrequest() {
+
+	private String pbrequest;
+	private String pbresponse;
+
+	public String getPbrequest() {
 		return pbrequest;
 	}
 
@@ -809,15 +937,16 @@ public class WorkspaceAction extends ActionBase {
 	public void setPbresponse(String pbresponse) {
 		this.pbresponse = pbresponse;
 	}
+
 	/**
-     * 
-     * 功能描述：保存用户提交的PB协议的文本内容(用户导入pb的时候)
-     * @return 
-     * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
-     * created on: 2015-10-20
-     */
-    public String savePB(){
-    	long curUserId = getCurUserId();
+	 * 
+	 * 功能描述：保存用户提交的PB协议的文本内容(用户导入pb的时候)
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2015-10-20
+	 */
+	public String savePB() {
+		long curUserId = getCurUserId();
 		if (curUserId <= 0) {
 			setIsOk(false);
 			setErrMsg(LOGIN_WARN_MSG);
@@ -827,35 +956,37 @@ public class WorkspaceAction extends ActionBase {
 		boolean isOk = false;
 		validationMgr.savePB(actionId, pbtxt, reflag);
 		isOk = true;
-		
+
 		if (isOk) {
 			setJson("{\"isOk\":true}");
 		}
 		return SUCCESS;
-    }
-    
-    //查看PB协议的内容
-    public String getPB(){
+	}
+
+	//查看PB协议的内容
+	public String getPB() {
 		boolean isOk = false;
-		Map<String,String> result = validationMgr.getPB(actionId);
+		Map<String, String> result = validationMgr.getPB(actionId);
 		String pbrequest = result.get("pbrequest");
 		String pbresponse = result.get("pbresponse");
-		if(pbrequest==null) pbrequest="";
-		if(pbresponse==null) pbresponse="";
-		
+		if (pbrequest == null)
+			pbrequest = "";
+		if (pbresponse == null)
+			pbresponse = "";
+
 		isOk = true;
 		//System.out.println("result:" + result.replaceAll("\"", "'"));
 		//System.out.println("result:" + result);
 		if (isOk) {
-			setJson("{\"isOk\":true,\"pbrequest\":\"" + pbrequest.replaceAll("\\n", "\\\\n") + "\","+
-				"\"pbresponse\":\"" + pbresponse.replaceAll("\\n", "\\\\n") + "\"}");
+			setJson("{\"isOk\":true,\"pbrequest\":\"" + pbrequest.replaceAll("\\n", "\\\\n")
+					+ "\"," + "\"pbresponse\":\"" + pbresponse.replaceAll("\\n", "\\\\n") + "\"}");
 		}
-		return SUCCESS;    	
-    }
-     
-    //在查看PB协议内容后执行更新内容操作
-	public String updatePB(){
-    	long curUserId = getCurUserId();
+		return SUCCESS;
+	}
+
+	//在查看PB协议内容后执行更新内容操作
+	public String updatePB() {
+		long curUserId = getCurUserId();
 		if (curUserId <= 0) {
 			setIsOk(false);
 			setErrMsg(LOGIN_WARN_MSG);
@@ -863,12 +994,12 @@ public class WorkspaceAction extends ActionBase {
 		}
 
 		boolean isOk = false;
-		validationMgr.updatePB(actionId, pbrequest,pbresponse);
+		validationMgr.updatePB(actionId, pbrequest, pbresponse);
 		isOk = true;
-		
+
 		if (isOk) {
 			setJson("{\"isOk\":true}");
 		}
 		return SUCCESS;
-    }
+	}
 }

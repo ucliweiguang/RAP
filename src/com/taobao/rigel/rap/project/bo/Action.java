@@ -76,6 +76,10 @@ public class Action implements java.io.Serializable {
 			return "PUT";
 		} else if (this.requestType.equals("4")) {
 			return "DELETE";
+		} else if (this.requestType.equals("5")) {
+			return "PATCH";
+		} else if (this.requestType.equals("6")) {
+			return "COPY";
 		} else {
 			return "GET"; // in default
 		}
@@ -229,7 +233,15 @@ public class Action implements java.io.Serializable {
 	
 	private String pbrequest;
 	private String pbresponse;
-	
+	private String cURL;
+
+	public String getcURL() {
+		return cURL;
+	}
+
+	public void setcURL(String cURL) {
+		this.cURL = cURL;
+	}
 
 	public String getPbrequest() {
 		return pbrequest;

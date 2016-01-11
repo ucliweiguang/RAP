@@ -67,7 +67,10 @@
     "savePB":"$projectContext/workspace/savePB.action",
     "getPB":"$projectContext/workspace/getPB.action",
     "updatePB":"$projectContext/workspace/updatePB.action",
-    "onlineDocs":"$projectContext/workspace/onlineDocs.action"
+    "onlineDocs":"$projectContext/workspace/onlineDocs.action",
+    "generateCURL":"$projectContext/workspace/generateCURL.action",
+    "getCURL":"$projectContext/workspace/getCURL.action",
+    "saveCURL":"$projectContext/workspace/saveCURL.action"
 })
 #set($platformUrl = {
     "home":"$projectContext/platform/home.action",

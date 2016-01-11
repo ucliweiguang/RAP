@@ -108,7 +108,23 @@
 			class="com.taobao.rigel.rap.workspace.web.action.WorkspaceAction"
 			method="onlineDocs">
 			<result name="success" type="velocity">/resource/export.vm</result>
-		</action>		
+		</action>	
+		
+		<action name="generateCURL"
+			class="com.taobao.rigel.rap.workspace.web.action.WorkspaceAction"
+			method="generateCURL">
+			<result name="success" type="velocity">/bcom/json.cb.vm</result>
+		</action>
+		<action name="saveCURL"
+			class="com.taobao.rigel.rap.workspace.web.action.WorkspaceAction"
+			method="saveCURL">
+			<result name="success" type="velocity">/bcom/json.cb.vm</result>
+		</action>
+		<action name="getCURL"
+			class="com.taobao.rigel.rap.workspace.web.action.WorkspaceAction"
+			method="getCURL">
+			<result name="success" type="velocity">/bcom/json.cb.vm</result>
+		</action>	
 	</package>
 
 </struts>

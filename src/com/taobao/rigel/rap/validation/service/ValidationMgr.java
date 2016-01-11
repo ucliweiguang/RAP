@@ -92,4 +92,32 @@ public interface ValidationMgr {
 	 * created on: 2015-10-20
 	 */
 	public void updatePB(long actionId,String pbrequest,String pbresponse);
+	
+	/**
+	 * 
+	 * 功能描述：为对应的API生成CURL
+	 * @param actionId API的id
+	 * @return 接口对应的CURL内容
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-01-08
+	 */
+	public String generateCURL(long actionId);
+	/**
+	 * 
+	 * 功能描述：保存对应API的CURL
+	 * @param actionId API的id
+	 * @param cURL CURL内容
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-01-08
+	 */
+	public void saveCURL(long actionId,String cURL);
+	/**
+	 * 
+	 * 功能描述：获取action对应的CURL内容
+	 * @param actionId
+	 * @return jsonschema内容
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-01-08
+	 */
+	public String getCURLByActionId(long actionId);	
 }

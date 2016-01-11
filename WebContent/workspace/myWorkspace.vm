@@ -497,6 +497,23 @@
         </form>
         #endFloater
         
+        #startFloater("cURLFloater" "cURL内容" 600 350)
+        <form name="formcURLFloater">
+            <div class="myfloater">
+                <table class="table">
+                    <tr>
+                        <td>
+                            <textarea id="cURLDataFloater-text" style="width: 510px; height: 200px; font-size: 12px; line-height: 1.5;" cols="20" rows="20"></textarea>
+                        </td>
+                    </tr>
+                </table>
+                <div class="div-floater-control">
+					<input type="button" class="btn btn-default" onclick="ws.closeCURLFloater();"  value="关闭" />
+                </div>
+            </div>
+        </form>
+        #endFloater
+        
         #startFloater("exportRAPDataFloater" "JSON导入" 600 350)
         <form name="formImportJSONFloater">
             <div class="myfloater">
@@ -671,7 +688,10 @@
                 "savePB"            : "$workspaceUrl.savePB",
                 "getPB"             : "$workspaceUrl.getPB",
                 "updatePB"          : "$workspaceUrl.updatePB",
-                "onlineDocs"        : "$workspaceUrl.onlineDocs"
+                "onlineDocs"        : "$workspaceUrl.onlineDocs",
+                "generateCURL"      : "$workspaceUrl.generateCURL",
+                "getCURL"      		: "$workspaceUrl.getCURL",
+                "saveCURL"      	: "$workspaceUrl.saveCURL",
             },
             ws = rap.workspace,
             data = $workspaceJsonString,

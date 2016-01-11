@@ -4193,6 +4193,10 @@ function deepCopy(o) {
             if(actionaccessable){
 	            body += "<div id='additionalrules' class='item'><a href='#' onclick='ws.doGenerateJsonSchema(" + a.id + "); return false;'>生成数据校验规则</a>&nbsp;&nbsp;";
 	            body += "<a href='#' onclick='ws.doGetJsonSchema(" + a.id + "); return false;'>查看数据校验规则</a>&nbsp;&nbsp;";
+	            //curl
+	            //body += "||&nbsp;&nbsp;<a href='#' onclick='ws.doGenerateCURL(" + a.id + "); return false;'>生成cURL</a>&nbsp;&nbsp;";
+	            body += "||&nbsp;&nbsp;<a href='#' onclick='ws.doGetCURL(" + a.id + "); return false;'>查看cURL</a>&nbsp;&nbsp;";
+	            //curl end
 	            body += "<br><br>如果该接口是PB协议，你可<a href='#' onclick='ws.doShowPB(" + a.id + "); return false;'>查看/更新PB协议内容</a></div>";	
             }
             //console.log("actionaccessable:" + actionaccessable);	
@@ -4238,6 +4242,35 @@ function deepCopy(o) {
             });
 
         }
+        
+        //一键创建接口的cURL内容
+        ws.doGenerateCURL = function(actionId) {
+        	var r=confirm("该操作将覆盖该接口原有cURL内容，确定吗？");
+        	if (r==false) {
+        	  return;
+        	}
+            var q = "actionId=" + actionId;
+                showMessage(CONST.LOADING, ELEMENT_ID.WORKSPACE_MESSAGE, MESSAGE.SAVING);
+                //console.log("ws.doGenerateJsonSchema：" + q);
+                //if (!processing(ELEMENT_ID.WORKSPACE_MESSAGE)) return;
+                b.ajax.post(URL.generateCURL, q, function(xhr, response) {
+                try {                	
+                    var obj = eval("(" + response + ")");
+                    if (obj.isOk) {
+
+                        showMessage(CONST.LOAD, ELEMENT_ID.WORKSPACE_MESSAGE, MESSAGE.SAVED);
+                    } else {
+                        showMessage(CONST.WARN, ELEMENT_ID.WORKSPACE_MESSAGE, obj.errMsg);
+                    }
+                } catch(e) {
+                	console.log("ws.doGenerateCURL：e" + e);
+                    showMessage(CONST.WARN, ELEMENT_ID.WORKSPACE_MESSAGE, MESSAGE.FATAL_ERROR);
+                } finally {
+                    processed();
+                }
+            });
+        }
+        
       //added by liwg 2015-10-20 start
         ws.doShowPB = function(actionId) {
       	  var q = "actionId=" + actionId;
@@ -4286,7 +4319,36 @@ function deepCopy(o) {
               b.g("responsePBFloater-text").value = ""; 
               e.get("showPBFloater").hide();
            };
-              
+      
+           //added by liwg 2016-01-11 start
+           ws.doGetCURL = function(actionId) {
+               //var action = p.getAction(actionId);
+               //initEditAFloater();
+         	  var q = "actionId=" + actionId;
+         	  //b.g("cURLFloater-actionId").value = actionId;
+               b.ajax.post(URL.getCURL, q, function(xhr, response) {
+                   try {
+                 	  console.log("response:" +response);
+                 	  var obj = eval("(" + response + ")");
+                       //console.log("obj:" +obj);
+                       //b.g("cURLDataFloater-text").value = JSON.stringify(obj.cURL);
+                 	 b.g("cURLDataFloater-text").value = obj.cURL;
+                   } catch(e) {
+                       showMessage(CONST.ERROR, ELEMENT_ID.WORKSPACE_MESSAGE, MESSAGE.FATAL_ERROR);
+                   }
+               });          
+               e.get("cURLFloater").setTitle("查看cURL");          
+               ecFloater.show("cURLFloater");            
+             };  
+             
+             //关闭ShowCURL窗口
+             ws.closeCURLFloater = function() {
+            	 b.g("cURLDataFloater-text").value ="";
+                 e.get("cURLFloater").hide();
+             }  
+             
+             //2016-01-11 END 
+             
       //added by liwg 2015-09-01 start
       ws.doGetJsonSchema = function(actionId) {
           //var action = p.getAction(actionId);
