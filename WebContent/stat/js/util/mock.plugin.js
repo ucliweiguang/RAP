@@ -135,6 +135,111 @@
 
     window.wrapJQueryForRAP = wrapJQuery;
 
+    //扩展支持Zepto开始  by李伟光 2016-01-14
+    function wrapZepto(Zepto, pId, rootStr) {
+        if (pId) {
+            projectId = pId;
+        }
+        if (rootStr) {
+            ROOT = rootStr;
+        }
+        if (Zepto._rap_wrapped) {
+            return;
+        }
+        Zepto._rap_wrapped = true;
+
+        var ajax = Zepto.ajax;
+        Zepto.ajax = function() {
+            var oOptions = arguments[0];
+
+            // process ajax(url, options) condition
+            if (typeof arguments[0] === 'string' &&
+                typeof arguments[1] === 'object' &&
+                arguments[1].url === undefined) {
+
+                oOptions = arguments[1];
+                oOptions.url = arguments[0];
+                arguments[0] = oOptions;
+
+            } else if(typeof arguments[0] === 'string' &&
+                typeof arguments[1] === undefined) {
+                oOptions = arguments[0] = {
+                    url : arguments[0]
+                };
+            }
+
+            var url = oOptions.url;
+            var routePassed = route(url) && projectId;
+            if (routePassed) {
+                rapUrlConverterJQuery(oOptions);
+                var oldSuccess1 = oOptions.success;
+                oldSuccess1 && (oOptions.success = function(data) {
+                    if (PREFIX == '/mockjs/') {
+                        data = Mock.mock(data);
+                        console.log('请求' + url + '返回的Mock数据:');
+                        console.dir(data);
+
+                    }
+                    oldSuccess1.apply(this, arguments);
+                });
+
+                var oldComplete = oOptions.complete;
+                oldComplete && (oOptions.complete = function(data) {
+                    if (PREFIX == '/mockjs/') {
+                        data = Mock.mock(data);
+                        console.log('请求' + url + '返回的Mock数据:');
+                        console.dir(data);
+
+                    }
+                    oldComplete.apply(this, arguments);
+                });
+            } else if(isInWhiteList(url) && !oOptions.RAP_NOT_TRACK) {
+                var checkerOptions = {url : oOptions.url};
+                rapUrlConverterJQuery(checkerOptions);
+                checkerOptions.RAP_NOT_TRACK = true;
+                checkerOptions.success = checkerHandler;
+                // real data checking
+                var oldSuccess2 = oOptions.success;
+                oOptions.success = function() {
+                    var realData = arguments[0];
+                    checkerOptions.context = {
+                        data : realData,
+                        url : oOptions.url
+                    };
+                    // perform real data check
+                    ajax.apply(Zepto, [checkerOptions]);
+                    oldSuccess2.apply(this,arguments);
+                };
+            }
+            var rv = ajax.apply(this, arguments);
+            if (routePassed) {
+                var oldDone = rv.done;
+                oldDone && (rv.done = function(data) {
+                    var oldCb = arguments[0];
+                    var args = arguments;
+                    if (oldCb) {
+                        args[0] = function(data) {
+                            if (PREFIX == '/mockjs/') {
+                                data = Mock.mock(data);
+                                console.log('请求' + url + '返回的Mock数据:');
+                                console.dir(data);
+                            }
+                            oldCb.apply(this, arguments);
+                        };
+                    }
+                    oldDone.apply(this, args);
+                });
+            }
+
+
+            return rv;
+        };
+    }
+
+    window.wrapZeptoForRAP = wrapZepto;   
+    
+    //扩展支持Zepto结束
+    
     if (enable) {
         /**
          * jQuery override
@@ -142,7 +247,13 @@
         if (window.jQuery) {
             wrapJQuery(window.jQuery);
         }
-
+        
+        /**
+         * Zepto override
+         */
+        if (window.Zepto) {
+            wrapZepto(window.Zepto);
+        }
 
         /**
          * kissy override

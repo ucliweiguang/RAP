@@ -519,4 +519,5 @@ baidu.dom.ready(function (){
 <script type="text/javascript" src="${staticRoot}/js/core/ecui-1.1.0-br.js?_r=$!timeStamp"></script>
 <script type="text/javascript" src="${staticRoot}/js/ui/floater/js/floater.js?_r=$!timeStamp"></script>
 <script type="text/javascript" src="${staticRoot}/js/core/rap.js?_r=$!timeStamp"></script>
+<script type="text/javascript" src="${staticRoot}/js/core/zepto.min.js?_r=$!timeStamp"></script>
 #end
