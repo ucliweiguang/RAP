@@ -144,4 +144,13 @@ public interface ProjectDao {
     List<Project> selectMockNumTopNProjectList(int limit);
     
     public Action getActionByUrlAndProjectid(int projectId,String requestUrl);
+    /**
+     * 
+     * 功能描述：获取项目中所有action的id列表
+     * @param projectId
+     * @return 
+     * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+     * created on: 2016-1-15
+     */    
+	public List<Integer> getActionIdsByProjectId(int projectId);
 }

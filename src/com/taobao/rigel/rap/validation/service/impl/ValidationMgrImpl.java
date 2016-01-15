@@ -640,4 +640,18 @@ public class ValidationMgrImpl implements ValidationMgr {
 		Action action = getProjectDao().getAction(actionId);
 		return action.getcURL();
 	}
+
+	@Override
+	public void generateJsonSchemaByProject(int projectId) {
+		//通过项目id获取批量的action ids		
+		//System.out.println("projectId:"+projectId);
+		List<Integer> ids = getProjectDao().getActionIdsByProjectId(projectId);
+		//System.out.println("ids.size:"+ids.size());
+		for (Integer id : ids){
+			//System.out.println("id:"+id);
+			String jsonSchema = generateJsonSchema(Long.parseLong(id.toString()));
+			saveJsonSchema(id, jsonSchema);
+		}
+		System.out.println("jsonschema update ok.");
+	}
 }

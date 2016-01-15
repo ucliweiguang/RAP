@@ -465,6 +465,7 @@ public class WorkspaceAction extends ActionBase {
 		unlock();
 
 		// notification for doc change
+		/*
 		for (User user : project.getUserList()) {
 			Notification notification = new Notification();
 			notification.setParam1(new Integer(id).toString());
@@ -484,7 +485,7 @@ public class WorkspaceAction extends ActionBase {
 		notification.setUser(project.getUser());
 		if (notification.getUser().getId() != getCurUserId())
 			getAccountMgr().addNotification(notification);
-
+		*/
 		// unfinished
 
 		Callable<String> taskSub = new Callable<String>() {
@@ -496,6 +497,9 @@ public class WorkspaceAction extends ActionBase {
 					// projectMgr.updateDoc(id);
 					// async update disableCache
 					projectMgr.updateCache(id);
+					// async update batch jsonschem  added by liweiguang 2016-1-15
+					//System.out.println("in call....id:"+id);
+					validationMgr.generateJsonSchemaByProject(id);
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}

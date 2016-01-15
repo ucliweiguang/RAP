@@ -2,7 +2,6 @@ package com.taobao.rigel.rap.project.dao.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -565,6 +564,28 @@ public class ProjectDaoImpl extends HibernateDaoSupport implements ProjectDao {
 			return this.getAction(id);
 		}
 		return null;
+	}
+    
+	@Override
+	public List<Integer> getActionIdsByProjectId(int projectId) {
+		//List<Integer> ids = new ArrayList<Integer>();
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT a.id ");
+		sql.append("FROM tb_project p ");
+		sql.append("JOIN tb_module m ON m.project_id = p.id ");
+		sql.append("JOIN tb_page ON tb_page.module_id = m.id ");
+		sql.append("JOIN tb_action_and_page anp ON anp.page_id = tb_page.id ");
+		sql.append("JOIN tb_action a ON a.id = anp.action_id ");
+		sql.append("WHERE p.id = :projectId ");
+		Query query = getSession().createSQLQuery(sql.toString());
+		query.setInteger("projectId", projectId);
+
+		List<Integer> result = query.list();
+		
+		/*for (Object r : result) {
+			ids.add((Integer) r);
+		}*/
+		return result;
 	}
 
 }

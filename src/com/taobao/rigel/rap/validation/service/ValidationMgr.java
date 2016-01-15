@@ -27,6 +27,17 @@ public interface ValidationMgr {
 	 * created on: 2015-8-20
 	 */
 	public Map<String, String> validateAPIData(int projectId,String requestUrl,String jsonData) throws IOException, ProcessingException;
+	
+	/**
+	 * 
+	 * 功能描述：为对应的项目批量生成json schema，仅根据action的response parameters来生产
+	 * @param projectId 项目的id
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2015-1-15
+	 */
+	public void generateJsonSchemaByProject(int projectId);
+	
 	/**
 	 * 
 	 * 功能描述：为对应的API生成json schema(无校验规则)，仅根据action的response parameters来生产
