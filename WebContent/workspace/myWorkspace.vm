@@ -60,11 +60,11 @@
                         <span class="glyphicon glyphicon-pencil"></span>
                         编辑
                     </button>
-
+					<!--
                     <button id="btnVersion" type="button" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" onclick="ws.version(); return false;" title="查看或切换到历史版本">
                         <span class="glyphicon glyphicon-refresh"></span>
                         版本
-                    </button>
+                    </button>-->
                     #end
                     <button id="btnExitVersion" type="button" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" onclick="ws.exitVersion(); return false;" style="display: none;" title="退出版本查看">
                         <span class="glyphicon glyphicon-arrow-left"></span>
@@ -76,11 +76,12 @@
                         Mock
                     </button>
                     #if($accessable)
+                    <!--
                     <button id="btnExport" type="button" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" onclick="ws.showPluginCode(); return false;" title="配置项目路由，获取插件代码等...">
                         <span class="glyphicon glyphicon-wrench"></span>
                         配置
                     </button>
-                    
+                    -->
                     
                     
                     <div class="btn-group">
@@ -101,6 +102,17 @@
                                 Online Docs
                                 </a>
                             </li>
+                            
+                            #if($accessable)
+                            <li>
+                                <!--<a href="/doc/${projectId}" target="_blank">-->
+                                <a id="btnVersion" href="#" onclick="ws.version(); return false;">
+                                <span class="glyphicon glyphicon-refresh"></span>
+                                	版本管理
+                                </a>
+                            </li>
+                            #end
+                            
                             <!--
                             <li>
                                 <a href="http://thx.github.io/RAP/resources/rap-shortcuts/"  target="_blank">
@@ -109,15 +121,15 @@
                                 </a>
                             </li>
                             -->
-                            <li>
-                                <a href="https://github.com/thx/RAP/wiki/user_manual_cn"  target="_blank">
+                            <li><!--https://github.com/thx/RAP/wiki/user_manual_cn-->
+                                <a href="http://doc.ucweb.local/pages/viewpage.action?pageId=77660713&src=contextnavpagetreemode"  target="_blank">
                                     <span class="glyphicon glyphicon-list-alt"></span>
                                     帮助/教程
                                 </a>
                             </li>
-                            <li>
+                            <!--<li>
                                 <a target="_blank" href="http://www.taobao.com/webww/ww.php?ver=3&touid=%E9%9C%8D%E9%9B%8D&siteid=cntaobao&status=2&charset=utf-8"><img border="0" src="http://amos.alicdn.com/realonline.aw?v=2&uid=%E9%9C%8D%E9%9B%8D&site=cntaobao&s=2&charset=utf-8" alt="RAP支持" />在线客服</a>
-                            </li>
+                            </li>-->
 
                         </ul>
                     </div>

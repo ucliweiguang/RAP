@@ -837,7 +837,7 @@ $(function() {
 	})
 	loginTrigger.trigger('click');
 })
-
+/*
 $(function() {
 	if (!window.localStorage) {
 		return;
@@ -912,4 +912,4 @@ $(function() {
 		});
 	}
 	
-});
+});*/

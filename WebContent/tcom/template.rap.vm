@@ -15,12 +15,13 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-      <a class="navbar-brand" href="/"><i class="iconlogo mi-rap"></i> <span class="logo-text">RAP v0.11.3</span></a>
+      <a class="navbar-brand" href="/"><i class="iconlogo mi-rap"></i> <span class="logo-text">蜂鸟  RAP v0.11.3</span></a>
     </div>
     <div class="collapse navbar-collapse"  id="global-navbar">
       <ul class="nav navbar-nav">
         #if($isLogined)
         <li><a href="$newUrl.home">主页</a></li>
+        <!--
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">$curCorpName <b class="caret"></b></a>
           <ul class="dropdown-menu teams">
@@ -28,16 +29,18 @@
              <li><a href="$projectUrl.allProductlineList?id=$corp.id">$corp.name</a></li>
             #end
           </ul>
-        </li>
+        </li>-->
         <!-- <li><a href="$projectUrl.myProjectList">我的项目</a></li>
         <li><a href="$projectUrl.allProductlineList">产品线管理</a></li> -->
         #else
         <li><a href="$platformUrl.home">主页</a></li>
         #end
 
-        <li><a href="$platformUrl.doc" target="_blank">文档</a></li>
-        <li><a href="$platformUrl.test">测试</a></li>
-        <li><a href="$platformUrl.log">数据</a></li>
+        <!--<li><a href="$platformUrl.doc" target="_blank">文档</a></li>-->
+        <li><a href="http://doc.ucweb.local/pages/viewpage.action?pageId=77660713&src=contextnavpagetreemode" target="_blank">文档</a></li>
+        
+        <!--<li><a href="$platformUrl.test">测试</a></li>-->
+        <!--<li><a href="$platformUrl.log">数据</a></li>-->
         <li><a href="$platformUrl.study" target="_blank">教程
            <!-- <span style="color:yellow;"> (new)</span> -->
         </a></li>
@@ -58,6 +61,7 @@
       #if ($curUser)
       <div class="pull-right">
           <ul class="nav navbar-nav">
+          <!--
               <li>
                 <a href="#" class="dropdown-toggle messages-trigger">消息<span class="label label-success">4</span></a>
                 <ul class="dropdown-menu dropdown-menu-right messages-dropdown">
@@ -71,16 +75,18 @@
                     </li>
                 </ul>
               </li>
+              -->
               <li>
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">$curUser.name <b class="caret"></b></a>
                 <ul class="dropdown-menu dropdown-menu-right">
-                    <li><a href="$newUrl.home">我的主页</a></li>
-                    <li><a href="$accountUrl.myAccount">个人信息</a></li>
+                    <!--<li><a href="$newUrl.home">我的主页</a></li>-->
+                    <!--<li><a href="$accountUrl.myAccount">个人信息</a></li>
                     <li><a href="$accountUrl.mySetting">个人设置</a></li>
-                    <li class="divider"></li>
-                    <li><a href="https://$consts.aliLoginUrl/ssoLogout.htm?APP_NAME=hummingbird&BACK_URL=$logoutUrlEncoded">退出阿里账号</a></li>
-                    <li class="divider"></li>
-                    <li><a href="$domainUrl/account/doLogout.do">退出</a></li>
+                    <li class="divider"></li>-->
+                    
+                    <li><a id="ssologout" href="https://$consts.aliLoginUrl/ssoLogout.htm?APP_NAME=hummingbird&BACK_URL=$logoutUrlEncoded">退出阿里账号</a></li>
+                    <!--<li class="divider"></li>
+                    <li><a id="normallogout" href="$domainUrl/account/doLogout.do">退出</a></li>-->
                 </ul>
               </li>
           </ul>
@@ -154,7 +160,7 @@
     <hr>
     <footer>
         <p><span id="_logOnline">-</span> 人在使用RAP, 今日Mock服务被调用 <span id="_logMockNumToday">-</span> 次&nbsp;&nbsp;旺旺群支持:582755829
-    <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_5879641'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/stat.php%3Fid%3D5879641%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    <!--<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_5879641'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/stat.php%3Fid%3D5879641%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>-->
     </p>
     </footer>
     <script>
@@ -180,6 +186,28 @@
             });
         }
         _logData();
+        
+       
+
     </script>
 </div>
 #end
+
+<script>
+        //判断当前用户是否阿里用户,控制退出链接的显示
+        function isAliAcount(){
+        	var arr,reg=new RegExp("(^| )hummingbird_SSO_TOKEN=([^;]*)(;|$)");
+
+			if(arr=document.cookie.match(reg)){
+			alert(1);
+				document.getElementById("ssologout").style.display = "display";
+				document.getElementById("normallogout").style.display = "none";
+			}else{
+						alert(0);			
+				document.getElementById("ssologout").style.display = "none";
+				document.getElementById("normallogout").style.display = "display";
+			}
+        }
+        
+         //isAliAcount();
+</script>

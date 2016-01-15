@@ -61,8 +61,8 @@
 			{{/important}}
 			<div class="tools">
 				{{#isManagable}}<i class="glyphicon glyphicon-pencil" data-id="{{id}}"></i>{{/isManagable}}
-				<i class="glyphicon glyphicon-export" data-id="{{id}}" title="复制RAP插件地址"></i>
-				<i class="glyphicon glyphicon-eye-open" data-id="{{id}}"></i>
+				<!--<i class="glyphicon glyphicon-export" data-id="{{id}}" title="复制RAP插件地址"></i>-->
+				<!--<i class="glyphicon glyphicon-eye-open" data-id="{{id}}"></i>-->
 				{{#isManagable}}<i class="glyphicon glyphicon-trash" data-id="{{id}}"></i>{{/isManagable}}
 				<i class="glyphicon glyphicon-home" data-id="{{id}}" title="进入蜂鸟（自动化测试）数据配置管理"></i>
 			</div>
@@ -86,8 +86,8 @@
             <div class="status">{{status}}<span class="creator">@{{creator.name}}</span></div>
 			<div class="tools">
 				<i class="glyphicon glyphicon-pencil" data-id="{{id}}"></i>
-				<i class="glyphicon glyphicon-export" data-id="{{id}}" title="复制RAP插件地址"></i>
-				<i class="glyphicon glyphicon-eye-open" data-id="{{id}}"></i>
+				<!--<i class="glyphicon glyphicon-export" data-id="{{id}}" title="复制RAP插件地址"></i>-->
+				<!--<i class="glyphicon glyphicon-eye-open" data-id="{{id}}"></i>-->
 				<i class="glyphicon glyphicon-trash" data-id="{{id}}"></i>
 				<i class="glyphicon glyphicon-home" data-id="{{id}}" title="进入蜂鸟（自动化测试）数据配置管理"></i>
 			</div>
