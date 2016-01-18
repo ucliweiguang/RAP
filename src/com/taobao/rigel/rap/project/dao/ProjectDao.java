@@ -8,6 +8,7 @@ import com.taobao.rigel.rap.project.bo.Action;
 import com.taobao.rigel.rap.project.bo.Module;
 import com.taobao.rigel.rap.project.bo.Page;
 import com.taobao.rigel.rap.project.bo.Project;
+import com.taobao.rigel.rap.project.bo.ProjectUser;
 
 public interface ProjectDao {
 
@@ -153,4 +154,50 @@ public interface ProjectDao {
      * created on: 2016-1-15
      */    
 	public List<Integer> getActionIdsByProjectId(int projectId);
+	/**
+	 * 获取该项目的所有用户，包括读写、只读用户
+	 * 功能描述：
+	 * @param projectId
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-1-15
+	 */
+	public List<ProjectUser> getAllProjectUser(int projectId);
+	/**
+	 * 
+	 * 功能描述：获取该项目的只读用户
+	 * @param projectId
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-1-15
+	 */
+	public List<ProjectUser> getReadOnlyProjectUser(int projectId);
+	/**
+	 * 
+	 * 功能描述：获取该项目读写用户
+	 * @param projectId
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-1-15
+	 */
+	public List<ProjectUser> getRWProjectUser(int projectId);
+	/**
+	 * 
+	 * 功能描述：删除指定项目中指定accesslevel的记录
+	 * @param projecctId
+	 * @param accesslevel 1-读写，2-只读
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-1-18
+	 */
+	public void deleteProjectUser(int projectId,int accesslevel);
+	/**
+	 * 
+	 * 功能描述：创建指定项目中指定accesslevel的记录
+	 * @param projecctId
+	 * @param accesslevel   1-读写，2-只读
+	 * @param userId 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-1-18
+	 */
+	public void createProjectUser(int projectId,int accesslevel,long userId);
 }

@@ -22,6 +22,7 @@ import com.taobao.rigel.rap.project.bo.ObjectItem;
 import com.taobao.rigel.rap.project.bo.Page;
 import com.taobao.rigel.rap.project.bo.Parameter;
 import com.taobao.rigel.rap.project.bo.Project;
+import com.taobao.rigel.rap.project.bo.ProjectUser;
 import com.taobao.rigel.rap.project.dao.ProjectDao;
 
 public class ProjectDaoImpl extends HibernateDaoSupport implements ProjectDao {
@@ -588,4 +589,60 @@ public class ProjectDaoImpl extends HibernateDaoSupport implements ProjectDao {
 		return result;
 	}
 
+    //获取该项目的所有用户，包括读写、只读用户
+    public List<ProjectUser> getAllProjectUser(int projectId){
+    	List<ProjectUser> list = new ArrayList<ProjectUser>();
+    	StringBuilder sql = new StringBuilder();
+    	 sql.append("FROM ProjectUser t ")
+         .append("WHERE t.projectId = :projectId ");
+    	Query query = getSession().createQuery(sql.toString());
+ 		
+		query.setInteger("projectId", projectId);
+		list = query.list();
+    	return list;
+    }
+	@Override
+	//accesslevel=2,readonly user
+	public List<ProjectUser> getReadOnlyProjectUser(int projectId) {
+		List<ProjectUser> users = getAllProjectUser(projectId);
+		List<ProjectUser> result = new ArrayList<ProjectUser>();
+		for (ProjectUser pu : users){
+			if (pu.getAccesslevel()==2){
+				result.add(pu);
+			}
+		}
+		return result;
+	}
+	@Override
+	//accesslevel=1,read-write user
+	public List<ProjectUser> getRWProjectUser(int projectId) {
+		List<ProjectUser> users = getAllProjectUser(projectId);
+		List<ProjectUser> result = new ArrayList<ProjectUser>();
+		for (ProjectUser pu : users){
+			if (pu.getAccesslevel()==1){
+				result.add(pu);
+			}
+		}
+		return result;
+	}
+	@Override
+	public void deleteProjectUser(int projectId, int accesslevel) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("DELETE");
+		sql.append(" FROM tb_project_and_user");		
+		sql.append(" WHERE project_id = :projectId AND access_level = :accesslevel");
+		Query query = getSession().createSQLQuery(sql.toString());
+		query.setInteger("projectId", projectId);
+		query.setInteger("accesslevel", accesslevel);
+		query.executeUpdate();
+	}
+	@Override
+	public void createProjectUser(int projectId, int accesslevel,long userId) {
+		Session session = getSession();
+		ProjectUser pu = new ProjectUser();
+		pu.setAccesslevel(accesslevel);
+		pu.setProjectId(projectId);
+		pu.setUserId(userId);
+		session.save(pu);		
+	}    
 }

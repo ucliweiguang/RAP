@@ -67,6 +67,7 @@
 				<i class="glyphicon glyphicon-home" data-id="{{id}}" title="进入蜂鸟（自动化测试）数据配置管理"></i>
 			</div>
 			<input type="hidden" class="accounts-hidden" value="{{accounts}}"/>
+			<input type="hidden" class="readonly-accounts-hidden" value="{{readonlyaccounts}}"/>
         </div>
 		{{/projects}}
 		<div class="box-to-add">
@@ -92,6 +93,7 @@
 				<i class="glyphicon glyphicon-home" data-id="{{id}}" title="进入蜂鸟（自动化测试）数据配置管理"></i>
 			</div>
 			<input type="hidden" class="accounts-hidden" value="{{accounts}}"/>
+			<input type="hidden" class="readonly-accounts-hidden" value="{{readonlyaccounts}}"/>
         </div>
 </script>
 
@@ -110,8 +112,8 @@
       <textarea class="form-control desc" style="width:432px;resize:vertical;" placeholder="请在此编辑项目描述">{{{desc}}}</textarea>
     </div>
   </div>
-<div class="form-group">
-    <label for="" class="col-sm-2 control-label">项目成员</label>
+  <div class="form-group">
+    <label for="" class="col-sm-2 control-label">项目成员(读写)</label>
     <div class="col-sm-10 picking-user" style="position:relative">
 	  {{#users}}
 	  <span class="picked-user" data-name="{{name}}" data-account="{{account}}" title="{{account}} ({{name}})">{{account}} ({{name}})<i class="unpick-btn">&times;</i></span>
@@ -120,6 +122,19 @@
 	  <span class="user-loading">项目成员列表加载中，请稍候~ </span>
 	  <span class="glyphicon glyphicon-question-sign tip" title="如果该用户没有登录/注册过RAP，系统中就没有TA的信息。请TA先登录一下RAP吧。匹配时请可以输入TA的花名或帐号(域帐号)">找不到TA?</span>
       <div class="accounts-con"></div>
+	</div>
+  </div>
+  
+  <div class="form-group">
+    <label for="" class="col-sm-2 control-label">项目成员(只读)</label>
+    <div class="col-sm-10 readonly-picking-user" style="position:relative">
+	  {{#readonlyusers}}
+	  <span class="readonly-picked-user" data-name="{{name}}" data-account="{{account}}" title="{{account}} ({{name}})">{{account}} ({{name}})<i class="readonly-unpick-btn">&times;</i></span>
+	  {{/readonlyusers}}
+	  <input class="form-control readonly-accounts-inputer" placeholder="添加项目成员"/>
+	  <span class="readonly-user-loading">项目成员列表加载中，请稍候~ </span>
+	  <span class="glyphicon glyphicon-question-sign tip" title="如果该用户没有登录/注册过RAP，系统中就没有TA的信息。请TA先登录一下RAP吧。匹配时请可以输入TA的花名或帐号(域帐号)">找不到TA?</span>
+      <div class="readonly-accounts-con"></div>
 	</div>
   </div>
 </div>
@@ -217,9 +232,26 @@
 		{{/users}}
 	</ul>
 </script>
+
+<script type="text/tmpl" id="readonlyuser-auto-list">
+	<ul class="autocompleter">
+		{{#users}}
+			<li data-account="{{account}}" data-name="{{name}}" {{^block}}title="{{account}} ({{name}})"{{/block}}{{#block}} data-block="true"{{/block}}>
+				{{#block}}没有更多匹配数据{{/block}}
+				{{^block}}{{account}} ({{name}}){{/block}}
+			</li>
+		{{/users}}
+	</ul>
+</script>
+
 <script type="text/tmpl" id="user-item-tmpl">
 <span class="picked-user" data-name="{{name}}" data-account="{{account}}" title="{{account}} ({{name}})">{{account}} ({{name}})<i class="unpick-btn">&times;</i></span>
 </script>
+
+<script type="text/tmpl" id="readonlyuser-item-tmpl">
+<span class="readonly-picked-user" data-name="{{name}}" data-account="{{account}}" title="{{account}} ({{name}})">{{account}} ({{name}})<i class="readonly-unpick-btn">&times;</i></span>
+</script>
+
 		</script>
 	    <script src="./home/index.js?_r=$!timeStamp"></script>
 	    #bodyEnd

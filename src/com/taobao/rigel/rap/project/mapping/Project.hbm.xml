@@ -58,9 +58,15 @@
 			</column>
 		</property>
 		<many-to-one name="user" column="user_id" />
-		<set name="userList" order-by="user_id asc" table="tb_project_and_user">
+		<set name="userList" order-by="user_id asc" table="tb_project_and_user" where="access_level=1">
 			<key column="project_id" not-null="true" />
-			<many-to-many column="user_id"
+			<many-to-many column="user_id" 
+				class="com.taobao.rigel.rap.account.bo.User" />
+		</set>
+
+		<set name="readonlyUserList" order-by="user_id asc" table="tb_project_and_user" where="access_level=2">
+			<key column="project_id" not-null="true" />
+			<many-to-many column="user_id" 
 				class="com.taobao.rigel.rap.account.bo.User" />
 		</set>
 

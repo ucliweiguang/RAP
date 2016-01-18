@@ -114,6 +114,16 @@ public class Project implements java.io.Serializable {
 	public void setUserList(Set<User> userList) {
 		this.userList = userList;
 	}
+	
+	//added by liweiguang 2016-1-18
+	private Set<User> readonlyUserList = new HashSet<User>();	
+	
+	public Set<User> getReadonlyUserList() {
+		return readonlyUserList;
+	}
+	public void setReadonlyUserList(Set<User> readonlyUserList) {
+		this.readonlyUserList = readonlyUserList;
+	}
 
 	private Set<Module> moduleList = new HashSet<Module>();
 
@@ -193,7 +203,15 @@ public class Project implements java.io.Serializable {
 		return stringBuilder.toString();
 	}
 	
-	private List<String> memberAccountList;
+	//added by liweiguang 2016-1-18
+	public String getReadonlyMemberAccountListStr() {
+		StringBuilder stringBuilder = new StringBuilder();
+		for (User user : getReadonlyUserList()) {
+			stringBuilder.append(user.getAccount() + "(" + user.getName() + "), ");
+		}
+		return stringBuilder.toString();
+	}
+	private List<String> memberAccountList; //读写用户
 	
 	public List<String> getMemberAccountList() {
 		return memberAccountList;
@@ -203,6 +221,16 @@ public class Project implements java.io.Serializable {
 		this.memberAccountList = memberAccountList;
 	}
 	
+	private List<String> readonlyMemberAccountList; //只读用户
+	
+	public List<String> getReadonlyMemberAccountList() {
+		return readonlyMemberAccountList;
+	}
+
+	public void setReadonlyMemberAccountList(List<String> readonlyMemberAccountList) {
+		this.readonlyMemberAccountList = readonlyMemberAccountList;
+	}
+
 	private Set<Workspace> workspaceList = new HashSet<Workspace>();
 	
 	public Set<Workspace> getWorkspaceList() {
@@ -519,4 +547,5 @@ public class Project implements java.io.Serializable {
         }
         return list;
     }
+    
 }

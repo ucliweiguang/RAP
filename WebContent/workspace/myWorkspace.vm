@@ -13,7 +13,8 @@
         <link href="${staticRoot}/css/json-s.css" type="text/css" rel="stylesheet"></link>
 		<script src="${staticRoot}/js/util/json-c.js" type="text/javascript"></script>		        
     </head>
-    <body class="workspace #if(!$accessable)read-only#end">
+    #if($accessable)
+    <body class="workspace #if(!$manageable)read-only#end">
         #bodyNewStart(true)
         <div id="div-fixed-panel">
             <div class="clearfix">
@@ -37,7 +38,7 @@
                             </ul>
                         </div>
                     </div>
-		 #if($accessable)                    
+		 #if($manageable)                    
                     <button id="btnToMainPage" type="button" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" onclick="location.href='/';" title="返回主页">
                         <span class="glyphicon glyphicon-arrow-left"></span>
                         返回主页
@@ -55,7 +56,7 @@
                         <span class="glyphicon glyphicon-trash"></span>
                         取消
                     </button>
-                    #if($accessable)
+                    #if($manageable)
                     <button id="btnEdit" type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" onclick="ws.switchToEditMode(); return false;" title="锁定并进入文档编辑状态">
                         <span class="glyphicon glyphicon-pencil"></span>
                         编辑
@@ -75,7 +76,7 @@
                         <span class="glyphicon glyphicon-headphones"></span>
                         Mock
                     </button>
-                    #if($accessable)
+                    #if($manageable)
                     <!--
                     <button id="btnExport" type="button" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" onclick="ws.showPluginCode(); return false;" title="配置项目路由，获取插件代码等...">
                         <span class="glyphicon glyphicon-wrench"></span>
@@ -103,7 +104,7 @@
                                 </a>
                             </li>
                             
-                            #if($accessable)
+                            #if($manageable)
                             <li>
                                 <!--<a href="/doc/${projectId}" target="_blank">-->
                                 <a id="btnVersion" href="#" onclick="ws.version(); return false;">
@@ -675,6 +676,11 @@
     <script src="${staticRoot}/js/util/json-m.js" type="text/javascript"></script>
     
     </body>
+    #else
+    <body>
+    	你没有权限访问该项目的文档。请联系管理员。
+    </body>
+    #end
     <script type="text/javascript">    
         var urlObj = {
                 "getModuleHtmlAjax" : "$workspaceUrl.getModuleHtmlAjax",
@@ -713,12 +719,12 @@
             data.projectData.moduleList = [{"id":ws.generateId(),"name":"某模块（点击编辑后双击修改）","introduction":"","pageList":[{"moduleId":ws.generateId(),"name":"某页面","introduction":"","id":ws.generateId(),"isIdGenerated":true,"actionList":[{"pageId":ws.generateId(),"name":"某请求","requestType":"1","requestUrl":"","responseTemplate":"","description":"","id":ws.generateId(),"requestParameterList":[{"id":ws.generateId(),"identifier":"reqParam","name":"某请求参数","remark":"","validator":"","dataType":"number","parameterList":[]}],"responseParameterList":[{"id":ws.generateId(),"identifier":"resParam","name":"某响应参数","remark":"","validator":"","dataType":"number","parameterList":[]}]}]}]}];
         }
 
-		var accessable = false;
-		#if($accessable)
-			accessable = true;
+		var manageable = false;
+		#if($manageable)
+			manageable = true;
 		#end
-		//console.log("vm accessable:" + accessable);		
-        ws.init(data, urlObj#if($actionId),$actionId#end, callbackHandler,accessable);
+		//console.log("vm manageable:" + manageable);		
+        ws.init(data, urlObj#if($actionId),$actionId#end, callbackHandler,manageable);
 
 
         function callbackHandler() {

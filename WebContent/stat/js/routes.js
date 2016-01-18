@@ -168,6 +168,91 @@
 			});
 		}
 	}
+	
+	//added by liweiguang 2016-1-18
+	$.readonlyautocomplete = function (modal, users) {
+		//console.log("readonlyautocomplete users:"+users);
+		modal = $(modal);
+		var con = modal.find('.readonly-accounts-con');
+		var inputer = modal.find('.readonly-accounts-inputer');
+		if (!inputer.data('blur-binded')) {
+			inputer.data('blur-binded', 1);
+			inputer.on('blur', function() {
+				setTimeout(function() {
+					con && con.hide();
+				}, 200);
+			});
+		}
+		var val = inputer.val().trim();
+		if (val == '') {
+			return;
+		}
+		var picked = [];
+		var nodes = modal.find('.readonly-picked-user');
+		//console.log("user.length:"+users.length);
+		for(var i = 0, l = nodes.length; i < l; i++) {
+			picked.push($(nodes[i]).data('account'));
+		}
+		var remained = [];
+		//console.log("users:"+users);
+		//console.log("picked:"+picked);
+		users.forEach(function(user) {
+			if (remained.length >= 10) {
+				return;
+			}
+			if (picked.indexOf(user.account) != -1) {
+				return;
+			}
+
+			if (user.account && user.account.indexOf(val) != -1) {
+                remained.push(user);
+            } else if (user.name && user.name.indexOf(val) != -1) {
+                remained.push(user);
+			} else if (user.realName && user.realName.indexOf(val) != -1) {
+                remained.push(user);
+            } else if (user.realNamePinyin && user.realNamePinyin.indexOf(val) != -1) {
+                remained.push(user);
+            } else if (user.namePinyin && user.namePinyin.indexOf(val) != -1) {
+                remained.push(user);
+            }
+		});
+		if (remained.length == 0) {
+			remained.push({block:true})
+		}
+		var tmpl = $('#readonlyuser-auto-list').text();
+		var itemTeml = $('#readonlyuser-item-tmpl').text();
+		var html = $.render(tmpl, {
+			users: remained
+		});
+		//console.log("html:"+html);
+		con.show();
+		con.html(html);
+		var pos = inputer.position();
+		con.css({
+			left: pos.left,
+			top: pos.top + inputer.outerHeight() + 2
+		});
+		if (!con.data('inited')) {
+			con.data('inited', 1);
+			con.delegate('li', 'click', function() {
+				if ($(this).data('block')) {
+					return;
+				}
+				var node = $(this);
+				inputer.before($.render(itemTeml, {
+					name: node.data('name'), 
+					account: node.data('account')
+				}));
+				con.hide();
+				inputer.val('');
+				setTimeout(function() {
+					inputer && inputer.focus();
+				}, 200);
+			});
+		}
+	}
+	//added by liweiguang end
+	
 })($);
 
 

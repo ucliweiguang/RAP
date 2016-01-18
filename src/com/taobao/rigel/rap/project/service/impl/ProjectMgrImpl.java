@@ -17,6 +17,7 @@ import com.taobao.rigel.rap.project.bo.Module;
 import com.taobao.rigel.rap.project.bo.Page;
 import com.taobao.rigel.rap.project.bo.Parameter;
 import com.taobao.rigel.rap.project.bo.Project;
+import com.taobao.rigel.rap.project.bo.ProjectUser;
 import com.taobao.rigel.rap.project.dao.ProjectDao;
 import com.taobao.rigel.rap.project.service.ProjectMgr;
 import com.taobao.rigel.rap.workspace.bo.CheckIn;
@@ -167,6 +168,20 @@ public class ProjectMgrImpl implements ProjectMgr {
 				}
 			}
 		}
+		
+		//added by liweiguang 2016-1-18
+		//先批量删除当前项目中access_level=2的旧记录
+		projectDao.deleteProjectUser(outerProject.getId(), 2);
+		//然后再逐个增加
+		if (outerProject.getReadonlyMemberAccountList() != null){
+			for (String account : outerProject.getReadonlyMemberAccountList()) {
+				User user = accountDao.getUser(account);
+				if (user != null) {
+					projectDao.createProjectUser(outerProject.getId(), 2, user.getId());
+				}
+			}
+		}
+		//added by liweiguang 2016-1-18 end 
 
 		return projectDao.updateProject(project);
 	}
@@ -374,5 +389,20 @@ public class ProjectMgrImpl implements ProjectMgr {
 				clearParameterCache(child, action);
 			}
 		}
+	}
+
+	@Override
+	public List<ProjectUser> getReadOnlyProjectUser(int projectId) {
+		return projectDao.getReadOnlyProjectUser(projectId);
+	}
+
+	@Override
+	public List<ProjectUser> getRWProjectUser(int projectId) {
+		return projectDao.getRWProjectUser(projectId);
+	}
+
+	@Override
+	public List<ProjectUser> getAllProjectUser(int projectId) {
+		return projectDao.getAllProjectUser(projectId);
 	}
 }

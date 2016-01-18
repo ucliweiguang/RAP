@@ -93,6 +93,18 @@ public class ProjectAction extends ActionBase {
 	}
 
 	private String accounts;
+	
+	private String readonlyaccounts;
+
+	public String getReadonlyaccounts() {
+		if (readonlyaccounts == null)
+			return "";
+		return readonlyaccounts;
+	}
+
+	public void setReadonlyaccounts(String readonlyaccounts) {
+		this.readonlyaccounts = readonlyaccounts;
+	}
 
 	public String getDesc() {
 		return desc;
@@ -294,8 +306,22 @@ public class ProjectAction extends ActionBase {
 			if (!account.equals(""))
 				memberAccountList.add(account);
 		}
+		
+		//added by liweiguang 2016-1-18
+		List<String> readonlymemberAccountList = new ArrayList<String>();
+		String[] readonlylist =getReadonlyaccounts().split(",");
+		for (String item : readonlylist) {
+			String account = item.contains("(") ? item.substring(0,
+					item.indexOf("(")).trim() : item.trim();
+			if (!account.equals(""))
+				readonlymemberAccountList.add(account);
+		}
+		//added by liweiguang 2016-1-18 end
+		
 		Gson gson = new Gson();
 		project.setMemberAccountList(memberAccountList);
+		project.setReadonlyMemberAccountList(readonlymemberAccountList);//added by liweiguang 2016-1-18 end
+		
 		projectMgr.updateProject(project);
 		project = projectMgr.getProject(project.getId());
 
@@ -309,6 +335,8 @@ public class ProjectAction extends ActionBase {
 		result.put("name", project.getName());
 		result.put("desc", project.getIntroduction());
 		result.put("accounts", project.getMemberAccountListStr());
+		//readonlyaccounts
+		result.put("readonlyaccounts", project.getReadonlyMemberAccountListStr());
 		result.put("groupId", project.getGroupId());
 		result.put("isManagable", project.getIsManagable());
 		setJson(new RapError(gson.toJson(result)).toString());

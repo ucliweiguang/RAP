@@ -104,6 +104,7 @@ public class OrganizationAction extends ActionBase {
 			map.put("desc", p.getIntroduction());
 			map.put("status", p.getLastUpdateStr());
 			map.put("accounts", p.getMemberAccountListStr());
+			map.put("readonlyaccounts", p.getReadonlyMemberAccountListStr());//added by liweiguang 2016-1-18
 			map.put("isManagable", p.getIsManagable());
 			map.put("creator", p.getUser().getUserBaseInfo());
 			map.put("related", p.getUser().getId() != getCurUserId());

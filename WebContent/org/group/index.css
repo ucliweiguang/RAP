@@ -150,7 +150,7 @@
 	z-index: 10000;
 }
 
-.accounts-inputer {
+.accounts-inputer ,.readonly-accounts-inputer{
 	display: inline-block;
 	width: 142px;
 }
@@ -158,7 +158,7 @@
 .user-loading {
 	color:#999; margin-left:10px; font-size: 12px;
 }
-.picking-user .picked-user {
+.picking-user .picked-user , .readonly-picking-user .readonly-picked-user{
 	background-color: #EEE;
 	padding: 6px 14px 8px 6px;
 	display: inline-block;
@@ -169,7 +169,7 @@
 	text-align: center;
 }
 
-.picking-user .picked-user .unpick-btn {
+.picking-user .picked-user .unpick-btn , .readonly-picking-user .readonly-picked-user .readonly-unpick-btn{
 	margin-left: 5px;
 	font-size: 16px;
 	cursor: pointer;
@@ -177,11 +177,11 @@
 	position: absolute; right: 3px; top: 0;
 	line-height: 12px;
 }
-.picking-user .picked-user .unpick-btn:hover {
+.picking-user .picked-user .unpick-btn:hover ,.readonly-picking-user .readonly-picked-user .readonly-unpick-btn:hover{
 	color: #333;
 }
 
-.accounts-con .autocompleter {
+.accounts-con .autocompleter ,.readonly-accounts-con .autocompleter{
 	list-style: none;
 	padding: 0;
 	border: 1px solid #DDD;
@@ -191,7 +191,7 @@
 	border-radius: 2px;
 	box-shadow: 0 0 2px #DDD;
 }
-.accounts-con .autocompleter li {
+.accounts-con .autocompleter li ,.readonly-accounts-con .autocompleter li{
 	padding: 5px; 
 	cursor: pointer;
 	border-bottom: 1px solid #DDD;
@@ -199,7 +199,7 @@
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
-.accounts-con .autocompleter li:hover {
+.accounts-con .autocompleter li:hover,.readonly-accounts-con .autocompleter li:hover {
 	background-color: #F2F2F2;
 }
 

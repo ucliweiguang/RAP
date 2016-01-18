@@ -13,6 +13,7 @@ import com.taobao.rigel.rap.common.StringUtils;
 import com.taobao.rigel.rap.organization.bo.Corporation;
 import com.taobao.rigel.rap.organization.service.OrganizationMgr;
 import com.taobao.rigel.rap.project.bo.Project;
+import com.taobao.rigel.rap.project.bo.ProjectUser;
 import com.taobao.rigel.rap.project.service.ProjectMgr;
 
 public class AccountMgrImpl implements AccountMgr {
@@ -196,6 +197,37 @@ public class AccountMgrImpl implements AccountMgr {
 	@Override
 	public boolean canUserManageProject(long userId, int projectId) {
 		User user = this.getUser(userId);
+		//Project project = projectMgr.getProject(projectId);
+		if (user.isUserInRole("admin")) {
+			return true;
+		}
+		if (user.getCreatedProjectList() != null)
+			for (Project p : user.getCreatedProjectList()) {
+				if (p.getId() == projectId) {
+					return true;
+				}
+			}
+		//System.out.println("userList:"+ project.getUserList());
+		/*if (project.getUserList() != null)
+			for (User member : project.getUserList()) {
+				if (member.getId() == user.getId()) {
+					return true;
+				}
+			}*/
+		//新的accesslevel判断
+		List<ProjectUser> projectUsers =projectMgr.getRWProjectUser(projectId);
+		if (projectUsers!=null){
+			for (ProjectUser pu : projectUsers){
+				if (pu.getUserId() == user.getId()){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public boolean canUserAccessProject(long userId, int projectId){
+		User user = this.getUser(userId);
 		Project project = projectMgr.getProject(projectId);
 		if (user.isUserInRole("admin")) {
 			return true;
@@ -206,16 +238,23 @@ public class AccountMgrImpl implements AccountMgr {
 					return true;
 				}
 			}
-		if (project.getUserList() != null)
+		//System.out.println("userList:"+ project.getUserList());
+		/*if (project.getUserList() != null)
 			for (User member : project.getUserList()) {
 				if (member.getId() == user.getId()) {
 					return true;
 				}
+			}*/
+		List<ProjectUser> projectUsers =projectMgr.getAllProjectUser(projectId);
+		if (projectUsers!=null){
+			for (ProjectUser pu : projectUsers){
+				if (pu.getUserId() == user.getId()){
+					return true;
+				}
 			}
-
+		}
 		return false;
 	}
-
     @Override
     public long getUserNum() {
         return accountDao.getUsertNum();

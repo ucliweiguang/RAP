@@ -194,14 +194,24 @@ public interface AccountMgr {
 	
 	
 	/**
-	 * user access validation
-	 * 
+	 * user manageable validation
+	 * 判断用户是否可以管理（写文档）项目
 	 * @param userId
 	 * @param projectId
 	 * @return
+	 * @author 李伟光 2016-01-15
 	 */
 	boolean canUserManageProject(long userId, int projectId);
-
+	/**
+	 * user manageable validation
+	 * 判断用户是否可以管理（写文档）项目
+	 * @param userId
+	 * @param projectId
+	 * @return
+	 * @author 李伟光 2016-01-15
+	 */
+	boolean canUserAccessProject(long userId, int projectId);
+	
     long getUserNum();
 
     public void updateUser(User user);

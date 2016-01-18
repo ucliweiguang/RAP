@@ -36,8 +36,18 @@ import com.taobao.rigel.rap.workspace.service.WorkspaceMgr;
 public class WorkspaceAction extends ActionBase {
 
 	private static final long serialVersionUID = 1L;
-
+	//是否可访问该项目
 	private boolean accessable;
+	//是否可管理（写文档）
+	private boolean manageable;
+	
+	public boolean isManageable() {
+		return manageable;
+	}
+
+	public void setManageable(boolean manageable) {
+		this.manageable = manageable;
+	}
 
 	public boolean isAccessable() {
 		return accessable;
@@ -269,7 +279,10 @@ public class WorkspaceAction extends ActionBase {
 		workspace.setProject(p);
 		setWorkspaceJsonString(workspace.toString());
 		setWorkspace(workspace);
-		setAccessable(getAccountMgr().canUserManageProject(getCurUserId(), getProjectId()));
+		//modified by liweiguang 2016-1-18
+		setAccessable(getAccountMgr().canUserAccessProject(getCurUserId(), getProjectId()));
+		setManageable(getAccountMgr().canUserManageProject(getCurUserId(), getProjectId()));
+		//modified by liweiguang 2016-1-18 end
 		return SUCCESS;
 	}
 

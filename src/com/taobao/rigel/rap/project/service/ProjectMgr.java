@@ -8,6 +8,7 @@ import com.taobao.rigel.rap.project.bo.Action;
 import com.taobao.rigel.rap.project.bo.Module;
 import com.taobao.rigel.rap.project.bo.Page;
 import com.taobao.rigel.rap.project.bo.Project;
+import com.taobao.rigel.rap.project.bo.ProjectUser;
 
 public interface ProjectMgr {
 
@@ -173,4 +174,31 @@ public interface ProjectMgr {
      * @param projectId
      */
     void updateCache(int projectId);
+    /**
+	 * 
+	 * 功能描述：获取该项目的只读用户
+	 * @param projectId
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-1-15
+	 */
+	public List<ProjectUser> getReadOnlyProjectUser(int projectId);
+	/**
+	 * 
+	 * 功能描述：获取该项目读写用户
+	 * @param projectId
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-1-15
+	 */
+	public List<ProjectUser> getRWProjectUser(int projectId);
+	/**
+	 * 获取该项目的所有用户，包括读写、只读用户
+	 * 功能描述：
+	 * @param projectId
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-1-15
+	 */
+	public List<ProjectUser> getAllProjectUser(int projectId);
 }

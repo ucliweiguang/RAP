@@ -21,12 +21,26 @@ $(function() {
     var PL_ID = null;
     var CORP_ID = null;
     function getUsers(callback) {
+    	//console.log("getUsers:"+$.local('users'));
         if ($.local('users')) {
             callback($.local('users'));
             return;
         }
         $.get($.route('org.account.all'), function(data) {
             users = data.users;
+            $.local('users', users);
+            callback(users);
+        }, "JSON");
+    }
+    
+    function getReadonlyUsers(callback) {
+    	//console.log("local.users:"+$.local('users'));
+        if ($.local('users')) {
+            callback($.local('users'));
+            return;
+        }
+        $.get($.route('org.account.all'), function(data) {
+        	users = data.users;
             $.local('users', users);
             callback(users);
         }, "JSON");
@@ -163,6 +177,7 @@ $(function() {
         var box = $(this).parents('.box');
         var name = box.find('.info .title').html();
         var desc = box.find('.info .intro').html();
+        
         var accounts = box.find('.accounts-hidden').val();
         var splited = accounts.split(',');
         var pickeds = [];
@@ -176,20 +191,44 @@ $(function() {
                 });
             }
         }
+      //added by liweiguang 2016-1-18
+        var readonlyaccounts = box.find('.readonly-accounts-hidden').val();
+        //console.log("readonlyaccounts:"+readonlyaccounts);
+        var readonlysplited = readonlyaccounts.split(',');
+        var readonlypickeds = [];
+        //var reg = /(.+)\s*\(([^,]+)\)/;
+        for(var i = 0, l = readonlysplited.length; i < l; i++) {
+            var matched = reg.exec(readonlysplited[i]);
+            if (matched) {
+            	readonlypickeds.push({
+                    name: matched[2],
+                    account: matched[1]
+                });
+            }
+        }
+      //added by liweiguang 2016-1-18 end
+        
         $.confirm({
             content: $.render($('#update-proj-tmpl').text(), {
                 name: name ? name.replace(/"/g, "") : "",
                 desc: desc,
-                users: pickeds
+                users: pickeds,
+                readonlyusers : readonlypickeds
             }),
             title: '修改项目',
             confirmText: '确认修改',
             showCallback: function() {
                 var that = this;
                 $(this).find('input[type=text]').focus();
+                
                 $(this).find('.picking-user').delegate('.unpick-btn', 'click', function() {
                     $(this).parent('.picked-user').remove();
                 });
+                
+                $(this).find('.readonly-picking-user').delegate('.readonly-unpick-btn', 'click', function() {
+                    $(this).parent('.readonly-picked-user').remove();
+                });
+                
                 $('.tip').tooltip();
                 getUsers(function(users) {
                     $('.user-loading').hide();
@@ -199,6 +238,19 @@ $(function() {
                         $.autocomplete(that, users);
                     });
                 });
+                
+                //console.log("readonlypickeds:"+readonlypickeds);
+                getReadonlyUsers(function(readonlyusers) {
+                	//console.log("getReadonlyUsers users:"+readonlyusers);
+                	//console.log("getReadonlyUsers:"+readonlyusers);
+                    $('.readonly-user-loading').hide();
+                    $(that).find('.readonly-accounts-inputer').keyup(function() {
+                        $.readonlyautocomplete(that, readonlyusers);
+                    }).focus(function() {
+                        $.readonlyautocomplete(that, readonlyusers);
+                    });
+                });
+                
             },
             confirmClicked: function() {
                 var inputer = $(this).find('input[type=text]');
@@ -212,17 +264,27 @@ $(function() {
                 }
                 var tmpl = $('#create-proj-success-tmpl').text();
                 var modal = $(this);
-                var accounts = $(this).find('.picked-user');
+                var accounts = $(this).find('.picked-user');                
                 var values = [];
                 for(var i = 0, l = accounts.length; i < l; i++) {
                     var current = $(accounts[i]);
                     values.push(current.data('account') + '(' + current.data('name') + ')');
                 }
+                //added by liweiguang 2016-1-18
+                var readonlyvalues = [];
+                var readonlyaccounts = $(this).find('.readonly-picked-user');
+                for(var i = 0, l = readonlyaccounts.length; i < l; i++) {
+                    var current = $(readonlyaccounts[i]);
+                    readonlyvalues.push(current.data('account') + '(' + current.data('name') + ')');
+                }
+                //added by liweiguang 2016-1-18 end
+                
                 $.post($.route('org.project.update'), {
                     id: id,
                     name: inputer.val(),
                     desc: $(this).find('textarea.desc').val(),
-                    accounts: values.join(', ')
+                    accounts: values.join(', '),
+                    readonlyaccounts : readonlyvalues.join(', ')
                 }, function(data) {
                     if (data.code != '200') {
                         modal.modal('hide');
