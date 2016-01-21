@@ -50,7 +50,7 @@
     </h3>
     <div class="box-con clearfix">
 		{{#projects}}
-        <div class="box" data-projid="{{id}}">
+        <div class="box" data-projid="{{id}}" data-atadomain="{{atadomain}}">
             <div class="info">
                 <div class="title">{{name}}</div>
                 <div class="intro">{{desc}}</div>
@@ -64,7 +64,7 @@
 				<!--<i class="glyphicon glyphicon-export" data-id="{{id}}" title="复制RAP插件地址"></i>-->
 				<!--<i class="glyphicon glyphicon-eye-open" data-id="{{id}}"></i>-->
 				{{#isManagable}}<i class="glyphicon glyphicon-trash" data-id="{{id}}"></i>{{/isManagable}}
-				<i class="glyphicon glyphicon-home" data-id="{{id}}" title="进入蜂鸟（自动化测试）数据配置管理"></i>
+				<i class="glyphicon glyphicon-home" data-id="{{id}}"  title="进入蜂鸟（自动化测试）数据配置管理"></i>
 			</div>
 			<input type="hidden" class="accounts-hidden" value="{{accounts}}"/>
 			<input type="hidden" class="readonly-accounts-hidden" value="{{readonlyaccounts}}"/>
@@ -79,7 +79,7 @@
 
 
 <script type="text/tmpl" id="create-proj-success-tmpl">
-<div class="box" data-projid="{{id}}">
+<div class="box" data-projid="{{id}}"  data-atadomain="{{atadomain}}">
             <div class="info">
                 <div class="title">{{name}}</div>
                 <div class="intro">{{desc}}</div>

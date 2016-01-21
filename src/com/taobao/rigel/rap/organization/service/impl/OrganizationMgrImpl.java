@@ -14,6 +14,11 @@ import com.taobao.rigel.rap.project.service.ProjectMgr;
 public class OrganizationMgrImpl implements OrganizationMgr {
 	private OrganizationDao organizationDao;
 	private ProjectMgr projectMgr;
+	private String atadomain;
+
+	public void setAtadomain(String atadomain) {
+		this.atadomain = atadomain;
+	}
 
 	public ProjectMgr getProjectMgr() {
 		return projectMgr;
@@ -107,6 +112,11 @@ public class OrganizationMgrImpl implements OrganizationMgr {
 	@Override
 	public Corporation getCorporation(int id) {
 		return organizationDao.getCorporation(id);
+	}
+
+	@Override
+	public String getAtadomain() {
+		return atadomain;
 	}
 
 }

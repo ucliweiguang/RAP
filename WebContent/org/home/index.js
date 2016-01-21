@@ -9,7 +9,7 @@ $(function() {
     }
     
     //访问蜂鸟管理后台的地址
-    var ATA_DOMAIN = "http://fn.uctest.local:5000/";
+    //var ATA_DOMAIN = "http://fn.uctest.local:5000/";
     
     var NAME_MAP = {
         'user': '我的项目',
@@ -168,8 +168,9 @@ $(function() {
         var box = $(this);
         box = box.parents('.box');
         var projId = box.data('projid');
-        //console.log("projectId"+projId);
-        window.open(ATA_DOMAIN + '?projectId=' + projId);
+        var atadomain = box.data('atadomain');
+        //console.log("atadomain:"+atadomain);
+        window.open(atadomain + '?projectId=' + projId);
     }
 
     function handleEditProjectClick() {

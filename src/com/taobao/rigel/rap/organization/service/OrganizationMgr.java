@@ -87,5 +87,5 @@ public interface OrganizationMgr {
 	 */
 	Corporation getCorporation(int id);
 	
-
+	String getAtadomain();
 }
