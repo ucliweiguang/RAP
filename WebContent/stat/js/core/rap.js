@@ -4173,7 +4173,7 @@ function deepCopy(o) {
         function getAInfoHtml(a) {
             var head = "<h2 style='margin-top:20px;'>接口详情 <span style='font-size: 14px; color: #999;'>(id: " + a.id + ") <a href=\"#\" onclick=\"ws.openActionUrlFloater(" + a.id + ");return false;\">复制URL</a></span> </h2><div class='action-info' href='#' onclick='ws.editA(" + a.id + "); return false;'>",
                 body = "",
-                foot = "</div>";
+                foot = "";//"</div>";
             if (a.name) {
                 body += "<div class='item'><b>接口名称 </b>" + a.name + "</div>";
             }
@@ -4189,15 +4189,16 @@ function deepCopy(o) {
             if (a.description) {
                 body += "<div class='item'><b>接口描述 </b>" + processTextarea(a.description) + "</div>";
             }
+            body += "</div>";
             //added by liwg 2015-08-31
             if(actionaccessable){
-	            body += "<div id='additionalrules' class='item'><a href='#' onclick='ws.doGenerateJsonSchema(" + a.id + "); return false;'>生成数据校验规则</a>&nbsp;&nbsp;";
+	            body += "<div id='additionalrules' class='action-info item'><a href='#' onclick='ws.doGenerateJsonSchema(" + a.id + "); return false;'>生成数据校验规则</a>&nbsp;&nbsp;";
 	            body += "<a href='#' onclick='ws.doGetJsonSchema(" + a.id + "); return false;'>查看数据校验规则</a>&nbsp;&nbsp;";
 	            //curl
 	            //body += "||&nbsp;&nbsp;<a href='#' onclick='ws.doGenerateCURL(" + a.id + "); return false;'>生成cURL</a>&nbsp;&nbsp;";
 	            body += "||&nbsp;&nbsp;<a href='#' onclick='ws.doGetCURL(" + a.id + "); return false;'>查看cURL</a>&nbsp;&nbsp;";
 	            //curl end
-	            body += "<br><br>如果该接口是PB协议，你可<a href='#' onclick='ws.doShowPB(" + a.id + "); return false;'>查看/更新PB协议内容</a></div>";	
+	            body += "||&nbsp;&nbsp;如果该接口是PB协议，你可<a href='#' onclick='ws.doShowPB(" + a.id + "); return false;'>查看/更新PB协议内容</a></div>";	
             }
             //console.log("actionaccessable:" + actionaccessable);	
             
