@@ -4192,7 +4192,8 @@ function deepCopy(o) {
             body += "</div>";
             //added by liwg 2015-08-31
             if(actionaccessable){
-	            body += "<div id='additionalrules' class='action-info item'><a href='#' onclick='ws.doGenerateJsonSchema(" + a.id + "); return false;'>生成数据校验规则</a>&nbsp;&nbsp;";
+	            //body += "<div id='additionalrules' class='action-info item'><a href='#' onclick='ws.doGenerateJsonSchema(" + a.id + "); return false;'>生成数据校验规则</a>&nbsp;&nbsp;";
+            	body += "<div id='additionalrules' class='action-info item'>&nbsp;&nbsp;";
 	            body += "<a href='#' onclick='ws.doGetJsonSchema(" + a.id + "); return false;'>查看数据校验规则</a>&nbsp;&nbsp;";
 	            //curl
 	            //body += "||&nbsp;&nbsp;<a href='#' onclick='ws.doGenerateCURL(" + a.id + "); return false;'>生成cURL</a>&nbsp;&nbsp;";
