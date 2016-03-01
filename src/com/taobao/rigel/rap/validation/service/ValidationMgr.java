@@ -131,4 +131,22 @@ public interface ValidationMgr {
 	 * created on: 2016-01-08
 	 */
 	public String getCURLByActionId(long actionId);	
+	/**
+	 * 
+	 * 功能描述：保存对应API的saveMockdata
+	 * @param actionId API的id
+	 * @param mockdata mockdata内容
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-03-01
+	 */
+	public void saveMockdata(long actionId,String mockdata);
+	/**
+	 * 
+	 * 功能描述：为对应的项目批量生成mockdata
+	 * @param projectId 项目的id
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2015-03-01
+	 */
+	public void generateMockdataByProject(int projectId);
 }

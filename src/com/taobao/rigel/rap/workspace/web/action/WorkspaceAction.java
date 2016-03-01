@@ -513,6 +513,8 @@ public class WorkspaceAction extends ActionBase {
 					// async update batch jsonschem  added by liweiguang 2016-1-15
 					//System.out.println("in call....id:"+id);
 					validationMgr.generateJsonSchemaByProject(id);
+					//add by liweiguang 2016-03-01
+					validationMgr.generateMockdataByProject(id);
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}

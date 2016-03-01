@@ -3,12 +3,14 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html;charset=UTF8">
         <title></title>
+        <!--<script src="http://fn.uctest.local:8080/stat/js/core/jquery-2.1.0.min.js"></script>
+        <script src="http://127.0.0.1:8080/stat/js/core/util.js"></script>-->
         <style type="text/css">
             #container {margin:8px;}
             .param-table {background:#E6E6E6;border:1px solid #FFF;margin:12px 0;border-collapse:collapse;}
             .param-table th {background:gray;color:#FFF;font-size:14px;font-weight:bold;text-align:center;border:1px solid #FFF;}
-            .param-table td {border-collapse:collapse;border:1px solid #FFF;font-size:12px;}
-            .param-table .th-name {width:140px;}
+            .param-table td {border-collapse:collapse;border:1px solid #FFF;font-size:14px;height: 28px}
+            .param-table .th-name {width:200px;}
             .param-table .th-identifier {width:140px;}
             .param-table .th-type {width:100px;}
             .param-table .th-remark {width:200px;}
@@ -16,9 +18,9 @@
             .param-table .td-identifier {}
             .param-table .td-type {color:#990000;}
             .param-table .td-remark {color:#666;}
-            .param-table .tr-level-1 {background:#E6E6E6;}
-            .param-table .tr-level-2 {background:silver;}
-            .param-table .tr-level-3 {background:gray;}
+            .param-table .tr-level-1 {background:#b8def5;}
+            .param-table .tr-level-2 {background:#eddff3;}
+            .param-table .tr-level-3 {background:#e8f1df;}
             .param-table .tr-level-4 {background:silver;}
             .param-table .tr-level-5 {background:gray;}
             .param-table .tr-level-6 {background:silver;}
@@ -30,6 +32,7 @@
             .param-table .tr-level-12 {background:silver;}
             .param-table .tr-level-13 {background:gray;}
         </style>
+       
     </head>
     <body>
         <div id="container">
@@ -69,12 +72,16 @@
                             $action.requestParameterListHTML
                             <h3>响应参数列表:</h3>
                             $action.responseParameterListHTML
-                            </div>
+                            <h3>响应数据例子:</h3>
+	                            <div style="width:700px; height: 150px; overflow:auto;">
+	                            <pre>$action.mockdata</pre>
+	                            </div>
+                            </div>                            
                         #end
                     </div>
                 #end
             </div>
         #end
-        </div>
+        </div>       
     </body>
 </html>

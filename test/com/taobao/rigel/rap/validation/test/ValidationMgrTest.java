@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
@@ -26,7 +28,14 @@ import junit.framework.TestCase;
 
 public class ValidationMgrTest extends TestCase {
 	ApplicationContext context;
-
+	//@param url参数  
+	private static final String TAG_PARAM = "@param";
+	//@json body参数
+	private static final String TAG_JSON = "@json";
+	//@header header参数
+	private static final String TAG_HEADER = "@header";
+	//@form form-data参数
+	private static final String TAG_FORMDATA = "@form";
 	@Before
 	protected void setUp() throws Exception {
 		context = new FileSystemXmlApplicationContext(
@@ -38,8 +47,8 @@ public class ValidationMgrTest extends TestCase {
 		context = null;
 	}
 
-	//@Test
-	public void estValidationData() throws IOException, ProcessingException {
+	@Test
+	public void testValidationData() throws IOException, ProcessingException {
 		ValidationMgr valMgr = (ValidationMgr) context.getBean("validationMgr");
 		//action:3 url: /mobile/page/channel_short/1.1.1  短视频列表接口
 		/*for(int i=1 ;i<=70;i++){
@@ -55,18 +64,18 @@ public class ValidationMgrTest extends TestCase {
 		valMgr.saveJsonSchema(i, result);
 		*/
 
-		String param ="id=1&preview_nomc=1";
+		/*String param ="id=1&preview_nomc=1";
 		String requestUrl = "mobile/page/short/1.1.3";
 		String responseData=HttpRequest.sendGet("http://rvibll.test2.uae.uc.cn/" + requestUrl, param);		
 		System.out.println("responseData:"+ responseData);
 		
 		Map result2 = valMgr.validateAPIData(3, requestUrl, responseData);
 		System.out.println("result2:" + result2.get("message"));
-
+*/		//novel/i.php?do=qs_getjingsp
 		//String responseData = "{\"data\":[{\"name\":\"测试内容b7z6\",\"project_id\":68402,\"status\":1}],\"msg\":\"测试内容j85i\",\"result\":44877}";
-		/*String responseData = "{\"data\":[{\"name\":\"null\",\"project_id\":68402,\"status\":1}],\"msg\":null,\"result\":0}";
-		Map result2 = valMgr.validateAPIData(1, "project.php", responseData);
-		System.out.println("result2:" + result2.get("message"));*/
+		String responseData = "{\"status\": 1, \"info\": { \"page\": 1, \"size\": 10, \"count\": 1260, \"total\": 12598, \"visit_time\": 4821, \"spnum\": 81191}, \"data\": [{\"mid\": \"NOVELb022b4e4f55311e4a32c002590ab3e8c\", \"author\": \"天蚕土豆\",    \"title\": \"大主宰\", \"sm_uid\": \"5585662\", \"sm_name\": \"管理员小七\", \"sm_photo\": \"2\", \"uc_uid\": \"743862218\", \"is_top\": \"1\", \"is_jing\": \"0\", \"auto_jing\": \"1\", \"score\": 0, \"zan\": \"5464\",\"zan_time\": \"1456194325\", \"pub_time\": \"1431070051\", \"replynum\": \"1685\", \"replytime\": \"1456194331\", \"text_title\": \"\", \"text\": \"ss\"}], \"spend\": {\"total\": 0.0886 }}";
+		Map result2 = valMgr.validateAPIData(9, "novel/i.php?do=qs_getjingsp", responseData);
+		System.out.println("result2:" + result2.get("message"));
 		
 		//System.out.println(removeMockForField("field"));
 		//String requiredStr = "abced,";
@@ -187,7 +196,7 @@ public class ValidationMgrTest extends TestCase {
 		System.out.println("Action:" + a.getJsonschema());
 	}
 	
-	public void testFormatRules(){		
+	public void estFormatRules(){		
 		String raw = readFileByLines("D:\\RAP\\test\\testdata");
 		String result = "";
 		
@@ -242,4 +251,27 @@ public class ValidationMgrTest extends TestCase {
         }
         return result;
     }
+    
+	//从参数的名称字段获取对应的值，如从字段Accept-Language获取"@header{zh-CN,zh;q=0.8}"
+	public void estgetValueFromParamName(){
+		String name = "测试字段@header{zh-CN,zh;q=0.8}@v=NOT NULL;extra#abcd#";
+		StringBuilder value =new StringBuilder(); 
+		String tmp = name.substring(name.indexOf(TAG_HEADER)+7);
+		if (tmp.startsWith("{")){
+			char[] cs = tmp.toCharArray();
+			for (char c : cs ){
+				if (c =='{') continue;
+				if (c == '}') break;
+				value.append(c);
+			}
+		}
+
+		System.out.println("values:" + value.toString());
+	}
+	
+	public void estGenerateCURL(){
+		long actionId = 288;  //288 //1
+		ValidationMgr valMgr = (ValidationMgr) context.getBean("validationMgr");
+		System.out.println("cURL:" + valMgr.generateCURL(actionId));
+	}
 }

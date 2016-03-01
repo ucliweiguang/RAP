@@ -13,6 +13,10 @@
 		<param-value>classpath*:applicationContext.xml</param-value>
 	</context-param>
 	
+	<!-- 日常：https://login-test.alibaba-inc.com，线上：https://login.alibaba-inc.com -->
+	<!--prod: 3023e5c2-cdb0-45b5-af49-557401159209-->
+	<!--test: d455bcb3-2bb8-4a89-9141-8381b4309b20-->
+	
 	<filter>
 		<filter-name>ssoFilter</filter-name>
 		<filter-class>com.alibaba.buc.sso.client.filter.SSOFilter</filter-class>
@@ -27,26 +31,25 @@
 		<init-param>
 			<param-name>SSO_SERVER_URL</param-name>
 			<param-value>https://login-test.alibaba-inc.com</param-value>
-			<!-- 日常：https://login-test.alibaba-inc.com，线上：https://login.alibaba-inc.com -->
+			
 		</init-param>
 		<init-param>
 			<param-name>CLIENT_KEY</param-name>
 			<param-value>d455bcb3-2bb8-4a89-9141-8381b4309b20</param-value>
-			<!--prod: 3023e5c2-cdb0-45b5-af49-557401159209-->
-			<!--test: d455bcb3-2bb8-4a89-9141-8381b4309b20-->
+			
 		</init-param>
 		<init-param>
 			<param-name>EXCLUSIONS</param-name>
-			<param-value>/index.htm,/org/index.do,/platform/*,/account/*,*/img/*,*/css/*,*/js/*,*/fonts/*,/page.html,*/api/*,/rap.plugin.js</param-value>
+			<param-value>/index.htm,/org/index.do,/platform/*,/account/*,*/img/*,*/css/*,*/js/*,*/fonts/*,/page.html,*/api/*,/rap.plugin.js,*/mockjsdata/*</param-value>
 		</init-param>
 
 		<init-param>
-		    <!-- 返回完整的用户对象信息 -->
+		
 		    <param-name>RETURN_USER_EXTEND_INFO</param-name>
 		    <param-value>true</param-value>
 		</init-param>
 		<init-param>  
-      		<!--修改request和response的默认charset-->  
+      	
       		<param-name>ENCODING</param-name>  
       		<param-value>UTF-8</param-value>  
 		</init-param>

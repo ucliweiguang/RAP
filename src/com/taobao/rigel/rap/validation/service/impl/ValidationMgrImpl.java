@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import antlr.StringUtils;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jackson.JsonLoader;
@@ -17,6 +18,7 @@ import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.processors.syntax.SyntaxValidator;
 import com.github.fge.jsonschema.core.report.ProcessingMessage;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
+import com.taobao.rigel.rap.common.HTTPUtils;
 import com.taobao.rigel.rap.project.dao.ProjectDao;
 import com.taobao.rigel.rap.validation.service.ValidationMgr;
 import com.taobao.rigel.rap.project.bo.Action;
@@ -42,6 +44,15 @@ public class ValidationMgrImpl implements ValidationMgr {
 	private static final String TAG_FORMDATA = "@form";
 			
 	private ProjectDao projectDao;
+	private String rapdomain;
+
+	public String getRapdomain() {
+		return rapdomain;
+	}
+
+	public void setRapdomain(String rapdomain) {
+		this.rapdomain = rapdomain;
+	}
 
 	public ProjectDao getProjectDao() {
 		return projectDao;
@@ -654,4 +665,40 @@ public class ValidationMgrImpl implements ValidationMgr {
 		}
 		System.out.println("jsonschema update ok.");
 	}
+
+	@Override
+	public void saveMockdata(long actionId, String mockdata) {
+		Action action = getProjectDao().getAction(actionId);
+		action.setMockdata(mockdata);
+		action.update(action);			
+	}
+
+	@Override
+	public void generateMockdataByProject(int projectId) {
+		//通过项目id获取批量的action ids		
+		List<Integer> ids = getProjectDao().getActionIdsByProjectId(projectId);
+		//System.out.println("ids.size:"+ids.size());
+		for (Integer id : ids){
+			String path = getProjectDao().getAction(id).getRequestUrl();
+			String mockdata = generateMockdata(Long.parseLong(id.toString()),projectId,path);
+			saveMockdata(id, com.taobao.rigel.rap.common.StringUtils.formatJSON(mockdata));
+		}
+		System.out.println("mockdata update ok.");
+	}
+	
+	private String generateMockdata(long actionId,int projectId,String path){
+		String mockdata = null;
+		//http://fn.uctest.local:8080/mockjs/1/project.php
+		String url = rapdomain + "mockjsdata/" + projectId + "/" + path;
+		//System.out.println("url:" + url);
+		try {
+			mockdata = HTTPUtils.sendGet(url,"");			
+			//System.out.println("mockdata:" + new String(mockdata.getBytes(), "utf8"));
+			//System.out.println("mockdata:" + mockdata);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return mockdata;
+	}	
+
 }

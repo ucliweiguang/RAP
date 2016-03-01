@@ -234,6 +234,15 @@ public class Action implements java.io.Serializable {
 	private String pbrequest;
 	private String pbresponse;
 	private String cURL;
+	private String mockdata;
+	
+	public String getMockdata() {
+		return mockdata;
+	}
+
+	public void setMockdata(String mockdata) {
+		this.mockdata = mockdata;
+	}
 
 	public String getcURL() {
 		return cURL;

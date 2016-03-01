@@ -6,6 +6,9 @@
 	<bean id="validationMgr"
 		class="com.taobao.rigel.rap.validation.service.impl.ValidationMgrImpl">		
 		<property name="projectDao" ref="projectDao" />
+		<property name="rapdomain">
+			<value>${rap.domain}</value>
+		</property>
 	</bean>
 	<!-- 
 	<bean id="projectDao" class="com.taobao.rigel.rap.project.dao.impl.ProjectDaoImpl"
