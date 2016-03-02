@@ -485,6 +485,9 @@ public class ValidationMgrImpl implements ValidationMgr {
 		String requestType = action.getRequestType();
 		
 		StringBuilder cURL = new StringBuilder("curl 'http://yourdomain.com/");
+		if (path.startsWith("/")){
+    		path = path.substring(1);
+    	} 
 		cURL.append(path);
 		//遍历请求参数（递归），解析那几个自定义标签，以便组合curl内容串
 		cURL.append(constructCURL(requestType,parameters));
@@ -494,14 +497,14 @@ public class ValidationMgrImpl implements ValidationMgr {
 
 	//构造curl内容串	
 	private String constructCURL(String requestType,Set<Parameter> parameters){
-		if("1".equals(requestType)||"4".equals(requestType)||"6".equals(requestType)){
+		if("1".equals(requestType)|| "6".equals(requestType)){ //GET和PATCH方法
 			return constructCURLForGET(parameters);
 		} else {
-			return constructCURLForPOST(parameters);
+			return constructCURLForPOST(parameters,requestType);
 		}
 	}
 	
-	//适合于GET,DELETE,COPY类型的请求
+	//适合于GET,COPY类型的请求
 	//@param url参数 @json body参数 @header header参数 @form form-data参数
 	private String constructCURLForGET(Set<Parameter> parameters){
 		StringBuilder params = new StringBuilder("?");
@@ -540,6 +543,8 @@ public class ValidationMgrImpl implements ValidationMgr {
 				if (c == '}') break;
 				value.append(c);
 			}
+		} else {
+			return "mockvalue";
 		}
 		return value.toString();
 	}
@@ -563,8 +568,8 @@ public class ValidationMgrImpl implements ValidationMgr {
 		return param.toString();
 	}
 	
-	//适合与POST,PUT,PATCH类型的请求
-	private String constructCURLForPOST(Set<Parameter> parameters){
+	//适合与POST,PUT,PATCH，DELETE类型的请求
+	private String constructCURLForPOST(Set<Parameter> parameters,String requestType){
 		Iterator<Parameter> iter = parameters.iterator();
 		StringBuilder cURL = new StringBuilder();
 		StringBuilder headers = new StringBuilder();
@@ -595,6 +600,15 @@ public class ValidationMgrImpl implements ValidationMgr {
 		datas.append("}'");
 		
 		cURL.append(params.toString()); //url参数
+		//插入方法标识，如 -X DELETE 
+		//接口类型：2-POST,3-PUT,4-DELETE,5-PATCH
+		if ("3".equals(requestType)){
+			cURL.append(" -X PUT ");
+		} else if ("4".equals(requestType)){
+			cURL.append(" -X DELETE ");
+		} else if ("5".equals(requestType)){
+			cURL.append(" -X PATCH ");
+		}
 		cURL.append(headers.toString());//header参数
 		cURL.append(datas.toString());//body 参数
 		return cURL.toString();
@@ -634,6 +648,7 @@ public class ValidationMgrImpl implements ValidationMgr {
 		}
 		//考虑去掉最后一个逗号
 		String result = datas.toString();
+		if ("".equals(result)) return "";
 		
 		return result.substring(0, result.length()-1);
 	}
@@ -689,7 +704,10 @@ public class ValidationMgrImpl implements ValidationMgr {
 	private String generateMockdata(long actionId,int projectId,String path){
 		String mockdata = null;
 		//http://fn.uctest.local:8080/mockjs/1/project.php
-		String url = rapdomain + "mockjsdata/" + projectId + "/" + path;
+    	if (path.startsWith("/")){
+    		path = path.substring(1);
+    	} 
+		String url = rapdomain + "mockjsdata/" + projectId + "/" + removeSpecialPart(path);
 		//System.out.println("url:" + url);
 		try {
 			mockdata = HTTPUtils.sendGet(url,"");			
@@ -700,5 +718,23 @@ public class ValidationMgrImpl implements ValidationMgr {
 		}
 		return mockdata;
 	}	
+	
+	//处理路径部分带冒号的path
+	private String removeSpecialPart(String path){
+		String[] paths = path.split("/");
+    	//将冒号开头的路径部分替换成100
+    	for (int i=0;i<paths.length;i++){
+    		if(paths[i].startsWith(":")){
+    			paths[i] = "100";
+    		}
+    	}
+    	//再将原路径拼回去
+        String newPath = "";
+        for (int i=0;i<paths.length;i++){
+        	newPath += paths[i] + "/";
+        }
+        newPath = newPath.substring(0, newPath.length()-1);
+        return newPath;
+	}
 
 }

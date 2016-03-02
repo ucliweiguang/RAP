@@ -66,8 +66,11 @@
                             <h3>请求路径:</h3>
                             <div>$action.requestUrl</div>
                             <h3>描述:</h3>
-                            <div>$action.description<br><br>
-                            <b>cURL内容:</b><br>$action.cURL</div>
+                                <div style="overflow:auto;width:auto;height:auto">
+	                            <pre>$action.description</pre>
+	                            </div>    
+                            <h3>cURL内容:</h3>
+                            <div>$action.cURL</div>
                             <h3>请求参数列表:</h3>
                             $action.requestParameterListHTML
                             <h3>响应参数列表:</h3>
