@@ -76,7 +76,8 @@
                             <h3>响应参数列表:</h3>
                             $action.responseParameterListHTML
                             <h3>响应数据例子:</h3>
-	                            <div style="width:700px; height: 150px; overflow:auto;">
+	                            <!--<div style="width:700px; height: 150px; overflow:auto;">-->
+	                            <div style="background-color: #F7EED6; display:table; padding:0px 30px">
 	                            <pre>$action.mockdata</pre>
 	                            </div>
                             </div>                            
