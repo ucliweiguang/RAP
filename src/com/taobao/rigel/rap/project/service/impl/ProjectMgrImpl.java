@@ -169,11 +169,11 @@ public class ProjectMgrImpl implements ProjectMgr {
 			}
 		}
 		
-		//added by liweiguang 2016-1-18
-		//先批量删除当前项目中access_level=2的旧记录
-		projectDao.deleteProjectUser(outerProject.getId(), 2);
-		//然后再逐个增加
+		//added by liweiguang 2016-1-18		
 		if (outerProject.getReadonlyMemberAccountList() != null){
+			//先批量删除当前项目中access_level=2的旧记录
+			projectDao.deleteProjectUser(outerProject.getId(), 2);
+			//然后再逐个增加			
 			for (String account : outerProject.getReadonlyMemberAccountList()) {
 				User user = accountDao.getUser(account);
 				if (user != null) {
