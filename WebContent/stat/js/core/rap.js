@@ -4048,7 +4048,7 @@ function deepCopy(o) {
                         page.id + "); return false;\"><i class=\"glyphicon glyphicon-pencil\"></i></a><a href=\"#\" class=\"del-link\" onclick=\"ws.removeP(" +
                         page.id + "); return false;\"><i class=\"glyphicon glyphicon-trash\"></i></a></span>";
                 }
-                str += (page.isIdGenerated ? '' : '<a class="test-link" href="' + URL.pageTester + '?id=' + page.id + '" target="_blank"><i class="glyphicon glyphicon-step-forward"></i></a>');
+                str += (page.isIdGenerated ? '' : '<a class="test-link" href="' + URL.pageTester + '?id=' + page.id + '" target="_blank"><i class="glyphicon glyphicon-step-forward" title="查看Mock数据"></i></a>');
                 str += "</label>";
                 for (var j = 0; j < actionListNum; j++) {
                     var action = actionList[j];
