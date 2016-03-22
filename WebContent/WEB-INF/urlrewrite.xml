@@ -40,6 +40,16 @@
 	</rule>
 	<rule>
 		<note>
+			new mockjs result service, support http method
+		</note>
+		<from>^/newmockjsdata/(\d*?)/(GET|POST|PUT|DELETE|PATCH|COPY?)/(.*)$</from>
+		<to>/mock/createMockjsData.action?id=$1&amp;method=$2&amp;pattern=/${escape:utf8:$3}</to>
+		<set type="response-header" name="Access-Control-Allow-Origin">*</set>
+		<set type="response-header" name="Access-Control-Allow-Headers">Origin, X-Requested-With, Content-Type, Accept</set>
+	</rule>
+	
+	<rule>
+		<note>
 			mockjs result service
 		</note>
 		<from>^/mockjsdataauto/(\d*?)/(.*)$</from>

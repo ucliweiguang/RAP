@@ -695,20 +695,21 @@ public class ValidationMgrImpl implements ValidationMgr {
 		//System.out.println("ids.size:"+ids.size());
 		for (Integer id : ids){
 			String path = getProjectDao().getAction(id).getRequestUrl();
-			String mockdata = generateMockdata(Long.parseLong(id.toString()),projectId,path);
+			String requesttype = getProjectDao().getAction(id).getRequestType();
+			String mockdata = generateMockdata(Long.parseLong(id.toString()),projectId,path,getRequesttypeById(Integer.parseInt(requesttype)));
 			saveMockdata(id, com.taobao.rigel.rap.common.StringUtils.formatJSON(mockdata));
 		}
 		System.out.println("mockdata update ok.");
 	}
 	
-	private String generateMockdata(long actionId,int projectId,String path){
+	private String generateMockdata(long actionId,int projectId,String path,String method){
 		String mockdata = null;
 		//http://fn.uctest.local:8080/mockjs/1/project.php
     	if (path.startsWith("/")){
     		path = path.substring(1);
     	} 
-		String url = rapdomain + "mockjsdata/" + projectId + "/" + removeSpecialPart(path);
-		//System.out.println("url:" + url);
+		String url = rapdomain + "newmockjsdata/" + projectId +"/" + method + "/" + removeSpecialPart(path);
+		System.out.println("url:" + url);
 		try {
 			mockdata = HTTPUtils.sendGet(url,"");			
 			//System.out.println("mockdata:" + new String(mockdata.getBytes(), "utf8"));
@@ -735,6 +736,25 @@ public class ValidationMgrImpl implements ValidationMgr {
         }
         newPath = newPath.substring(0, newPath.length()-1);
         return newPath;
+	}
+	
+	private String getRequesttypeById(int id){
+		String result = "GET";
+		////接口类型：1-GET,2-POST,3-PUT,4-DELETE,5-PATCH,6-COPY
+		if (id == 1){
+			result = "GET";
+		} else if (id == 2){
+			result = "POST";
+		} else if (id == 3){
+			result = "PUT";
+		} else if (id == 4){
+			result = "DELETE";
+		} else if (id == 5){
+			result = "PATCH";
+		} else if (id == 6){
+			result = "COPY";
+		}			
+		return result;
 	}
 
 }

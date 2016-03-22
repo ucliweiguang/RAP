@@ -42,6 +42,11 @@ public class MockAction extends ActionBase {
 	private boolean disableLog;
 	private String mode;
 	private MockMgr mockMgr;
+	private String method;
+
+	public void setMethod(String method) {
+		this.method = method;
+	}
 
 	public boolean isDisableLog() {
 		return disableLog;
@@ -60,7 +65,8 @@ public class MockAction extends ActionBase {
 	}
 
 	private String getMethod() {
-		return ServletActionContext.getRequest().getMethod();
+		//return ServletActionContext.getRequest().getMethod();
+		return method;
 	}
 
 	public ProjectMgr getProjectMgr() {
@@ -338,7 +344,11 @@ public class MockAction extends ActionBase {
         SystemVisitorLog.mock(id, "createMockjsData", pattern, getCurAccount(), projectMgr);
 		String _c = get_c();
 		Map<String, Object> options = new HashMap<String, Object>();
-		options.put("method", getMethod());
+		
+		//options.put("method", getMethod());  //commented by liweiguang
+		//System.out.println("method:"+method);
+		options.put("method", method);  //added by liweiguang  2016-03-22 
+		
 		String result = mockMgr.generateRuleData(id, pattern, options);
 		if (options.get("callback") != null) {
 			_c = (String) options.get("callback");
