@@ -709,7 +709,7 @@ public class ValidationMgrImpl implements ValidationMgr {
     		path = path.substring(1);
     	} 
 		String url = rapdomain + "newmockjsdata/" + projectId +"/" + method + "/" + removeSpecialPart(path);
-		System.out.println("url:" + url);
+		//System.out.println("url:" + url);
 		try {
 			mockdata = HTTPUtils.sendGet(url,"");			
 			//System.out.println("mockdata:" + new String(mockdata.getBytes(), "utf8"));
