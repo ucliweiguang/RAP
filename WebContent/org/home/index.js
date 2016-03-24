@@ -173,6 +173,14 @@ $(function() {
         window.open(atadomain + '?projectId=' + projId);
     }
 
+    //编辑项目API通用信息
+    function handleEditProjectCommonInfoClick(){
+    	var box = $(this);
+        box = box.parents('.box');
+    	var projId = box.data('projid');
+    	window.open('../ueditor/index.html?projectId=' + projId,'','menubar=no, scrollbars=no, location=no, status=no');
+    }
+    
     function handleEditProjectClick() {
         var id = $(this).data('id');
         var box = $(this).parents('.box');
@@ -450,6 +458,7 @@ $(function() {
         .delegate('.box .info, .box .tools .glyphicon-eye-open', 'click', handleViewProjectClick)
         .delegate('.box-to-add', 'click', handleAddClick)
         .delegate('.box .glyphicon-pencil', 'click', handleEditProjectClick)
+        .delegate('.box .glyphicon-file', 'click', handleEditProjectCommonInfoClick)
         .delegate('.box .glyphicon-export', 'click', handleRapPluginClick)
         .delegate('.create-productline', 'click', handleCreateProductline)
         .delegate('.create-group', 'click', handleCreateGroup)

@@ -57,6 +57,11 @@
 				<comment>项目数据(json)，用于VSS同步模式</comment>
 			</column>
 		</property>
+		<property name="commondesc" type="string">
+			<column name="commondesc">
+				<comment>项目API通用信息</comment>
+			</column>
+		</property>
 		<many-to-one name="user" column="user_id" />
 		<set name="userList" order-by="user_id asc" table="tb_project_and_user" where="access_level=1">
 			<key column="project_id" not-null="true" />

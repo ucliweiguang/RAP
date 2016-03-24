@@ -34,8 +34,17 @@ public class Project implements java.io.Serializable {
 	private String relatedIds = "";
 	private int groupId;
     private int mockNum;
+    private String commondesc;
 
-    public void setMockNum(int mockNum) {
+    public String getCommondesc() {
+		return commondesc;
+	}
+
+	public void setCommondesc(String commondesc) {
+		this.commondesc = commondesc;
+	}
+
+	public void setMockNum(int mockNum) {
         this.mockNum = mockNum;
     }
 

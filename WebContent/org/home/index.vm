@@ -60,7 +60,10 @@
 				<div class="star"><i class="glyphicon glyphicon-star"></i></div>
 			{{/important}}
 			<div class="tools">
-				{{#isManagable}}<i class="glyphicon glyphicon-pencil" data-id="{{id}}" title="修改项目基本信息，分配用户访问权限"></i>{{/isManagable}}
+				{{#isManagable}}
+				<i class="glyphicon glyphicon-pencil" data-id="{{id}}" title="修改项目基本信息，分配用户访问权限"></i>
+				<i class="glyphicon glyphicon-file" data-id="{{id}}" title="编辑项目API通用信息"></i>
+				{{/isManagable}}
 				<!--<i class="glyphicon glyphicon-export" data-id="{{id}}" title="复制RAP插件地址"></i>-->
 				<!--<i class="glyphicon glyphicon-eye-open" data-id="{{id}}"></i>-->
 				{{#isManagable}}<!--<i class="glyphicon glyphicon-trash" data-id="{{id}}"></i>-->{{/isManagable}}
@@ -87,6 +90,7 @@
             <div class="status">{{status}}<span class="creator">@{{creator.name}}</span></div>
 			<div class="tools">
 				<i class="glyphicon glyphicon-pencil" data-id="{{id}}"  title="修改项目基本信息，分配用户访问权限"></i>
+				<i class="glyphicon glyphicon-file" data-id="{{id}}" title="编辑项目API通用信息"></i>
 				<!--<i class="glyphicon glyphicon-export" data-id="{{id}}" title="复制RAP插件地址"></i>-->
 				<!--<i class="glyphicon glyphicon-eye-open" data-id="{{id}}"></i>-->
 				<!--<i class="glyphicon glyphicon-trash" data-id="{{id}}"></i>-->

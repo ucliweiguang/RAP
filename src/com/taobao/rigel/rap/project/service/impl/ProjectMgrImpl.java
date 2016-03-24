@@ -405,4 +405,15 @@ public class ProjectMgrImpl implements ProjectMgr {
 	public List<ProjectUser> getAllProjectUser(int projectId) {
 		return projectDao.getAllProjectUser(projectId);
 	}
+
+	@Override
+	public int updateCommonDesc(int projectId, String commonDesc) {
+		return projectDao.updateCommonDesc(projectId, commonDesc);
+	}
+
+	@Override
+	public String getCommonDesc(int projectId) {
+		return projectDao.getCommonDesc(projectId);
+	}
+	
 }

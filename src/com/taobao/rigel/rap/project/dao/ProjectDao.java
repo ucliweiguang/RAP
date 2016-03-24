@@ -200,4 +200,23 @@ public interface ProjectDao {
 	 * created on: 2016-1-18
 	 */
 	public void createProjectUser(int projectId,int accesslevel,long userId);
+	/**
+	 * 
+	 * 功能描述：更新项目API的通用信息
+	 * @param projectId
+	 * @param commonDesc 项目API的通用信息
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-3-23
+	 */
+	public int updateCommonDesc(int projectId,String commonDesc);
+	/**
+	 * 
+	 * 功能描述：获取项目API的通用信息
+	 * @param projectId
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-3-23
+	 */
+	public String getCommonDesc(int projectId);
 }

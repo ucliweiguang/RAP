@@ -196,5 +196,20 @@ public class ActionBase extends ActionSupport {
 	public void plsLogin() {
 		setErrMsg("请先登录");
 	}
+	
+	private String text;//一般文本
+
+	public String getText() {
+		if (text == null){
+			return "";
+		}
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
+	}
+	
+	
 
 }

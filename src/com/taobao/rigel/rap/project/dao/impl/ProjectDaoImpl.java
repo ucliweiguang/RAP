@@ -644,5 +644,19 @@ public class ProjectDaoImpl extends HibernateDaoSupport implements ProjectDao {
 		pu.setProjectId(projectId);
 		pu.setUserId(userId);
 		session.save(pu);		
-	}    
+	}
+	
+	//更新项目API的通用信息
+	public int updateCommonDesc(int projectId,String commonDesc) {		
+		String sql = "UPDATE tb_project SET commondesc = :commondesc where id=:projectId";
+		Query query = getSession().createSQLQuery(sql);
+		query.setString("commondesc", commonDesc);
+		query.setInteger("projectId", projectId);
+		return query.executeUpdate();
+	}
+	//获取项目API的通用信息
+	public String getCommonDesc(int projectId){    	
+    	Project project = getProject(projectId);    	
+    	return project.getCommondesc();
+	}
 }

@@ -123,6 +123,16 @@ public class ProjectAction extends ActionBase {
 	public void setAccounts(String accounts) {
 		this.accounts = accounts;
 	}
+	
+	private String commonDesc;	
+	
+	public String getCommonDesc() {
+		return commonDesc;
+	}
+
+	public void setCommonDesc(String commonDesc) {
+		this.commonDesc = commonDesc;
+	}
 
 	public List<String> getMemberAccountList() {
 		List<String> memberList = new ArrayList<String>();
@@ -407,4 +417,30 @@ public class ProjectAction extends ActionBase {
 		return SUCCESS;
 	}
 
+	public String updateCommonDesc() {
+		if (!isUserLogined())
+			return LOGIN;
+		if (!getAccountMgr().canUserManageProject(getCurUserId(), getId())) {
+			setErrMsg("您没有管理该项目的权限");
+			return ERROR;
+		}		
+		//System.out.println("getId():"+getId()+"==>commonDesc:"+getCommonDesc());
+		projectMgr.updateCommonDesc(getId(),getCommonDesc());		
+		return SUCCESS;
+	}
+	
+	public String showCommonDesc() {
+		if (!isUserLogined())
+			return LOGIN;
+		if (!getAccountMgr().canUserManageProject(getCurUserId(), getId())) {
+			setErrMsg("您没有管理该项目的权限");
+			return ERROR;
+		}			
+		String commonDesc = projectMgr.getCommonDesc(getId());	
+		//System.out.println("commonDesc:"+commonDesc);
+		//Gson gson = new Gson();
+		//setJson(gson.toJson(commonDesc));
+		setText(commonDesc);
+		return SUCCESS;
+	}
 }

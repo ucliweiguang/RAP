@@ -36,6 +36,12 @@
     </head>
     <body>
         <div id="container">
+        #if($project.commondesc) 
+        	<h1>项目API通用信息</h1>
+        	$project.commondesc
+        	<hr>
+        #end  
+        
         #foreach($module in $project.moduleListOrdered)
             #set($moduleNo = $velocityCount)
             <div class="module">
