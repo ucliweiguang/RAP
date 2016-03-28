@@ -1,11 +1,16 @@
 package com.taobao.rigel.rap.project.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.taobao.rigel.rap.common.CacheUtils;
+import com.taobao.rigel.rap.common.Param;
 import com.taobao.rigel.rap.common.URLUtils;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Query;
@@ -149,9 +154,9 @@ public class ProjectDaoImpl extends HibernateDaoSupport implements ProjectDao {
 		Session session = getSession();
 		// StringBuilder log = new StringBuilder();
 		Gson gson = new Gson();
-
-		Project projectClient = gson.fromJson(projectData, Project.class);
-
+		//System.out.println("projectData:"+projectData);
+		Project projectClient = gson.fromJson(projectData, Project.class);		
+		
 		ObjectItem[] deletedObjectList = gson.fromJson(deletedObjectListData,
 				ObjectItem[].class);
 
@@ -197,7 +202,12 @@ public class ProjectDaoImpl extends HibernateDaoSupport implements ProjectDao {
 					}
 					actionServer.update(action);
                     CacheUtils.removeCacheByActionId(action.getId());
-					for (Parameter parameter : action.getRequestParameterList()) {
+                    
+                    //added by liweiguang
+                    Set<Parameter> requestParameters = sortFields(action.getRequestParameterList());
+                    //
+					//for (Parameter parameter : action.getRequestParameterList()) {
+					for (Parameter parameter : requestParameters) {
 						Parameter parameterServer = projectServer
 								.findParameter(parameter.getId(), true);
 						if (parameterServer == null) {
@@ -205,15 +215,21 @@ public class ProjectDaoImpl extends HibernateDaoSupport implements ProjectDao {
 							continue;
 						}
 						parameterServer.update(parameter);
-						for (Parameter childParameter : parameter
-								.getParameterList()) {
+						
+						//added by liweiguang
+	                    Set<Parameter> childrequestParameters = sortFields(parameter.getParameterList());
+	                    //
+	                    //for (Parameter childParameter : parameter.getParameterList()) {
+						for (Parameter childParameter :childrequestParameters) {
 							processParameterRecursively(session, projectServer,
 									parameter, childParameter);
 						}
 					}
-
-					for (Parameter parameter : action
-							.getResponseParameterList()) {
+					//added by liweiguang
+                    Set<Parameter> responseParameters = sortFields(action.getResponseParameterList());
+                    //
+                    //for (Parameter parameter : action.getResponseParameterList()) {
+					for (Parameter parameter : responseParameters) {
 						Parameter parameterServer = projectServer
 								.findParameter(parameter.getId(), false);
 						if (parameterServer == null) {
@@ -221,8 +237,11 @@ public class ProjectDaoImpl extends HibernateDaoSupport implements ProjectDao {
 							continue;
 						}
 						parameterServer.update(parameter);
-						for (Parameter childParameter : parameter
-								.getParameterList()) {
+						//added by liweiguang
+	                    Set<Parameter> childresponseParameters = sortFields(parameter.getParameterList());
+	                    //
+	                    //for (Parameter childParameter : parameter.getParameterList()) {
+						for (Parameter childParameter : childresponseParameters) {
 							processParameterRecursively(session, projectServer,
 									parameter, childParameter);
 						}
@@ -233,6 +252,32 @@ public class ProjectDaoImpl extends HibernateDaoSupport implements ProjectDao {
 		return "";
 	}
 
+	private Set<Parameter> sortFields(Set<Parameter> fields){
+		//List<Action> actions = projectClient.getAllAction();
+		//Action a = actions.get(0);
+		//Set<Parameter> params = a.getRequestParameterList();
+		SortedSet<Parameter> result = new TreeSet<Parameter>(new Comparator<Parameter>() {
+			@Override
+			public int compare(Parameter o1, Parameter o2) {
+
+				if (o1.getId() > o2.getId()){
+					return 1;
+				} else if (o1.getId() < o2.getId()){
+					return -1;
+				} else{
+					return 0;
+				}				
+			}
+			
+		});
+		result.addAll(fields);
+		/*for (Parameter p : result){
+			System.out.println("para:" + p.getId());
+			System.out.println("para.getIdentifier:" + p.getIdentifier());
+		}*/
+		return result;		
+	}
+	
 	private void processParameterRecursively(Session session,
 			Project projectServer, Parameter parameter, Parameter childParameter) {
 		Parameter childParameterServer = projectServer
@@ -242,8 +287,11 @@ public class ProjectDaoImpl extends HibernateDaoSupport implements ProjectDao {
 		} else {
 			childParameterServer.update(childParameter);
 		}
-		for (Parameter childOfChildParameter : childParameter
-				.getParameterList()) {
+		//added by liweiguang
+        Set<Parameter> childrequestParameters = sortFields(childParameter.getParameterList());
+        //
+        //for (Parameter childOfChildParameter : childParameter.getParameterList()) {
+		for (Parameter childOfChildParameter : childrequestParameters) {
 			processParameterRecursively(session, projectServer, childParameter,
 					childOfChildParameter);
 		}

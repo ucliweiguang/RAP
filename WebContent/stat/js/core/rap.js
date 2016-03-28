@@ -1107,7 +1107,10 @@ function deepCopy(o) {
      * [todo] generate unique id, this algorithm may have problem.
      */
     function generateId() {
-        return (new Date()).getTime() - 1283136075795 + (_generateCounter++);
+        //return (new Date()).getTime() - 1283136075795 + (_generateCounter++);
+    	var id = (new Date()).getTime() + (_generateCounter++);
+    	//console.log("generateId:"+Number(id.toString().substring(4)));
+    	return Number(id.toString().substring(4));
     }
 
     /**
@@ -4129,8 +4132,8 @@ function deepCopy(o) {
                 breaker = true;
 
 
-            sortParams(requestParameterList);
-            sortParams(responseParameterList);
+            //sortParams(requestParameterList);
+            //sortParams(responseParameterList);
 
             str += getAInfoHtml(a);
 

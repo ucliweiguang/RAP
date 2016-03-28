@@ -8,7 +8,8 @@ public class ParameterComparator implements Comparator<Parameter> {
 	public int compare(Parameter o1, Parameter o2) {
 		Parameter l = (Parameter) o1;
 		Parameter r = (Parameter) o2;
-		return l.getId() < r.getId() ? 0 : 1;
+		//return l.getId() < r.getId() ? 0 : 1;
+		return l.getId() > r.getId() ? 1 : -1;
 	}
 
 }
