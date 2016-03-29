@@ -83,6 +83,10 @@
                         配置
                     </button>
                     -->
+                    <button id="btnToCommonDescPage" type="button" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" onclick="window.open('/ueditor/viewCommonDesc.html?projectId=$!projectId');" title="通用信息">
+                        <span class="glyphicon glyphicon-file"></span>
+                        通用信息
+                    </button>
                     
                     
                     <div class="btn-group">
