@@ -1,4 +1,4 @@
-/*!
+/*
  * UEditor
  * version: ueditor
  * build: Tue Aug 25 2015 15:27:16 GMT+0800 (CST)

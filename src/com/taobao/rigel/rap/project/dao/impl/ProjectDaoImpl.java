@@ -192,6 +192,7 @@ public class ProjectDaoImpl extends HibernateDaoSupport implements ProjectDao {
 				}
 				pageServer.update(page);
 				for (Action action : page.getActionList()) {
+					//System.out.println("action.id:"+action.getId());
 					Action actionServer = projectServer.findAction(action
 							.getId());
 					if (actionServer == null) {
@@ -202,7 +203,7 @@ public class ProjectDaoImpl extends HibernateDaoSupport implements ProjectDao {
 					}
 					actionServer.update(action);
                     CacheUtils.removeCacheByActionId(action.getId());
-                    
+                    //System.out.println("action.name:"+action.getName());
                     //added by liweiguang
                     Set<Parameter> requestParameters = sortFields(action.getRequestParameterList());
                     //
@@ -318,10 +319,15 @@ public class ProjectDaoImpl extends HibernateDaoSupport implements ProjectDao {
 		page = (Page) session.load(Page.class, page.getId());
 		page.addAction(action);
 		long createdId = (Long)session.save(action);
-		for (Parameter parameter : action.getRequestParameterList()) {
+		Set<Parameter> requestParameters = sortFields(action.getRequestParameterList());
+		//for (Parameter parameter : action.getRequestParameterList()) {
+		for (Parameter parameter : requestParameters) {
 			addParameter(session, action, parameter, true);
 		}
-		for (Parameter parameter : action.getResponseParameterList()) {
+		
+		Set<Parameter> responseParameters = sortFields(action.getResponseParameterList());
+		//for (Parameter parameter : action.getResponseParameterList()) {
+		for (Parameter parameter : responseParameters) {
 			addParameter(session, action, parameter, false);
 		}
 		return createdId;
@@ -332,7 +338,10 @@ public class ProjectDaoImpl extends HibernateDaoSupport implements ProjectDao {
 		action = (Action) session.load(Action.class, action.getId());
 		action.addParameter(parameter, isRequest);
 		session.save(parameter);
-		for (Parameter childParameter : parameter.getParameterList()) {
+		
+		Set<Parameter> parameters = sortFields(parameter.getParameterList());
+		//for (Parameter childParameter : parameter.getParameterList()) {
+		for (Parameter childParameter : parameters) {
 			addParameterRecursively(session, parameter, childParameter);
 		}
 	}
@@ -353,8 +362,10 @@ public class ProjectDaoImpl extends HibernateDaoSupport implements ProjectDao {
 				.load(Parameter.class, parameter.getId());
 		parameter.addChild(childParameter);
 		session.save(childParameter);
-		for (Parameter childOfChildParameter : childParameter
-				.getParameterList()) {
+		
+		Set<Parameter> parameters = sortFields(childParameter.getParameterList());
+		//for (Parameter childOfChildParameter : childParameter.getParameterList()) {
+		for (Parameter childOfChildParameter : parameters) {
 			addParameterRecursively(session, childParameter,
 					childOfChildParameter);
 		}
