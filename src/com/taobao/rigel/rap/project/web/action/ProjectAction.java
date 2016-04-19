@@ -1,8 +1,13 @@
 package com.taobao.rigel.rap.project.web.action;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,12 +15,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.struts2.ServletActionContext;
+import org.apache.tomcat.util.http.fileupload.DiskFileUpload;
+
 import com.google.gson.Gson;
 import com.taobao.rigel.rap.account.bo.User;
 import com.taobao.rigel.rap.auto.generate.bo.VelocityTemplateGenerator;
 import com.taobao.rigel.rap.auto.generate.contract.Generator;
 import com.taobao.rigel.rap.common.ActionBase;
 import com.taobao.rigel.rap.common.RapError;
+import com.taobao.rigel.rap.project.bo.CommonModel;
 import com.taobao.rigel.rap.project.bo.Page;
 import com.taobao.rigel.rap.project.bo.Project;
 import com.taobao.rigel.rap.project.service.ProjectMgr;
@@ -26,14 +35,14 @@ public class ProjectAction extends ActionBase {
 	private int id;
 
 	private List<Project> searchResult;
-	
+
 	private String ids;
 
 	public String getIds() {
 		if (ids == null || ids.isEmpty()) {
 			return "";
 		}
-		
+
 		String[] idList = ids.split(",");
 		String returnVal = "";
 		Integer num = 0;
@@ -46,9 +55,9 @@ public class ProjectAction extends ActionBase {
 					returnVal += ",";
 				}
 				returnVal += num.toString();
-			
+
 			} catch (Exception ex) {
-				
+
 			}
 		}
 		return returnVal;
@@ -93,7 +102,7 @@ public class ProjectAction extends ActionBase {
 	}
 
 	private String accounts;
-	
+
 	private String readonlyaccounts;
 
 	public String getReadonlyaccounts() {
@@ -123,9 +132,9 @@ public class ProjectAction extends ActionBase {
 	public void setAccounts(String accounts) {
 		this.accounts = accounts;
 	}
-	
-	private String commonDesc;	
-	
+
+	private String commonDesc;
+
 	public String getCommonDesc() {
 		return commonDesc;
 	}
@@ -249,7 +258,6 @@ public class ProjectAction extends ActionBase {
 		this.projectData = projectData;
 	}
 
-
 	public String delete() {
 		if (!isUserLogined())
 			return LOGIN;
@@ -275,8 +283,8 @@ public class ProjectAction extends ActionBase {
 		String[] list = getAccounts().split(",");
 		// format: mashengbo(大灰狼堡森), linpanhui(林攀辉),
 		for (String item : list) {
-			String account = item.contains("(") ? item.substring(0,
-					item.indexOf("(")).trim() : item.trim();
+			String account = item.contains("(") ? item.substring(0, item.indexOf("(")).trim()
+												: item.trim();
 			if (!account.equals(""))
 				memberAccountList.add(account);
 		}
@@ -311,32 +319,31 @@ public class ProjectAction extends ActionBase {
 		String[] list = getAccounts().split(",");
 		// format: mashengbo(大灰狼堡森), linpanhui(林攀辉),
 		for (String item : list) {
-			String account = item.contains("(") ? item.substring(0,
-					item.indexOf("(")).trim() : item.trim();
+			String account = item.contains("(") ? item.substring(0, item.indexOf("(")).trim()
+												: item.trim();
 			if (!account.equals(""))
 				memberAccountList.add(account);
 		}
-		
+
 		//added by liweiguang 2016-1-18
 		List<String> readonlymemberAccountList = new ArrayList<String>();
-		String[] readonlylist =getReadonlyaccounts().split(",");
+		String[] readonlylist = getReadonlyaccounts().split(",");
 		for (String item : readonlylist) {
-			String account = item.contains("(") ? item.substring(0,
-					item.indexOf("(")).trim() : item.trim();
+			String account = item.contains("(") ? item.substring(0, item.indexOf("(")).trim()
+												: item.trim();
 			if (!account.equals(""))
 				readonlymemberAccountList.add(account);
 		}
 		//added by liweiguang 2016-1-18 end
-		
+
 		Gson gson = new Gson();
 		project.setMemberAccountList(memberAccountList);
 		project.setReadonlyMemberAccountList(readonlymemberAccountList);//added by liweiguang 2016-1-18 end
-		
+
 		projectMgr.updateProject(project);
 		project = projectMgr.getProject(project.getId());
 
-		if (getCurUser().isUserInRole("admin")
-				|| getCurUser().getId() == project.getUser().getId()) {
+		if (getCurUser().isUserInRole("admin") || getCurUser().getId() == project.getUser().getId()) {
 			project.setIsManagable(true);
 		}
 
@@ -352,7 +359,7 @@ public class ProjectAction extends ActionBase {
 		setJson(new RapError(gson.toJson(result)).toString());
 		return SUCCESS;
 	}
-	
+
 	public String updateReleatedIds() {
 		if (!isUserLogined())
 			return LOGIN;
@@ -360,11 +367,11 @@ public class ProjectAction extends ActionBase {
 			setErrMsg("您没有管理该项目的权限");
 			return ERROR;
 		}
-		
+
 		Project project = projectMgr.getProject(getId());
 		project.setRelatedIds(getIds());
 		projectMgr.updateProject(project);
-		
+
 		return SUCCESS;
 	}
 
@@ -388,14 +395,12 @@ public class ProjectAction extends ActionBase {
 		this.outputStream = outputStream;
 	}
 
-	public String autoGenerate() throws FileNotFoundException,
-			UnsupportedEncodingException {
+	public String autoGenerate() throws FileNotFoundException, UnsupportedEncodingException {
 		Generator generator = new VelocityTemplateGenerator();
 		Page page = projectMgr.getPage(getPageId());
 		generator.setObject(page);
 		String exportFileString = generator.doGenerate();
-		outputStream = new ByteArrayInputStream(
-				exportFileString.getBytes("UTF8"));
+		outputStream = new ByteArrayInputStream(exportFileString.getBytes("UTF8"));
 		return SUCCESS;
 	}
 
@@ -423,24 +428,108 @@ public class ProjectAction extends ActionBase {
 		if (!getAccountMgr().canUserManageProject(getCurUserId(), getId())) {
 			setErrMsg("您没有管理该项目的权限");
 			return ERROR;
-		}		
+		}
 		//System.out.println("getId():"+getId()+"==>commonDesc:"+getCommonDesc());
-		projectMgr.updateCommonDesc(getId(),getCommonDesc());		
+		projectMgr.updateCommonDesc(getId(), getCommonDesc());
 		return SUCCESS;
 	}
-	
+
 	public String showCommonDesc() {
 		if (!isUserLogined())
 			return LOGIN;
 		if (!getAccountMgr().canUserManageProject(getCurUserId(), getId())) {
 			setErrMsg("您没有管理该项目的权限");
 			return ERROR;
-		}			
-		String commonDesc = projectMgr.getCommonDesc(getId());	
+		}
+		String commonDesc = projectMgr.getCommonDesc(getId());
 		//System.out.println("commonDesc:"+commonDesc);
 		//Gson gson = new Gson();
 		//setJson(gson.toJson(commonDesc));
 		setText(commonDesc);
 		return SUCCESS;
+	}
+
+	//注意，file并不是指前端jsp上传过来的文件本身，而是文件上传过来存放在临时文件夹下面的文件
+	private File file;
+	//提交过来的file的名字
+	private String fileFileName;
+	private int projectId;
+	private String fileContentType;
+
+	public String getFileContentType() {
+		return fileContentType;
+	}
+
+	public void setFileContentType(String fileContentType) {
+		this.fileContentType = fileContentType;
+	}
+
+	public int getProjectId() {
+		return projectId;
+	}
+
+	public void setProjectId(int projectId) {
+		this.projectId = projectId;
+	}
+
+	public String getFileFileName() {
+		return fileFileName;
+	}
+
+	public void setFileFileName(String fileFileName) {
+		this.fileFileName = fileFileName;
+	}
+
+	public File getFile() {
+		return file;
+	}
+
+	public void setFile(File file) {
+		this.file = file;
+	}
+
+	public String uploadcommonmodel() throws IOException {
+		try {
+			String fileDir = ServletActionContext.getServletContext().getRealPath("/upload");//上传文件存放目录
+			File tempFile = new File(fileDir);
+		    if (!tempFile.exists()) {
+		      tempFile.mkdirs();
+		    }
+		    //写文件开始
+		    InputStream originalIs = new FileInputStream(file);
+		    OutputStream os = new FileOutputStream(new File(fileDir, fileFileName));
+		    byte[] buffer = new byte[500];
+			int length = 0;
+			while (-1 != (length = originalIs.read(buffer, 0, buffer.length))) {
+				os.write(buffer);
+			}
+			originalIs.close();
+			os.close();
+			//写文件结束
+			
+		    String excelFileName = fileDir + "/" + fileFileName;// 获取上传文件名,包括路径		    
+			//System.out.println("fileDir:"+fileDir);
+			//System.out.println("projectId:"+projectId);
+			//System.out.println("fileContentType:"+fileContentType);
+			//System.out.println("file:"+file);
+			//System.out.println("excelFileName:"+excelFileName);
+			File excelFile = new File(excelFileName);
+			InputStream is = new FileInputStream(excelFile);			
+	
+			//System.out.println("fileFileName: " + fileFileName);//上传文件的文件名
+			// 因为file是存放在临时文件夹的文件，我们可以将其文件名和文件路径打印出来，看和之前的fileFileName是否相同
+			//System.out.println("fileName: " + file.getName());
+			//System.out.println("filePath: " + file.getPath());			
+			
+			List<CommonModel> commonModels = projectMgr.readCommonModelListFromExcel(is);
+			projectMgr.updateCommonModel(projectId, commonModels);
+			projectMgr.updateModelFileName(projectId, fileFileName);
+			is.close();			
+	
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return SUCCESS;
+		}
 	}
 }

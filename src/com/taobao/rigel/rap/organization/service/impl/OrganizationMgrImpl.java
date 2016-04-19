@@ -15,6 +15,11 @@ public class OrganizationMgrImpl implements OrganizationMgr {
 	private OrganizationDao organizationDao;
 	private ProjectMgr projectMgr;
 	private String atadomain;
+	private String rapdomain;
+	
+	public void setRapdomain(String rapdomain) {
+		this.rapdomain = rapdomain;
+	}
 
 	public void setAtadomain(String atadomain) {
 		this.atadomain = atadomain;
@@ -117,6 +122,11 @@ public class OrganizationMgrImpl implements OrganizationMgr {
 	@Override
 	public String getAtadomain() {
 		return atadomain;
+	}
+
+	@Override
+	public String getRapdomain() {
+		return rapdomain;
 	}
 
 }

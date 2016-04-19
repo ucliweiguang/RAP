@@ -3,6 +3,7 @@ package com.taobao.rigel.rap.project.dao.impl;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +23,8 @@ import com.taobao.rigel.rap.account.bo.User;
 import com.taobao.rigel.rap.common.ArrayUtils;
 import com.taobao.rigel.rap.common.StringUtils;
 import com.taobao.rigel.rap.project.bo.Action;
+import com.taobao.rigel.rap.project.bo.CommonModel;
+import com.taobao.rigel.rap.project.bo.CommonModelField;
 import com.taobao.rigel.rap.project.bo.Module;
 import com.taobao.rigel.rap.project.bo.ObjectItem;
 import com.taobao.rigel.rap.project.bo.Page;
@@ -717,5 +720,66 @@ public class ProjectDaoImpl extends HibernateDaoSupport implements ProjectDao {
 	public String getCommonDesc(int projectId){    	
     	Project project = getProject(projectId);    	
     	return project.getCommondesc();
+	}
+	@Override
+	public void addCommonModel(int projectId, CommonModel commonModel) {
+		Session session = getSession();
+		Project project = getProject(projectId); 
+		project.addCommonModel(commonModel);
+		session.save(commonModel);
+		for (CommonModelField commonModelField : commonModel.getCommonModelFieldList()) {
+			addCommonModelField(session, commonModel, commonModelField);
+		}
+	}
+	
+	private void addCommonModelField(Session session, CommonModel commonModel, CommonModelField commonModelField) {
+		commonModel = (CommonModel) session.load(CommonModel.class, commonModel.getId());
+		commonModel.addCommonModelField(commonModelField);
+		session.save(commonModelField);
+	}
+	@Override
+	public void deleteCommonModels(int projectId) {
+		Session session = getSession();
+		Project project = getProject(projectId);		
+		//获取要删除的ModelId和ModelFieldId
+		Set<CommonModel> commonModels = project.getCommonModelList();		
+		Iterator<CommonModel> iter = commonModels.iterator();
+		int[] commonModelIds = new int[commonModels.size()];//保存commonModel的id列表
+		List<Integer> commonModelFieldIds = new ArrayList<Integer>();//保存commonModelFields的id列表
+		int i=0;
+		while(iter.hasNext()){
+			CommonModel c =  iter.next();
+			commonModelIds[i] = c.getId();
+			i++;
+			
+			Set<CommonModelField> fields = c.getCommonModelFieldList();
+			Iterator<CommonModelField> iterfields = fields.iterator();	
+			while(iterfields.hasNext()){
+				CommonModelField f = iterfields.next();
+				commonModelFieldIds.add(f.getId());
+			}			
+		}//获取要删除的ModelId和ModelFieldId 恩典
+		
+		//删除CommonModelField
+		for(int commonModelFieldId : commonModelFieldIds){
+			project.removeCommonModel(commonModelFieldId, session);				
+		}
+		//删除CommonModel
+		for(int commonModelId : commonModelIds){
+			project.removeCommonModel(commonModelId, session);				
+		}
+	}
+	@Override
+	public List<CommonModel> getCommonModels(int projectId) {
+		Project project = getProject(projectId);
+		Set<CommonModel> commonModels = project.getCommonModelList();
+		List<CommonModel> list = new ArrayList<CommonModel>();
+		Iterator<CommonModel> iter = commonModels.iterator();
+		while(iter.hasNext()){
+			CommonModel c = iter.next();
+			//System.out.println(c.getCommonModelFieldListOrdered());
+			list.add(c);
+		}
+		return list;
 	}
 }

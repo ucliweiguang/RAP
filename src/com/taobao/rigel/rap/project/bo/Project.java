@@ -35,8 +35,17 @@ public class Project implements java.io.Serializable {
 	private int groupId;
     private int mockNum;
     private String commondesc;
+    private String modelfilename;
 
-    public String getCommondesc() {
+    public String getModelfilename() {
+		return modelfilename;
+	}
+
+	public void setModelfilename(String modelfilename) {
+		this.modelfilename = modelfilename;
+	}
+
+	public String getCommondesc() {
 		return commondesc;
 	}
 
@@ -144,6 +153,15 @@ public class Project implements java.io.Serializable {
 		this.moduleList = moduleList;
 	}
 	
+	private Set<CommonModel> commonModelList = new HashSet<CommonModel>();
+	public Set<CommonModel> getCommonModelList() {
+		return commonModelList;
+	}
+
+	public void setCommonModelList(Set<CommonModel> commonModelList) {
+		this.commonModelList = commonModelList;
+	}
+
 	public Project() {
 		
 	}
@@ -202,6 +220,40 @@ public class Project implements java.io.Serializable {
 	public void addModule(Module module) {
 		getModuleList().add(module);
 		module.setProject(this);
+	}
+	/**
+	 * 
+	 * 功能描述：增加项目的公用Model
+	 * @param commonModel 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-4-6
+	 */
+	public void addCommonModel(CommonModel commonModel){
+		getCommonModelList().add(commonModel);
+		commonModel.setProject(this);
+	}
+	/**
+	 * 
+	 * 功能描述：删除项目旧的model数据
+	 * @param id
+	 * @param session 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-4-7
+	 */
+	public void removeCommonModel(int modelId,Session session) {
+		CommonModel commonModel = this.findCommonModel(modelId);
+		if (commonModel != null && commonModelList != null) {
+			commonModelList.remove(commonModel);
+			session.delete(commonModel);
+		}
+	}
+	//删除项目旧model的字段数据
+	public void removeCommonModelField(int id, Session session) {
+		CommonModelField commonModelField = this.findCommonModelField(id);
+		if (commonModelField != null && commonModelField.getCommonModel() != null && commonModelField.getCommonModel().getCommonModelFieldList() != null) {
+			commonModelField.getCommonModel().getCommonModelFieldList().remove(commonModelField);
+			session.delete(commonModelField);
+		}
 	}
 	
 	public String getMemberAccountListStr() {
@@ -362,6 +414,30 @@ public class Project implements java.io.Serializable {
 		checkInListOrdered.addAll(checkInList);
 		Collections.sort(checkInListOrdered, new CheckInComparator());
 		return checkInListOrdered;
+	}
+	/**
+	 * 
+	 * 功能描述：查找指定的接口公用model
+	 * @param modelId
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-4-6
+	 */
+	public CommonModel findCommonModel(int modelId) {
+		for (CommonModel c : getCommonModelList()) {
+			if (c.getId() == modelId)
+				return c;
+		}
+		return null;
+	}
+	public CommonModelField findCommonModelField(int fieldId) {
+		for (CommonModel c : getCommonModelList()) {
+			for (CommonModelField f : c.getCommonModelFieldList()) {
+				if (f.getId() == fieldId)
+					return f;
+			}
+		}
+		return null;
 	}
 	
 	public Module findModule(int moduleId) {

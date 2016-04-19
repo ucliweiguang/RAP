@@ -1,6 +1,17 @@
 package com.taobao.rigel.rap.project.service.impl;
 
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.google.gson.Gson;
 import com.taobao.rigel.rap.account.bo.Notification;
@@ -13,6 +24,8 @@ import com.taobao.rigel.rap.common.SystemConstant;
 import com.taobao.rigel.rap.organization.bo.Group;
 import com.taobao.rigel.rap.organization.dao.OrganizationDao;
 import com.taobao.rigel.rap.project.bo.Action;
+import com.taobao.rigel.rap.project.bo.CommonModel;
+import com.taobao.rigel.rap.project.bo.CommonModelField;
 import com.taobao.rigel.rap.project.bo.Module;
 import com.taobao.rigel.rap.project.bo.Page;
 import com.taobao.rigel.rap.project.bo.Parameter;
@@ -414,6 +427,98 @@ public class ProjectMgrImpl implements ProjectMgr {
 	@Override
 	public String getCommonDesc(int projectId) {
 		return projectDao.getCommonDesc(projectId);
+	}
+
+	@Override
+	public void updateCommonModel(int projectId, List<CommonModel> commonModels) {
+		//先清空旧数据
+		projectDao.deleteCommonModels(projectId);
+		//再逐个增加新的commonModel的数据
+		for (CommonModel commonModel : commonModels){
+			projectDao.addCommonModel(projectId, commonModel);
+		}
+	}
+
+	@Override
+	public List<CommonModel> getCommonModelList(int projectId) {
+		List<CommonModel> list = projectDao.getCommonModels(projectId);
+		for (CommonModel c : list){
+			List<CommonModelField> fields = c.getCommonModelFieldListOrdered();
+			//for(CommonModelField f : fields){
+				/*System.out.println(f.getIdentifier());
+				System.out.println(f.getSort());
+				System.out.println("######################");*/
+			//}
+		}
+		return list;
+	}
+
+	@Override
+	public List<CommonModel> readCommonModelListFromExcel(InputStream is) throws IOException {
+		XSSFWorkbook hssfWorkbook = new XSSFWorkbook(is);
+		//HSSFWorkbook hssfWorkbook = new HSSFWorkbook(is);
+		List<CommonModel> commonModellist = new ArrayList<CommonModel>();
+		CommonModel commonModel;
+		CommonModelField commonModelField;
+		// 循环工作表Sheet
+	    for (int numSheet = 0; numSheet < hssfWorkbook.getNumberOfSheets(); numSheet++) {
+	      //HSSFSheet hssfSheet = hssfWorkbook.getSheetAt(numSheet);
+	      XSSFSheet hssfSheet = hssfWorkbook.getSheetAt(numSheet);
+	      if (hssfSheet == null) {
+	        continue;
+	      }
+	      commonModel = new CommonModel();
+	      String sheetName = hssfSheet.getSheetName();	  
+	      //封装commonModel
+	      commonModel.setCode(sheetName.substring(sheetName.indexOf("<")+1, sheetName.indexOf(">")));
+	      commonModel.setName(sheetName.substring(0, sheetName.indexOf("<")));
+	      
+	      // 循环行Row
+	      for (int rowNum = 1; rowNum <= hssfSheet.getLastRowNum(); rowNum++) {
+	    	  commonModelField = new CommonModelField();
+	    	  //HSSFRow hssfRow = hssfSheet.getRow(rowNum);
+	    	  XSSFRow hssfRow = hssfSheet.getRow(rowNum);
+	    	  if (hssfRow.getCell(1) ==null){ //如果某行的字段名为空，则结束该模型的构建
+	    		  continue;
+	    	  }
+	    	  for (int i = 0; i < hssfRow.getLastCellNum(); i++) {
+		          //HSSFCell hssfCell = hssfRow.getCell(i);
+	    		  XSSFCell hssfCell = hssfRow.getCell(i);		          
+		          if (i == 0) {//sort		        	  
+		        	  commonModelField.setSort((int)(hssfCell.getNumericCellValue()));
+		          } else if (i == 1) {//字段名
+		        	  commonModelField.setIdentifier(hssfCell.getStringCellValue());
+		          } else if (i == 2) {//类型,强制转成小写
+		        	  commonModelField.setDatatype(hssfCell.getStringCellValue().toLowerCase());
+		          } else if (i == 3) {//必填
+		        	  String n = hssfCell.getStringCellValue();
+		        	  if ("y".equals(n.toLowerCase())){
+		        		  commonModelField.setNeeded(1);
+		        	  } else if ("n".equals(n.toLowerCase())){
+		        		  commonModelField.setNeeded(0);
+		        	  }		        	  
+		          } else if (i == 4) {//备注
+		        	  commonModelField.setDescription(hssfCell.getStringCellValue());
+		          }
+	    	  }
+	    	  commonModel.addCommonModelField(commonModelField);	        
+	      }
+	      commonModellist.add(commonModel);
+	    }
+		return commonModellist;
+	}
+
+	@Override
+	public void updateModelFileName(int projectId, String modelFileName) {
+		Project project = getProject(projectId);
+		project.setModelfilename(modelFileName);
+		projectDao.updateProject(project);
+	}
+
+	@Override
+	public String getModelFileName(int projectId) {
+		Project project = getProject(projectId);
+		return project.getModelfilename();
 	}
 	
 }

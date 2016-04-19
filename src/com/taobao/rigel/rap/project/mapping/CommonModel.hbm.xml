@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.taobao.rigel.rap.project.bo.CommonModel" table="tb_commonmodel">
+		<id name="id" type="integer">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<property name="code">
+			<column name="code" />
+		</property>
+		<property name="name">
+			<column name="name" />
+		</property>
+		<!-- <property name="projectId">
+			<column name="projectId" />
+		</property> -->
+		<many-to-one name="project" column="projectId" />
+		
+		<set name="commonModelFieldList" order-by="id asc" inverse="true" cascade="delete">
+			<key column="modelId" not-null="true" />
+			<one-to-many class="com.taobao.rigel.rap.project.bo.CommonModelField" />
+		</set>		
+	</class>
+</hibernate-mapping>

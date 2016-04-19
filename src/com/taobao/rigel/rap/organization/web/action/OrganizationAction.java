@@ -20,16 +20,6 @@ public class OrganizationAction extends ActionBase {
 	private ProjectMgr projectMgr;
 	private int plid;
 	private int id;
-	/*private String atadomain;
-
-	public String getAtadomain() {
-		return atadomain;
-	}
-
-	public void setAtadomain(String atadomain) {
-		this.atadomain = atadomain;
-	}*/
-
 	public int getId() {
 		return id;
 	}
@@ -103,6 +93,8 @@ public class OrganizationAction extends ActionBase {
 		List<Project> projectList = projectMgr.getProjectList(getCurUser(), 1,
 				Integer.MAX_VALUE);
 		String atadomain = organizationMgr.getAtadomain();
+		String rapdomain = organizationMgr.getRapdomain();
+		
 		for (Project p : projectList) {
 			if (getCurUser().isUserInRole("admin")
 					|| getAccountMgr().canUserManageProject(
@@ -120,8 +112,10 @@ public class OrganizationAction extends ActionBase {
 			map.put("creator", p.getUser().getUserBaseInfo());
 			map.put("related", p.getUser().getId() != getCurUserId());
 			
-			//System.out.println("atadomain:"+atadomain);
 			map.put("atadomain", atadomain);
+			map.put("modelfilename", p.getModelfilename());
+			map.put("rapdomain", rapdomain);
+			//System.out.println("p.getModelfilename():"+p.getModelfilename());
 			projects.add(map);
 		}
 		StringBuilder json = new StringBuilder();

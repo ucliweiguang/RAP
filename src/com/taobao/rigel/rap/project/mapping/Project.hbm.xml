@@ -62,6 +62,12 @@
 				<comment>项目API通用信息</comment>
 			</column>
 		</property>
+		<property name="modelfilename" type="string">
+			<column name="modelfilename">
+				<comment>公用模型excel文件名</comment>
+			</column>
+		</property>
+		
 		<many-to-one name="user" column="user_id" />
 		<set name="userList" order-by="user_id asc" table="tb_project_and_user" where="access_level=1">
 			<key column="project_id" not-null="true" />
@@ -78,6 +84,11 @@
 		<set name="moduleList" order-by="id asc" inverse="true" cascade="delete">
 			<key column="project_id" not-null="true" />
 			<one-to-many class="com.taobao.rigel.rap.project.bo.Module" />
+		</set>
+		
+		<set name="commonModelList" order-by="id asc" inverse="true" cascade="delete">
+			<key column="projectId" not-null="true" />
+			<one-to-many class="com.taobao.rigel.rap.project.bo.CommonModel" />
 		</set>
 
 		<set name="workspaceList" inverse="true" cascade="delete">

@@ -88,6 +88,8 @@
 		        <value>com/taobao/rigel/rap/organization/mapping/ProductionLine.hbm.xml</value>
 				<value>com/taobao/rigel/rap/mock/mapping/Rule.hbm.xml</value>
 				<value>com/taobao/rigel/rap/project/mapping/ProjectUser.hbm.xml</value>
+				<value>com/taobao/rigel/rap/project/mapping/CommonModel.hbm.xml</value>
+				<value>com/taobao/rigel/rap/project/mapping/CommonModelField.hbm.xml</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">

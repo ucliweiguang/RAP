@@ -7,6 +7,9 @@
 		<property name="atadomain">
 			<value>${ata.domain}</value>
 		</property>
+		<property name="rapdomain">
+			<value>${rap.domain}</value>
+		</property>
 	</bean>
 	<bean id="organizationDao" class="com.taobao.rigel.rap.organization.dao.impl.OrganizationDaoImpl" parent="baseDao" />
 </beans>

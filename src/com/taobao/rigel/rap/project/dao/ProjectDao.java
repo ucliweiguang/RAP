@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.taobao.rigel.rap.account.bo.User;
 import com.taobao.rigel.rap.project.bo.Action;
+import com.taobao.rigel.rap.project.bo.CommonModel;
 import com.taobao.rigel.rap.project.bo.Module;
 import com.taobao.rigel.rap.project.bo.Page;
 import com.taobao.rigel.rap.project.bo.Project;
@@ -219,4 +220,29 @@ public interface ProjectDao {
 	 * created on: 2016-3-23
 	 */
 	public String getCommonDesc(int projectId);
+	/**
+	 * 
+	 * 功能描述：为指定项目增加公用Model
+	 * @param commonModel 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-4-7
+	 */
+	public void addCommonModel(int projectId,CommonModel commonModel);
+	/**
+	 * 
+	 * 功能描述：删除指定项目所有公用Models。为每次更新项目公用Model数据做准备。
+	 * @param projectId 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-4-7
+	 */
+	public void deleteCommonModels(int projectId);
+	/**
+	 * 
+	 * 功能描述：获取单个公共Model
+	 * @param projectId
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-4-7
+	 */
+	public List<CommonModel> getCommonModels(int projectId);
 }

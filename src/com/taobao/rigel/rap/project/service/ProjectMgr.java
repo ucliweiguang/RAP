@@ -1,10 +1,13 @@
 package com.taobao.rigel.rap.project.service;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
 import com.taobao.rigel.rap.account.bo.User;
 import com.taobao.rigel.rap.project.bo.Action;
+import com.taobao.rigel.rap.project.bo.CommonModel;
 import com.taobao.rigel.rap.project.bo.Module;
 import com.taobao.rigel.rap.project.bo.Page;
 import com.taobao.rigel.rap.project.bo.Project;
@@ -220,4 +223,50 @@ public interface ProjectMgr {
 	 * created on: 2016-3-23
 	 */
 	public String getCommonDesc(int projectId);
+	/**
+	 * 
+	 * 功能描述： 更新指定项目的公用model
+	 * @param projectId
+	 * @param commonModels 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-4-7
+	 */
+	public void updateCommonModel(int projectId,List<CommonModel> commonModels);
+	/**
+	 * 
+	 * 功能描述：获取指定项目的所有公用Model的内容，包括每个model的字段。用于前端下载或显示
+	 * @param projectId
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-4-7
+	 */
+	public List<CommonModel> getCommonModelList(int projectId);
+	/**
+	 * 
+	 * 功能描述：从excel文件读取公用Model的信息，包含Model和ModelField
+	 * @param is
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-4-7
+	 */
+	public List<CommonModel> readCommonModelListFromExcel(InputStream is)  throws IOException;
+	/**
+	 * 
+	 * 功能描述：更新项目的公用模型EXCEL文件名
+	 * @param projectId
+	 * @param modelFileName
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-4-12
+	 */
+	public void updateModelFileName(int projectId,String modelFileName);
+	/**
+	 * 
+	 * 功能描述：获取项目的公用模型EXCEL文件名
+	 * @param projectId
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-4-12
+	 */
+	public String getModelFileName(int projectId);
 }

@@ -88,6 +88,7 @@
                         通用信息
                     </button>
                     
+                    #end
                     
                     <div class="btn-group">
                         <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
@@ -138,7 +139,7 @@
 
                         </ul>
                     </div>
-                    #end
+                    
                     
                 </div>
 

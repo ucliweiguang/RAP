@@ -173,6 +173,70 @@ $(function() {
         window.open(atadomain + '?projectId=' + projId);
     }
 
+    //管理API公用模型
+    function handleEditCommonModelClick(){
+    	var box = $(this);
+        box = box.parents('.box');
+    	var projId = box.data('projid'); //projectId    	
+    	//debugger;
+    	var modelfilename = box.data('modelfilename'); //模型文件的名称    	
+    	//console.log("projId:"+projId);
+    	//console.log("modelfilename:"+modelfilename);
+    	var rapdomain = box.data('rapdomain');
+    	
+    	$.confirm({
+            content: $.render($('#upload-commonmodel-tmpl').text(), {}),
+            title: '公用模型Excel管理',
+            confirmText: '确定',
+            showCallback: function() {
+            	$('#modelfilename').html("<a href="+rapdomain+"upload/"+modelfilename+" target=_blank>"+ modelfilename +"</a>");
+            	$('#templatefile').html("<a href="+rapdomain+"upload/template-commonmodel.xlsx target=_blank>template-commonmodel.xls</a>");
+            	
+                $(this).find('input[type=text]').focus();
+            },
+            confirmClicked: function() {                                
+                var modal = $(this);                
+                
+                var fileObj = $("#excel_file")[0];
+                var length = fileObj.files.length;
+                if (length < 1) {
+                	return false;
+                }
+                var formData = new FormData();
+                formData.append("projectId",projId);
+                formData.append("file",fileObj.files[0]);
+                //debugger;
+  
+                $.ajax({
+        			url : '/project/uploadcommonmodel.action',
+        			data : formData,
+        			/*data : {
+        				projectId :projId,
+        				file : fileObj.files[0]
+        			},*/
+        			type : 'POST',
+        			contentType : false,
+        			//contentType : 'multipart/form-data',
+        			//cache : false,
+        			processData : false
+        			/*beforeSend : function(e, xhr, opt) {
+        				$.messager.progress({
+        					title : '请等待',
+        					msg : '上传中...'
+        				});
+        			}*/
+	        		}).done(function(data) {
+	        			alert("上传文件成功.");
+	        			modal.modal('hide');
+	        		});
+	                //end
+                
+            	}
+        	});
+    }
+    
+  
+    
     //编辑项目API通用信息
     function handleEditProjectCommonInfoClick(){
     	var box = $(this);
@@ -459,6 +523,7 @@ $(function() {
         .delegate('.box-to-add', 'click', handleAddClick)
         .delegate('.box .glyphicon-pencil', 'click', handleEditProjectClick)
         .delegate('.box .glyphicon-file', 'click', handleEditProjectCommonInfoClick)
+        .delegate('.box .glyphicon-list', 'click', handleEditCommonModelClick)
         .delegate('.box .glyphicon-export', 'click', handleRapPluginClick)
         .delegate('.create-productline', 'click', handleCreateProductline)
         .delegate('.create-group', 'click', handleCreateGroup)
