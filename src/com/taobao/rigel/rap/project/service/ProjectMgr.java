@@ -269,4 +269,36 @@ public interface ProjectMgr {
 	 * created on: 2016-4-12
 	 */
 	public String getModelFileName(int projectId);
+	/**
+	 * 功能描述：通过项目id以及模型的code获取模型对应的json字符串，用于测试时可以替换带有@model标签的字段内容
+	 * 用于替换"parameterList: [ ]"
+	  parameterList: [
+		{
+		id: 2210,
+		identifier: "status",
+		name: "",
+		remark: "",
+		parameterList: [ ],
+		validator: "",
+		dataType: "number"
+		},
+		{
+		id: 2211,
+		identifier: "result_msg",
+		name: "",
+		remark: "",
+		parameterList: [ ],
+		validator: "",
+		dataType: "string"
+		}
+	 ]
+	 * @param projectId
+	 * @param modelCode 模型的code
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-4-19
+	 */
+	public String getModelJsonStr(int projectId,String modelCode);
+	
+	public CommonModel getCommonModelByCode(int projectId, String modelCode);
 }

@@ -2,6 +2,7 @@ package com.taobao.rigel.rap.validation.service.impl;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -20,9 +21,13 @@ import com.github.fge.jsonschema.core.report.ProcessingMessage;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.taobao.rigel.rap.common.HTTPUtils;
 import com.taobao.rigel.rap.project.dao.ProjectDao;
+import com.taobao.rigel.rap.project.service.ProjectMgr;
 import com.taobao.rigel.rap.validation.service.ValidationMgr;
 import com.taobao.rigel.rap.project.bo.Action;
+import com.taobao.rigel.rap.project.bo.CommonModel;
+import com.taobao.rigel.rap.project.bo.CommonModelField;
 import com.taobao.rigel.rap.project.bo.Parameter;
+import com.taobao.rigel.rap.project.bo.Project;
 
 /**
  * 
@@ -44,6 +49,7 @@ public class ValidationMgrImpl implements ValidationMgr {
 	private static final String TAG_FORMDATA = "@form";
 			
 	private ProjectDao projectDao;
+	private ProjectMgr projectMgr;
 	private String rapdomain;
 
 	public String getRapdomain() {
@@ -60,6 +66,13 @@ public class ValidationMgrImpl implements ValidationMgr {
 
 	public void setProjectDao(ProjectDao projectDao) {
 		this.projectDao = projectDao;
+	}
+
+	public ProjectMgr getProjectMgr() {
+		return projectMgr;
+	}
+	public void setProjectMgr(ProjectMgr projectMgr) {
+		this.projectMgr = projectMgr;
 	}
 
 	//返回数据格式：{"requestUrl:":requestUrl,"Result":[
@@ -265,16 +278,64 @@ public class ValidationMgrImpl implements ValidationMgr {
 		}
 		return true;
 	}
+	
+	//将name含有"@model(package)"的字段转换成公共模型的字段
+	private Set<Parameter> unionModelParameters(Set<Parameter> parameters, int projectId){
+		Set<Parameter> result = new HashSet<Parameter>();
+		Set<Parameter> temp = parameters;
+		
+		Iterator<Parameter> iter = temp.iterator();
+		while (iter.hasNext()) {
+			Parameter p = iter.next();
+			
+			if (p.getName().contains("@model")){
+				String tmp = p.getName().substring(p.getName().indexOf("@model("));
+				String modelCode = tmp.substring(7, tmp.indexOf(")"));
+				CommonModel commonModel = projectMgr.getCommonModelByCode(projectId, modelCode);
+				List<CommonModelField> fields = commonModel.getCommonModelFieldListOrdered();
+				Set<Parameter> paralist = new HashSet<Parameter>();  //用于保存模型字段
+				for(CommonModelField field : fields){
+					Parameter para = new Parameter();
+					para.setIdentifier(field.getIdentifier());
+					para.setName(field.getDescription().replaceAll("\n", ""));
+					if (field.getDatatype().equals("int")||field.getDatatype().equals("long")||
+							field.getDatatype().equals("double")||field.getDatatype().equals("float")){
+						para.setDataType("number");
+					} else if (field.getDatatype().equals("string")){
+						para.setDataType("string");
+					} else if (field.getDatatype().equals("boolean")){
+						para.setDataType("boolean");
+					} else {
+						para.setDataType("string");
+					}
+					paralist.add(para);
+				}
+				p.setParameterList(paralist);
+				result.add(p);
+				continue;
+			}			
+			
+			if(p.getParameterList().size()>0){
+				p.setParameterList(unionModelParameters(p.getParameterList(), projectId));				
+			} 
+			result.add(p);
+			
+		}
+		return result;
+	}
+	
 	@Override
-	public String generateJsonSchema(long actionId) {
+	public String generateJsonSchema(long actionId, int projectId) {
 		Action action = getProjectDao().getAction(actionId);
 		Set<Parameter> parameters = action.getResponseParameterList();
+		
+		Set<Parameter> newParameters = unionModelParameters(parameters, projectId);
 		StringBuilder schema = new StringBuilder("{");
 		schema.append("\"title\":\"");
 		schema.append(action.getName());
 		schema.append("\", \"type\": \"object\",");
 		//生成字段Schema部分
-		schema.append(generateFieldsSchema(parameters));
+		schema.append(generateFieldsSchema(newParameters));
 		schema.append("}");
 
 		return schema.toString();
@@ -286,7 +347,7 @@ public class ValidationMgrImpl implements ValidationMgr {
 		Iterator<Parameter> iter = parameters.iterator();
 		// 必填字段
 		StringBuilder requiredStr = new StringBuilder();
-		;
+		
 		while (iter.hasNext()) {
 			Parameter p = iter.next();
 			Set<Parameter> subparameters = p.getParameterList();
@@ -675,7 +736,7 @@ public class ValidationMgrImpl implements ValidationMgr {
 		//System.out.println("ids.size:"+ids.size());
 		for (Integer id : ids){
 			//System.out.println("id:"+id);
-			String jsonSchema = generateJsonSchema(Long.parseLong(id.toString()));
+			String jsonSchema = generateJsonSchema(Long.parseLong(id.toString()), projectId);
 			saveJsonSchema(id, jsonSchema);
 		}
 		System.out.println("jsonschema update ok.");

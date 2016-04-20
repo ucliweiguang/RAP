@@ -46,7 +46,7 @@ public interface ValidationMgr {
 	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
 	 * created on: 2015-8-20
 	 */
-	public String generateJsonSchema(long actionId);
+	public String generateJsonSchema(long actionId,int projectId);
 	/**
 	 * 
 	 * 功能描述：保存对应API的数据校验Schema

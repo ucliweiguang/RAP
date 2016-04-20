@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -520,5 +521,75 @@ public class ProjectMgrImpl implements ProjectMgr {
 		Project project = getProject(projectId);
 		return project.getModelfilename();
 	}
+
+	@Override
+	public String getModelJsonStr(int projectId, String modelCode) {
+		String json = null;
+		CommonModel model = getCommonModelByCode(projectId, modelCode);
+		json = generateModelJson(model);
+		return json;
+	}
+	//生成model的json内容
+	/*
+	 * 	id: 2210,
+		identifier: "status",
+		name: "",
+		remark: "",
+		parameterList: [ ],
+		validator: "",
+		dataType: "number"
+	 */
+	private String generateModelJson(CommonModel model){
+		StringBuilder json = new StringBuilder("[");
+		List<CommonModelField> fields = model.getCommonModelFieldListOrdered();
+		for (CommonModelField field : fields){
+			json.append("{");
+			json.append("\"id\":");
+			json.append(field.getId() * 1000000);//将id与RAP的字段的id区分
+			json.append(",");
+			
+			json.append("\"identifier\":\"");
+			json.append(field.getIdentifier());
+			json.append("\",");
+			
+			json.append("\"name\":\"");
+			json.append(field.getDescription().replaceAll("\n", ""));
+			json.append("\",");
+			
+			json.append("\"remark\":\"\",");			
+			json.append("\"parameterList\":[],");						
+			json.append("\"validator\":\"\",");
+			
+			json.append("\"dataType\":\"");
+			if (field.getDatatype().equals("int")||field.getDatatype().equals("long")||
+					field.getDatatype().equals("double")||field.getDatatype().equals("float")){
+				json.append("number\"");
+			} else if (field.getDatatype().equals("string")){
+				json.append("string\"");
+			} else if (field.getDatatype().equals("boolean")){
+				json.append("boolean\"");
+			} else {
+				json.append("string\"");
+			}			
+			json.append("},");
+		}		
+		//去掉最后一个逗号
+		String result = json.toString();
+		return result.substring(0, result.length() - 1)+"]";
+	}
 	
+	public CommonModel getCommonModelByCode(int projectId, String modelCode){
+		CommonModel result = null;
+		Project project = getProject(projectId);
+		Set<CommonModel> commonModelList = project.getCommonModelList();
+		Iterator<CommonModel> iter = commonModelList.iterator();
+		while (iter.hasNext()){
+			CommonModel model = iter.next();
+			if (model.getCode().equals(modelCode)){//找到对应的模型了
+				result = model;
+				break;
+			}
+		}
+		return result;
+	}
 }

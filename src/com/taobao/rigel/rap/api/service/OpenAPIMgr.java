@@ -50,4 +50,14 @@ public interface OpenAPIMgr {
 	 * @return JSON, contains isOk/msg properties
 	 */
 	String resetMockRules(int actionId);
+	/**
+	 * 通过项目id以及模型的code获取模型对应的json字符串，用于测试时可以替换带有@model标签的字段内容
+	 * 功能描述：
+	 * @param projectId
+	 * @param modelCode
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-4-20
+	 */
+	public String getModelJsonStr(int projectId,String modelCode);
 }

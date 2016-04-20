@@ -821,9 +821,10 @@ public class WorkspaceAction extends ActionBase {
 		}
 
 		boolean isOk = false;
-		//System.out.println("ActionId():" + this.actionId);		
+		//System.out.println("ActionId():" + this.actionId);
+		//System.out.println("projectId:"+ this.projectId);
 		validationMgr
-				.saveJsonSchema(this.actionId, validationMgr.generateJsonSchema(this.actionId));
+				.saveJsonSchema(this.actionId, validationMgr.generateJsonSchema(this.actionId,this.projectId));
 		isOk = true;
 
 		if (isOk) {

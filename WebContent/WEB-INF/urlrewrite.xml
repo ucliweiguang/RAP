@@ -80,4 +80,13 @@
         <from>^/doc/(\d*)$</from>
         <to type="proxy">http://localhost:7429/doc/$1.html</to>
     </rule>
+    <rule>
+		<note>
+			getModelJsonStr API
+		</note>
+		<from>^/api/modeljson/(\d*?)/(.*)$</from>
+		<to>/api/getModelJsonStr.action?projectId=$1&amp;modelCode=${escape:utf8:$2}</to>
+		<set type="response-header" name="Access-Control-Allow-Origin">*</set>
+		<set type="response-header" name="Access-Control-Allow-Headers">Origin, X-Requested-With, Content-Type, Accept</set>
+	</rule>
 </urlrewrite>

@@ -212,4 +212,9 @@ public class OpenAPIMgrImpl implements OpenAPIMgr {
 		return action.getJsonschema();
 	}
 
+	@Override
+	public String getModelJsonStr(int projectId, String modelCode) {		
+		return projectMgr.getModelJsonStr(projectId, modelCode);
+	}
+
 }

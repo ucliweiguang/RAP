@@ -203,7 +203,6 @@ public class OpenAPIAction extends ActionBase {
     }
     
 
-
 	private String requestUrl;
 
 	public String getRequestUrl() {
@@ -231,4 +230,19 @@ public class OpenAPIAction extends ActionBase {
 		return SUCCESS;
 	}
 
+	private String modelCode;	
+	public String getModelCode() {
+		return modelCode;
+	}
+	public void setModelCode(String modelCode) {
+		this.modelCode = modelCode;
+	}
+
+	public String getModelJsonStr(){
+		//System.out.println("projectId:"+projectId);
+		//System.out.println("modelCode:"+modelCode);
+        String json = openAPIMgr.getModelJsonStr(projectId, modelCode);
+        setJson(json);
+        return SUCCESS;
+	}
 }
