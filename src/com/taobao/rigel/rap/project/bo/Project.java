@@ -633,4 +633,55 @@ public class Project implements java.io.Serializable {
         return list;
     }
     
+    /**
+     * 
+     * 功能描述：返回项目接口文档的Model的HTML内容，用于通用信息页面、onlinedoc、导出文档
+     * @return 
+     * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+     * created on: 2016-4-21
+     */
+    public String getCommonModelHTML(){
+    	return _getCommonModelHTML(this.commonModelList);
+    }
+    
+    private String _getCommonModelHTML(Set<CommonModel> list) {
+		StringBuilder html = new StringBuilder();
+		for (CommonModel model : list){
+			List<CommonModelField> fields = model.getCommonModelFieldListOrdered();
+			
+			html
+			.append("<div>")
+			.append(model.getName())
+			.append("&lt;")
+			.append(model.getCode())
+			.append("&gt;</div>")
+			.append("<table class=\"param-table\">")
+			.append("<thead>")
+	        .append("<th class=\"th-identifier\">字段名</th>")
+	        .append("<th class=\"th-type\">类型</th>")
+	        .append("<th class=\"th-need\">必填</th>")
+	        .append("<th class=\"th-remark\">备注</th>")
+	        .append("</thead>");
+			getCommonModelHTMLSub(html, fields, (short)1);
+			html.append("</table><hr/>");
+		}
+		return html.toString();
+	}
+	
+	private void getCommonModelHTMLSub(StringBuilder html, List<CommonModelField> list, short level) {
+		for(CommonModelField f : list) {
+			html
+			//.append("<tr class=\"tr-level-" + level + "\">")
+			//.append("<td class=\"td-name\">" + levelMark(level) + StringUtils.escapeInH(p.getName()) + "</td>")
+			.append("<td class=\"td-identifier\">" + StringUtils.escapeInH(f.getIdentifier()) + "</td>")
+			.append("<td class=\"td-type\">" + StringUtils.escapeInH(f.getDatatype()) + "</td>")
+			.append("<td class=\"td-need\">" + StringUtils.escapeInH(f.getNeeded()) + "</td>")
+			.append("<td class=\"td-remark\">" + StringUtils.escapeInH(f.getDescription()) + "</td>")
+			.append("</tr>");
+			/*if (p.getParameterList() != null || p.getParameterList().size() > 0) {
+				getParameterListHTMLSub(html, p.getParameterList(), (short)(level + 1));
+			}*/
+		}
+		
+	}
 }

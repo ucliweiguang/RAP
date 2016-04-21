@@ -442,10 +442,19 @@ public class ProjectAction extends ActionBase {
 			return ERROR;
 		}
 		String commonDesc = projectMgr.getCommonDesc(getId());
+		if (commonDesc ==null) commonDesc ="";
 		//System.out.println("commonDesc:"+commonDesc);
 		//Gson gson = new Gson();
 		//setJson(gson.toJson(commonDesc));
-		setText(commonDesc);
+		String line = "";
+		String commonModel = projectMgr.getCommonModelHTML(getId());
+		if (commonModel == null || "".equals(commonModel)){
+			line = "";
+		} else {
+			line = "<hr><h1>项目API公用模型</h1>";
+		}		
+		
+		setText(commonDesc+line+commonModel);
 		return SUCCESS;
 	}
 

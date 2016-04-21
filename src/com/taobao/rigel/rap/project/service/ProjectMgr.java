@@ -301,4 +301,12 @@ public interface ProjectMgr {
 	public String getModelJsonStr(int projectId,String modelCode);
 	
 	public CommonModel getCommonModelByCode(int projectId, String modelCode);
+	/**
+	 * 
+	 * 功能描述：返回项目接口文档的Model的HTML内容，用于通用信息页面、onlinedoc、导出文档
+	 * @return 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-4-21
+	 */
+	public String getCommonModelHTML(int projectId);
 }

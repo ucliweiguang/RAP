@@ -39,6 +39,11 @@
         #if($project.commondesc) 
         	<h1>项目API通用信息</h1>
         	$project.commondesc
+        	<hr>        	
+        #end
+        #if($project.commonModelHTML!="") 
+        	<h1>项目API公用模型</h1>        	
+        	$project.commonModelHTML
         	<hr>
         #end  
         

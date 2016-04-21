@@ -592,4 +592,10 @@ public class ProjectMgrImpl implements ProjectMgr {
 		}
 		return result;
 	}
+
+	@Override
+	public String getCommonModelHTML(int projectId) {
+		Project project = getProject(projectId);
+		return project.getCommonModelHTML();
+	}
 }
