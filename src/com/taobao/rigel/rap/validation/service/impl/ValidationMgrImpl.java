@@ -104,9 +104,11 @@ public class ValidationMgrImpl implements ValidationMgr {
 				//break;
 				return result;
 			}
-			JsonNode jsonschema = JsonLoader.fromString(action.getJsonschema());
+			
+			JsonNode jsonschema = JsonLoader.fromString(action.getJsonschema().replaceAll("\\\\", "\\\\\\\\"));
+			//System.out.println("getJsonschema:" + action.getJsonschema());
 			JsonNode data = JsonLoader.fromString(jsonData);
-			//System.out.println("data:" + data);
+			
 			final JsonSchema schema = factory.getJsonSchema(jsonschema);
 			ProcessingReport report = schema.validate(data, true);
 			Iterator<ProcessingMessage> iter = report.iterator();
