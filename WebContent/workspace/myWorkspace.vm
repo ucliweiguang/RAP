@@ -442,6 +442,14 @@
                             <textarea placeholder="请输入PB格式协议" id="importPBFloater-text" style="width: 510px; height: 200px; font-size: 12px; line-height: 1.5;" cols="20" rows="20"></textarea>
                         </td>
                     </tr>
+                    <tr>
+                    	<td>
+                    	请注意：<br>
+                    	1、.porto文件的内容中不能有重复名称的mesasge对象。<br>
+						2、若message对象中的属性也是一个message对象，那么该属性的名称和对象的名称要一致，但大小写可以不一样。如Object object = 1。不能写成Object obj = 1。<br>
+						3、若message对象中含有子message对象，请将子message对象写到父message对象外面。<br>
+                    	</td>
+                    </tr>
                 </table>
                 <div class="div-floater-control">
                     <button type="button" class="btn btn-primary" onclick="ws.doImportPB();">
@@ -498,7 +506,15 @@
                         <td>响应参数内容：<font color="red">请将根对象（主对象）放在最前面</font>
                             <textarea placeholder="响应参数内容" id="responsePBFloater-text" style="width: 350px; height: 250px; font-size: 12px; line-height: 1.5;" cols="25" rows="25"></textarea>
                         </td>
-                    </tr>                  
+                    </tr> 
+                    <tr>
+                    	<td colspan="2">
+                    	请注意：<br>
+                    	1、.porto文件的内容中不能有重复名称的mesasge对象。<br>
+						2、若message对象中的属性也是一个message对象，那么该属性的名称和对象的名称要一致，但大小写可以不一样。如Object object = 1。不能写成Object obj = 1。<br>
+						3、若message对象中含有子message对象，请将子message对象写到父message对象外面。<br>
+                    	</td>
+                    </tr>                 
                 </table>
                 <div class="div-floater-control">
                 	<input type="hidden" id="showPBFloater-actionId" />
