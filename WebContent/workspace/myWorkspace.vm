@@ -445,8 +445,8 @@
                     <tr>
                     	<td>
                     	请注意：<br>
-                    	1、.porto文件的内容中不能有重复名称的mesasge对象。<br>
-						2、若message对象中的属性也是一个message对象，那么该属性的名称和对象的名称要一致，但大小写可以不一样。如Object object = 1。不能写成Object obj = 1。<br>
+                    	1、.porto文件内容中不能有重复名称的mesasge对象。<br>
+						2、若message对象中的属性也是一个message对象，则该属性的名称需包含对象的名称，但大小写可以不一样。如Object myObject = 1或Object object = 1。不能写成Object obj = 1。<br>
 						3、若message对象中含有子message对象，请将子message对象写到父message对象外面。<br>
                     	</td>
                     </tr>
@@ -510,8 +510,8 @@
                     <tr>
                     	<td colspan="2">
                     	请注意：<br>
-                    	1、.porto文件的内容中不能有重复名称的mesasge对象。<br>
-						2、若message对象中的属性也是一个message对象，那么该属性的名称和对象的名称要一致，但大小写可以不一样。如Object object = 1。不能写成Object obj = 1。<br>
+                    	1、.porto文件内容中不能有重复名称的mesasge对象。<br>
+						2、若message对象中的属性也是一个message对象，则该属性的名称需包含对象的名称，但大小写可以不一样。如Object myObject = 1或Object object = 1。不能写成Object obj = 1。<br>
 						3、若message对象中含有子message对象，请将子message对象写到父message对象外面。<br>
                     	</td>
                     </tr>                 
