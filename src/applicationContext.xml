@@ -30,6 +30,7 @@
 	<import resource="classpath:/com/taobao/rigel/rap/api/applicationContext.xml" />
     <import resource="classpath:/com/taobao/rigel/rap/platform/applicationContext.xml" />
     <import resource="classpath:/com/taobao/rigel/rap/validation/applicationContext.xml" />
+    <import resource="classpath:/com/taobao/rigel/rap/log/applicationContext.xml" />
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
 			<list>
@@ -90,6 +91,7 @@
 				<value>com/taobao/rigel/rap/project/mapping/ProjectUser.hbm.xml</value>
 				<value>com/taobao/rigel/rap/project/mapping/CommonModel.hbm.xml</value>
 				<value>com/taobao/rigel/rap/project/mapping/CommonModelField.hbm.xml</value>
+				<value>com/taobao/rigel/rap/log/mapping/RapLog.hbm.xml</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">

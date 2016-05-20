@@ -19,11 +19,12 @@ import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
 
-import com.taobao.rigel.rap.account.bo.Notification;
 import com.taobao.rigel.rap.account.bo.User;
 import com.taobao.rigel.rap.common.ActionBase;
 import com.taobao.rigel.rap.common.ContextManager;
 import com.taobao.rigel.rap.common.MapUtils;
+import com.taobao.rigel.rap.log.bo.RapLog;
+import com.taobao.rigel.rap.log.service.LogMgr;
 import com.taobao.rigel.rap.project.bo.Module;
 import com.taobao.rigel.rap.project.bo.Project;
 import com.taobao.rigel.rap.project.service.ProjectMgr;
@@ -384,6 +385,16 @@ public class WorkspaceAction extends ActionBase {
 		this.validationMgr = validationMgr;
 	}
 
+	private LogMgr logMgr;
+	
+	public LogMgr getLogMgr() {
+		return logMgr;
+	}
+
+	public void setLogMgr(LogMgr logMgr) {
+		this.logMgr = logMgr;
+	}
+
 	public String ping() {
 		setJson("{\"isOk\":true}");
 		return SUCCESS;
@@ -477,6 +488,12 @@ public class WorkspaceAction extends ActionBase {
 		// unlock the workspace
 		unlock();
 
+		//记录操作日志
+		RapLog log = new RapLog();		
+		log.setIp(org.apache.struts2.ServletActionContext.getRequest().getRemoteAddr());
+		log.setOperation("更新接口文档.项目名称："+project.getName());
+		log.setUserName(getAccountMgr().getUser(getCurUserId()).getName());
+		logMgr.createLog(log);
 		// notification for doc change
 		/*
 		for (User user : project.getUserList()) {
@@ -614,6 +631,14 @@ public class WorkspaceAction extends ActionBase {
 		StringWriter sw = new StringWriter();
 		template.merge(context, sw);
 		fileInputStream = new ByteArrayInputStream(sw.toString().getBytes("UTF8"));
+		
+		//记录操作日志
+		RapLog log = new RapLog();		
+		log.setIp(org.apache.struts2.ServletActionContext.getRequest().getRemoteAddr());
+		log.setOperation("导出接口文档.项目名称："+project.getName());
+		log.setUserName(getAccountMgr().getUser(getCurUserId()).getName());
+		logMgr.createLog(log);
+		
 		return SUCCESS;
 	}
 

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import antlr.StringUtils;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jackson.JsonLoader;
@@ -510,8 +509,74 @@ public class ValidationMgrImpl implements ValidationMgr {
 			result.append(pm.getMessage() + " 字段路径：" + pm.asJson().get("schema").get("pointer"));
 			result.append("|");
 		}
+		
+		//自定义数据类型校验
+		result.append(validateDIYDataType(jsonSchema));
+		
 		return result.toString();
 	}
+	
+	//自定义数据类型校验开始
+	private String validateDIYDataType(String jsonSchema) throws IOException{		
+		//System.out.println(jsonSchema);
+		if(jsonSchema.contains("@datatype")==false){//如果校验规则不包含自定义类型，则马上返回
+			return "";
+		}
+		JsonNode schema = JsonLoader.fromString(jsonSchema);
+		JsonNode properties =  schema.get("properties");
+		Iterator<String> fields = properties.fieldNames();
+		
+		String msg = getValidateMsg(properties,fields);
+		//System.out.println("msg:"+msg);
+		return msg;
+	}
+	
+	private String getValidateMsg(JsonNode jsonNode,Iterator<String> fields){
+		StringBuilder msg = new StringBuilder();
+		Iterator<JsonNode> iter = jsonNode.elements();
+		while(iter.hasNext()){
+			JsonNode node = iter.next();
+			String field = fields.next();			
+			//System.out.println(field +":"+node);
+			String type = node.get("type").textValue();
+			if("array".equals(type)){//如果当前node还有子对象
+				JsonNode subNode = node.get("items").get("properties");				
+				Iterator<String> subfields = subNode.fieldNames();
+				msg.append(getValidateMsg(subNode,subfields));
+			}
+			String description = node.get("description").textValue();
+			//System.out.println(type+":"+description);
+			//检查description字段是否含有自定义数据类型，如果有，提取自定义数据类型，并与datatype对比
+			if (description.contains("@datatype")){
+				String datatype = description.substring(10, description.length()-1);//自定义数据类型
+				//System.out.println("datatype:"+datatype);
+				if (isIntType(datatype)){//如果自定义的数据类型是数字类型，则检查type是否number
+					if(!"number".equals(type)){//如果不是
+						msg.append("字段:");
+						msg.append(field);
+						msg.append("的数据类型与自定义声明的类型");
+						msg.append(datatype);
+						msg.append("不匹配。|");
+					}
+				}
+			}
+		}
+		return msg.toString();
+	}
+	
+	//判断自定义数据类型是否数字类型.如果是，返回true;否，返回false
+	private boolean isIntType(String datatype){
+		boolean result = false;
+		for (String type : INT_TYPES){
+			if (type.equals(datatype)){
+				return true;
+			}
+		}
+		return result;
+	}
+	//自定义数据类型：数字类型
+	private static final String[] INT_TYPES = {"uint8_t","uint16_t","uint32_t"}; 	
+	//////////////////////自定义数据类型校验结束////////////////////////
 	
 	public void savePB(long actionId,String pbtxt,int reflag){
 		Action action = getProjectDao().getAction(actionId);

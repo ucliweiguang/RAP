@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.taobao.rigel.rap.log.bo">
+  <class name="RapLog" table="tb_log">
+	  <id name="id" column="id">
+	  	<generator class="native" />
+	  </id>
+	  <property name="userName" >
+	  	<column name="user_name" />
+	  </property>      
+	  <property name="operation" >
+	  	<column name="operation" />
+	  </property>     
+	  <property name="ip" >
+	  	<column name="ip" />
+	  </property>     
+	  <property name="operatetime" type="date"  insert="false">
+          <column name="operatetime">
+          </column>
+      </property>      
+  </class>
+</hibernate-mapping>

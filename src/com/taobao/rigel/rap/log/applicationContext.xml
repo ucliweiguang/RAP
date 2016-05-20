@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+	<bean id="logMgr" class="com.taobao.rigel.rap.log.service.impl.LogMgrImpl">
+		<property name="logDao" ref="logDao" />
+	</bean>
+ 	<bean id="logDao" class="com.taobao.rigel.rap.log.dao.impl.LogDaoImpl" parent="baseDao" />
+	<!-- <bean id="authCheckFilter" class="com.taobao.rigel.rap.common.AuthCheckFilter">
+		<property name="accountMgr" ref="accountMgr" />
+	</bean> -->
+</beans>

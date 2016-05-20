@@ -24,6 +24,8 @@ import com.taobao.rigel.rap.auto.generate.bo.VelocityTemplateGenerator;
 import com.taobao.rigel.rap.auto.generate.contract.Generator;
 import com.taobao.rigel.rap.common.ActionBase;
 import com.taobao.rigel.rap.common.RapError;
+import com.taobao.rigel.rap.log.bo.RapLog;
+import com.taobao.rigel.rap.log.service.LogMgr;
 import com.taobao.rigel.rap.project.bo.CommonModel;
 import com.taobao.rigel.rap.project.bo.Page;
 import com.taobao.rigel.rap.project.bo.Project;
@@ -31,7 +33,15 @@ import com.taobao.rigel.rap.project.service.ProjectMgr;
 import com.taobao.rigel.rap.workspace.service.WorkspaceMgr;
 
 public class ProjectAction extends ActionBase {
+	private LogMgr logMgr;
+	
+	public LogMgr getLogMgr() {
+		return logMgr;
+	}
 
+	public void setLogMgr(LogMgr logMgr) {
+		this.logMgr = logMgr;
+	}
 	private int id;
 
 	private List<Project> searchResult;
@@ -357,6 +367,14 @@ public class ProjectAction extends ActionBase {
 		result.put("groupId", project.getGroupId());
 		result.put("isManagable", project.getIsManagable());
 		setJson(new RapError(gson.toJson(result)).toString());
+		
+		//记录操作日志
+		RapLog log = new RapLog();		
+		log.setIp(org.apache.struts2.ServletActionContext.getRequest().getRemoteAddr());
+		log.setOperation("修改项目信息，含调整项目成员.项目名称："+project.getName());
+		log.setUserName(getAccountMgr().getUser(getCurUserId()).getName());
+		logMgr.createLog(log);
+				
 		return SUCCESS;
 	}
 
@@ -431,6 +449,14 @@ public class ProjectAction extends ActionBase {
 		}
 		//System.out.println("getId():"+getId()+"==>commonDesc:"+getCommonDesc());
 		projectMgr.updateCommonDesc(getId(), getCommonDesc());
+		
+		//记录操作日志
+		RapLog log = new RapLog();		
+		log.setIp(org.apache.struts2.ServletActionContext.getRequest().getRemoteAddr());
+		log.setOperation("编辑项目API通用信息.项目名称："+projectMgr.getProject(getId()).getName());
+		log.setUserName(getAccountMgr().getUser(getCurUserId()).getName());
+		logMgr.createLog(log);
+		
 		return SUCCESS;
 	}
 
@@ -535,6 +561,13 @@ public class ProjectAction extends ActionBase {
 			projectMgr.updateModelFileName(projectId, fileFileName);
 			is.close();			
 	
+			//记录操作日志
+			RapLog log = new RapLog();		
+			log.setIp(org.apache.struts2.ServletActionContext.getRequest().getRemoteAddr());
+			log.setOperation("上传API公用模型.项目名称："+projectMgr.getProject(projectId).getName()+" 文件名："+fileFileName);
+			log.setUserName(getAccountMgr().getUser(getCurUserId()).getName());
+			logMgr.createLog(log);
+			
 			return SUCCESS;
 		} catch (Exception e) {
 			e.printStackTrace();
