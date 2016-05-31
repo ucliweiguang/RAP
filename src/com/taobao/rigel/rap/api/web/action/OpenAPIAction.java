@@ -8,6 +8,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -243,7 +244,7 @@ public class OpenAPIAction extends ActionBase {
 	public String validateRequestData()throws IOException, ProcessingException {
 		String queryString = "";
 		String requestPath = "";
-		Map<String,String> queryMap = new HashMap<String,String>();
+		Map queryMap = new HashMap();
 		//System.out.println("projectId:"+projectId);
 		//System.out.println("requestUrl:"+requestUrl);
 		//如果requestUrl有问号，则从问号后的都是queryString；否则queryString = ""
@@ -263,9 +264,15 @@ public class OpenAPIAction extends ActionBase {
 		Enumeration names =  request.getParameterNames();
 		while (names.hasMoreElements()){  //将原formdata中的数组型元素转为普通类型
 			String key = (String)names.nextElement();
-			String[] value = (String[]) requestMap.get(key);
+			String[] values = (String[]) requestMap.get(key);
 			//System.out.println("value"+value[0]);
-			requestMap.put(key, value[0]);
+			if (isInteger(values[0])){
+				requestMap.put(key, Integer.parseInt(values[0]));
+			} else if (isDouble(values[0])){
+				requestMap.put(key, Double.parseDouble(values[0]));
+			} else {  //字符串
+				requestMap.put(key, values[0]);
+			}			
 		}		
 			
 		if (queryMap !=null){
@@ -284,7 +291,7 @@ public class OpenAPIAction extends ActionBase {
 			bodyStr.append(line); 
 		} 
 		//System.out.println("body:"+sb.toString());
-		Map<String,String> bodyMap = new HashMap<String,String>();
+		Map bodyMap = new HashMap();
 		bodyMap = constructBodyMap(bodyStr.toString());
 		if (bodyMap != null){
 			requestMap.putAll(bodyMap);	
@@ -301,22 +308,60 @@ public class OpenAPIAction extends ActionBase {
 	}
 
 	//将body的内容转化成Map
-	private Map<String,String> constructBodyMap(String bodyString){
+	private Map constructBodyMap(String bodyString){
+		Map result = new HashMap();
 		GsonBuilder gb = new GsonBuilder();
         Gson g = gb.create();
-        Map<String, String> map = g.fromJson(bodyString, new TypeToken<Map<String, String>>() {}.getType());
-        return map;
+        Map<String,String> map = g.fromJson(bodyString, new TypeToken<Map<String,String>>() {}.getType());
+        if (map ==null) return result;
+        
+        for (Map.Entry<String,String> entry : map.entrySet()) {        	  
+            //System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());  
+        	if (isInteger(entry.getValue())){
+        		result.put(entry.getKey(), Integer.parseInt(entry.getValue()));
+			} else if (isDouble(entry.getValue())){
+				result.put(entry.getKey(), Double.parseDouble(entry.getValue()));
+			} else {  //字符串
+				result.put(entry.getKey(), entry.getValue());
+			}
+        }  
+        return result;
 	}
 	//将queryString的内容转换成Map
-	private Map<String,String> constructQueryMap(String queryString){
-		Map<String,String> result = new HashMap<String,String>();
+	private Map constructQueryMap(String queryString){
+		Map result = new HashMap();
 		String[] data = queryString.split("&");
 		for (String s : data){
-			result.put(s.substring(0,s.indexOf("=")), s.substring(s.indexOf("=")+1));
+			String  value = s.substring(s.indexOf("=")+1); 
+			if (isInteger(value)){
+				result.put(s.substring(0,s.indexOf("=")), Integer.parseInt(value));
+			} else if (isDouble(value)){
+				result.put(s.substring(0,s.indexOf("=")), Double.parseDouble(value));
+			} else {  //字符串
+				result.put(s.substring(0,s.indexOf("=")), value);
+			}
+			//result.put(s.substring(0,s.indexOf("=")),s.substring(s.indexOf("=")+1) );
 		}		
 		return result;
 	}
-	
+	/* 
+	  * 判断是否为整数  
+	  * @param str 传入的字符串  
+	  * @return 是整数返回true,否则返回false  
+	*/  
+	private boolean isInteger(String str) {    
+		Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");    
+		return pattern.matcher(str).matches();    
+	} 
+	/*  
+	  * 判断是否为浮点数，包括double和float  
+	  * @param str 传入的字符串  
+	  * @return 是浮点数返回true,否则返回false  
+	*/    
+	private boolean isDouble(String str) {    
+	  Pattern pattern = Pattern.compile("^[-\\+]?[.\\d]*$");    
+	  return pattern.matcher(str).matches();    
+	}  
 	private String modelCode;	
 	public String getModelCode() {
 		return modelCode;
