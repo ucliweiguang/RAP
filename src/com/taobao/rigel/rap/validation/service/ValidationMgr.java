@@ -149,4 +149,44 @@ public interface ValidationMgr {
 	 * created on: 2015-03-01
 	 */
 	public void generateMockdataByProject(int projectId);
+	
+	/**
+	 * 
+	 * 功能描述：为对应的API生成请求数据的json schema(无校验规则)，仅根据action的request parameters来生产
+	 * @param actionId API的id
+	 * @return 接口对应的json schema
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-5-30
+	 */
+	public String generateRequestJsonSchema(long actionId,int projectId);
+	/**
+	 * 
+	 * 功能描述：保存对应API的请求数据的校验Schema
+	 * @param actionId API的id
+	 * @param jsonSchema schema的内容
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-5-30
+	 */
+	public void saveRequestJsonSchema(long actionId,String jsonSchema);
+	/** 
+	 * 功能描述：校验指定项目对应请求路径的API的请求数据的合法性。
+	 * 根据登记在RAP中API的jsonschema和传入的jsonData进行规则校验，返回校验结果
+	 * @param projectId   项目id
+	 * @param requestUrl  API的请求路径
+	 * @param jsonData    要校验的数据（json格式）
+	 * @return 校验结果  由code和message构成的Map，方便前端转换成json
+	 * code: 200--无错误；400--测试数据为空；401--接口的jsonSchema数据为空；500-接口数据有错误
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-5-30
+	 * (projectId, path, method, queryString, jsonData)
+	 */
+	public Map<String, String> validateRequestData(int projectId,String requestUrl,String jsonData) throws IOException, ProcessingException;
+	/**
+	 * 
+	 * 功能描述：创建/更新接口的request Jsonschema
+	 * @param projectId 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-5-30
+	 */
+	public void generateRequestSchemaByProject(int projectId);
 }

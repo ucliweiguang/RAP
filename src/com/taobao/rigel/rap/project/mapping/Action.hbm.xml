@@ -40,7 +40,10 @@
 		</property>
 		<property name="mockdata">
 			<column name="mockdata" />
-		</property>	
+		</property>
+		<property name="requestschema">
+			<column name="requestschema" />
+		</property>			
 			
 		<set name="pageList" order-by="page_id asc" inverse="true"
 			table="tb_action_and_page">

@@ -885,4 +885,128 @@ public class ValidationMgrImpl implements ValidationMgr {
 		return result;
 	}
 
+	@Override
+	public String generateRequestJsonSchema(long actionId, int projectId) {
+		Action action = getProjectDao().getAction(actionId);
+		Set<Parameter> parameters = action.getRequestParameterList();		
+		StringBuilder schema = new StringBuilder("{");
+		schema.append("\"title\":\"");
+		schema.append(action.getName());
+		schema.append("\", \"type\": \"object\",");
+		//生成字段Schema部分
+		schema.append(generateFieldsSchema(parameters));
+		schema.append("}");
+
+		return schema.toString();
+	}
+
+	@Override
+	public void saveRequestJsonSchema(long actionId, String jsonSchema) {
+		Action action = getProjectDao().getAction(actionId);
+		action.setRequestschema(jsonSchema);
+		action.update(action);		
+	}
+
+	@Override
+	//(projectId, path, method, queryString, jsonData)
+	public Map<String, String> validateRequestData(int projectId, String requestUrl, String jsonData)
+			throws IOException, ProcessingException {
+		Map<String, String> result = new HashMap<String, String>();
+		StringBuilder message = new StringBuilder();
+		if (jsonData == null || "".equals(jsonData)) {
+			result.put("code", "400");
+			result.put("message", "请求数据为空.");			
+			return result;
+		}
+		Action action = projectDao.getActionByUrlAndProjectid(projectId, requestUrl);	
+		String requestSchema = action.getRequestschema();
+		//System.out.println(action.getId());
+		final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
+			if (requestSchema == null || "".equals(requestSchema)) {
+				result.put("code", "401");
+				result.put("message", "接口的RequestSchema数据为空.");
+				return result;
+			}
+			
+			JsonNode jsonschema = JsonLoader.fromString(requestSchema.replaceAll("\\\\", "\\\\\\\\"));
+			//System.out.println("getJsonschema:" + action.getJsonschema());
+			JsonNode data = JsonLoader.fromString(jsonData);
+			
+			final JsonSchema schema = factory.getJsonSchema(jsonschema);
+			ProcessingReport report = schema.validate(data, true);
+			Iterator<ProcessingMessage> iter = report.iterator();
+			StringBuilder tmpResult = new StringBuilder();
+			while (iter.hasNext()) {//封装校验错误信息
+				ProcessingMessage pm = (ProcessingMessage) iter.next();
+				String field = pm.asJson().get("instance").findValue("pointer").asText();
+
+				//获取参数对应的附加规则
+				int error = 0;
+				String[] rules = null;
+				//遍历规则，看是否可处理默认的错误信息	
+				//System.out.println("pm.getMessage():" + pm.getMessage());
+				if (pm.getMessage().indexOf("instance type (null)") != -1) {
+					rules = getRules(requestSchema, field);
+					if (rules != null){
+						for (int i = 0; i < rules.length; i++) {
+							if ("NOT NULL".equals(rules[i])) {//只有找到不可为空的规则才能标记为错的
+								error = 1;
+							}
+						}	
+					}			
+					if (error == 0)
+						continue;
+				} else if (pm.getMessage().indexOf("missing required properties") != -1){  //必须（是否返回显示）字段
+					//处理depend类的规则。即返回数据的部分结构由某些字段值决定
+					error = validateRequiredProperties(pm.getMessage(), field, requestSchema, jsonData);				
+					
+					if (error == 0)
+						continue;
+				} else if (pm.getMessage().indexOf("instance type") != -1){//任何类型不匹配的情况，如果出现，则可忽略(这种情况只用于处理变态的不定类型)
+					error = 1;
+					rules = getRules(requestSchema, field);
+					if (rules != null){
+						for (int i = 0; i < rules.length; i++) {
+							if ("ANYTYPE".equals(rules[i])) {//只有找到不可为空的规则才能标记为错的
+								error = 0;
+							}
+						}
+					}			
+					if (error == 0)
+						continue;
+				}
+				
+				tmpResult.append("字段'");
+				tmpResult.append(field);
+				tmpResult.append("'的数据问题：");
+				tmpResult.append(pm.getMessage().replace('"', '\''));
+				tmpResult.append("|");
+			}
+			if ("".equals(tmpResult.toString())) {//校验的数据没有错误
+				result.put("code", "200");
+				result.put("message", "本接口请求数据字段规则校验完毕，未发现问题。");
+				return result;
+			} else {//校验数据有错误		
+				result.put("code", "500");
+				message.append(tmpResult.toString());
+			}
+		//}//结束循环
+		result.put("message", message.toString());
+		
+		return result;
+	}
+
+	@Override
+	public void generateRequestSchemaByProject(int projectId) {
+		//通过项目id获取批量的action ids		
+		//System.out.println("projectId:"+projectId);
+		List<Integer> ids = getProjectDao().getActionIdsByProjectId(projectId);
+		//System.out.println("ids.size:"+ids.size());
+		for (Integer id : ids){
+			String jsonSchema = generateRequestJsonSchema(Long.parseLong(id.toString()), projectId);
+			saveRequestJsonSchema(id, jsonSchema);
+		}
+		System.out.println("request schema update ok.");
+		
+	}
 }

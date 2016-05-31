@@ -235,7 +235,16 @@ public class Action implements java.io.Serializable {
 	private String pbresponse;
 	private String cURL;
 	private String mockdata;
+	private String requestschema;
 	
+	public String getRequestschema() {
+		return requestschema;
+	}
+
+	public void setRequestschema(String requestschema) {
+		this.requestschema = requestschema;
+	}
+
 	public String getMockdata() {
 		return mockdata;
 	}

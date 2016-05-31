@@ -532,6 +532,8 @@ public class WorkspaceAction extends ActionBase {
 					validationMgr.generateJsonSchemaByProject(id);
 					//add by liweiguang 2016-03-01
 					validationMgr.generateMockdataByProject(id);
+					//request jsonschema
+					validationMgr.generateRequestSchemaByProject(id);
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
