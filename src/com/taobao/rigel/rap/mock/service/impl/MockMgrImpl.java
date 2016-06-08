@@ -1047,4 +1047,14 @@ public class MockMgrImpl implements MockMgr {
         return projectDao.resetMockData(projectId);
     }
 
+	@Override
+	public String generateRuleDataForAPI(int projectId, String pattern, Map<String, Object> options)
+			throws UnsupportedEncodingException {
+        String result = generateRule(projectId, pattern, options);        
+        //result = MockjsRunner.renderMockjsRule(result);
+        result = StringUtils.decodeUnicode(result);
+        //System.out.println("generateRule"+result);
+        return result;
+	}
+
 }

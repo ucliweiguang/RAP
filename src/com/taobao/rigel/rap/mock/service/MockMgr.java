@@ -86,4 +86,17 @@ public interface MockMgr {
      * @return
      */
 	public String validateAPI(int projectId, String pattern, Map<String, Object> options, String jsonToCompare) throws UnsupportedEncodingException,IOException, ProcessingException;
+	/**
+	 * 
+	 * 功能描述：为API生成mockdata的json内容
+	 * @param projectId
+	 * @param pattern
+	 * @param options
+	 * @return
+	 * @throws UnsupportedEncodingException 
+	 * @author <a href="mailto:weiguang.lwg@alibaba-inc.com">李伟光 </a>
+	 * created on: 2016-6-8
+	 */
+	public String generateRuleDataForAPI(int projectId, String pattern,
+            Map<String, Object> options) throws UnsupportedEncodingException;
 }

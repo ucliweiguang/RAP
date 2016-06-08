@@ -340,16 +340,17 @@ public class MockAction extends ActionBase {
 	}
 
 	public String createMockjsData() throws UnsupportedEncodingException {
+		System.out.println("in createMockjsData");
 		boolean isJSON = false;
-        SystemVisitorLog.mock(id, "createMockjsData", pattern, getCurAccount(), projectMgr);
+        //SystemVisitorLog.mock(id, "createMockjsData", pattern, getCurAccount(), projectMgr);
 		String _c = get_c();
 		Map<String, Object> options = new HashMap<String, Object>();
 		
 		//options.put("method", getMethod());  //commented by liweiguang
 		//System.out.println("method:"+method);
 		options.put("method", method);  //added by liweiguang  2016-03-22 
-		
-		String result = mockMgr.generateRuleData(id, pattern, options);
+		System.out.println("createMockjsData...");
+		String result = mockMgr.generateRuleDataForAPI(id, pattern, options);
 		if (options.get("callback") != null) {
 			_c = (String) options.get("callback");
 			callback = (String) options.get("callback");

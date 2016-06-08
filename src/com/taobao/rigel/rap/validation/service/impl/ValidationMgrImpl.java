@@ -19,6 +19,7 @@ import com.github.fge.jsonschema.processors.syntax.SyntaxValidator;
 import com.github.fge.jsonschema.core.report.ProcessingMessage;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.taobao.rigel.rap.common.HTTPUtils;
+import com.taobao.rigel.rap.mock.service.MockMgr;
 import com.taobao.rigel.rap.project.dao.ProjectDao;
 import com.taobao.rigel.rap.project.service.ProjectMgr;
 import com.taobao.rigel.rap.validation.service.ValidationMgr;
@@ -42,6 +43,7 @@ public class ValidationMgrImpl implements ValidationMgr {
 	private static final String TAG_PARAM = "@param";
 	//@json body参数
 	private static final String TAG_JSON = "@json";
+
 	//@header header参数
 	private static final String TAG_HEADER = "@header";
 	//@form form-data参数
@@ -49,6 +51,7 @@ public class ValidationMgrImpl implements ValidationMgr {
 			
 	private ProjectDao projectDao;
 	private ProjectMgr projectMgr;
+	private MockMgr mockMgr;
 	private String rapdomain;
 
 	public String getRapdomain() {
@@ -73,7 +76,9 @@ public class ValidationMgrImpl implements ValidationMgr {
 	public void setProjectMgr(ProjectMgr projectMgr) {
 		this.projectMgr = projectMgr;
 	}
-
+	public void setMockMgr(MockMgr mockMgr) {
+		this.mockMgr = mockMgr;
+	}
 	//返回数据格式：{"requestUrl:":requestUrl,"Result":[
 	//{"API":action.getName(),"code":code,"resultStr":result.toString()}
 	//]}
@@ -825,6 +830,10 @@ public class ValidationMgrImpl implements ValidationMgr {
 			String path = getProjectDao().getAction(id).getRequestUrl();
 			String requesttype = getProjectDao().getAction(id).getRequestType();
 			String mockdata = generateMockdata(Long.parseLong(id.toString()),projectId,path,getRequesttypeById(Integer.parseInt(requesttype)));
+			//System.out.println("mockdata2:"+mockdata);
+			if(mockdata ==null || "".equals(mockdata)){//避免因前面的错误导致破坏原有的数据
+				continue;
+			}
 			saveMockdata(id, com.taobao.rigel.rap.common.StringUtils.formatJSON(mockdata));
 		}
 		System.out.println("mockdata update ok.");
@@ -836,12 +845,15 @@ public class ValidationMgrImpl implements ValidationMgr {
     	if (path.startsWith("/")){
     		path = path.substring(1);
     	} 
-		String url = rapdomain + "newmockjsdata/" + projectId +"/" + method + "/" + removeSpecialPart(path);
+		//String url = rapdomain + "newmockjsdata/" + projectId +"/" + method + "/" + removeSpecialPart(path);
 		//System.out.println("url:" + url);
 		try {
-			mockdata = HTTPUtils.sendGet(url,"");			
+			//mockdata = HTTPUtils.sendGet(url,"");
+			
+			Map<String, Object> options = new HashMap<String, Object>();
+			options.put("method", method); 
+			mockdata = mockMgr.generateRuleDataForAPI(projectId, removeSpecialPart(path), options);
 			//System.out.println("mockdata:" + new String(mockdata.getBytes(), "utf8"));
-			//System.out.println("mockdata:" + mockdata);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
