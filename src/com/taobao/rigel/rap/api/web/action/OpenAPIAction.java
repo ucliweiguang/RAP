@@ -260,7 +260,8 @@ public class OpenAPIAction extends ActionBase {
 		
 		//构造jsonData,jsonData = queryString + requestbody
 		HttpServletRequest request = ServletActionContext.getRequest();
-		Map requestMap = request.getParameterMap();  //获取formData的数据
+		//Map requestMap = request.getParameterMap();  //获取formData的数据
+		Map requestMap = new HashMap(request.getParameterMap());  //获取formData的数据
 		Enumeration names =  request.getParameterNames();
 		while (names.hasMoreElements()){  //将原formdata中的数组型元素转为普通类型
 			String key = (String)names.nextElement();
