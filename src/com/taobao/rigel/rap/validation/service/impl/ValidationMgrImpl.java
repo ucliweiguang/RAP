@@ -303,7 +303,12 @@ public class ValidationMgrImpl implements ValidationMgr {
 				for(CommonModelField field : fields){
 					Parameter para = new Parameter();
 					para.setIdentifier(field.getIdentifier());
-					para.setName(field.getDescription().replaceAll("\n", ""));
+					if (field.getDescription() == null){
+						para.setName(field.getIdentifier());
+					} else {
+						para.setName(field.getDescription().replaceAll("\n", ""));
+					}
+					
 					if (field.getDatatype().equals("int")||field.getDatatype().equals("long")||
 							field.getDatatype().equals("double")||field.getDatatype().equals("float")){
 						para.setDataType("number");
@@ -334,7 +339,7 @@ public class ValidationMgrImpl implements ValidationMgr {
 	public String generateJsonSchema(long actionId, int projectId) {
 		Action action = getProjectDao().getAction(actionId);
 		Set<Parameter> parameters = action.getResponseParameterList();
-		
+		//System.out.println("actionid:"+actionId);
 		Set<Parameter> newParameters = unionModelParameters(parameters, projectId);
 		StringBuilder schema = new StringBuilder("{");
 		schema.append("\"title\":\"");
