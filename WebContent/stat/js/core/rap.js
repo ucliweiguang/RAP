@@ -2216,7 +2216,7 @@ function deepCopy(o) {
     	  
     	  //从第一个对象开始构造
     	  var paras = getParasByObj(objs[0]);
-    	  var jsonstr = constructJsonStr(names,objs,paras);
+    	  var jsonstr = constructJsonStr(names,objs,paras,null);
     	  jsonstr = "{" + jsonstr + "}";
     	  //console.log("jsonstr:" + jsonstr);
     	  return jsonstr;    	 
@@ -2225,7 +2225,8 @@ function deepCopy(o) {
       //names:对象名称数组
       //objs：对象内容数组
       //paras：当前要处理对象的参数数组
-      function constructJsonStr(names,objs,paras){
+      //parentObj:当前要处理对象的父对象名称，一级对象的父对象是null
+      function constructJsonStr(names,objs,paras,parentObj){
     	  var jsonstr = "";
     	  //console.log("dealing paras:" + paras);
 		  for(var j=0;j<paras.length-1;j++){//逐个参数进行构造处理
@@ -2259,9 +2260,20 @@ function deepCopy(o) {
 					  }
 					  jsonstr += "],";  
 				  }else{ //自定义对象数组
-					  jsonstr += "\"" +  words[2] + "\":[{";				  
+					  /*jsonstr += "\"" +  words[2] + "\":[{";				  
 					  jsonstr += constructJsonStr(names,objs,subParas);
-					  jsonstr += "}],";
+					  jsonstr += "}],";*/
+					  //console.log("words[1]:" + words[1]);
+					  //console.log("parentObj:" + parentObj);
+					  if (words[1]==parentObj){ //如果该对象内部属性自己引用，则避免递归
+                          jsonstr += "\"" +  words[2] + "\":[{";                  
+                          //jsonstr += constructJsonStr(names,objs,subParas);
+                          jsonstr += "}],";
+                      } else {
+                          jsonstr += "\"" +  words[2] + "\":[{";                  
+                          jsonstr += constructJsonStr(names,objs,subParas,words[1]);
+                          jsonstr += "}],";
+                      }
 				  }
 				  		
 			  } else if (words[0]=="optional" || words[0]=="required"){  //单个值或对象
@@ -2286,7 +2298,7 @@ function deepCopy(o) {
 						  jsonstr += "\"" + words[2] + "\":[\"\"],";
 					  }else{
 						  jsonstr += "\"" + words[2] + "\":{";
-						  jsonstr += constructJsonStr(names,objs,subParas);
+						  jsonstr += constructJsonStr(names,objs,subParas,words[1]);
 						  //jsonstr = jsonstr.substring(0,jsonstr.length-1);//去掉该对象描述内容的最后一个逗号
 						  jsonstr += "},";						  
 					  }
