@@ -472,18 +472,42 @@ public class ProjectAction extends ActionBase {
 		//System.out.println("commonDesc:"+commonDesc);
 		//Gson gson = new Gson();
 		//setJson(gson.toJson(commonDesc));
-		String line = "";
+		/*String line = "";
 		String commonModel = projectMgr.getCommonModelHTML(getId());
 		if (commonModel == null || "".equals(commonModel)){
 			line = "";
 		} else {
 			line = "<hr><h1>项目API公用模型</h1>";
-		}		
+		}*/		
 		
-		setText(commonDesc+line+commonModel);
+		setText(commonDesc);//+line+commonModel
 		return SUCCESS;
 	}
 
+	public String showCommonDescWithModel() {
+		if (!isUserLogined())
+			return LOGIN;
+		if (!getAccountMgr().canUserManageProject(getCurUserId(), getId())) {
+			setErrMsg("您没有管理该项目的权限");
+			return ERROR;
+		}
+		String commonDesc = projectMgr.getCommonDesc(getId());
+		if (commonDesc ==null) commonDesc ="";
+		//System.out.println("commonDesc:"+commonDesc);
+		//Gson gson = new Gson();
+		//setJson(gson.toJson(commonDesc));
+		String line = "";
+		String commonModel = projectMgr.getCommonModelHTML(getId());
+		//System.out.println("commonModel:"+commonModel);
+		if (commonModel == null || "".equals(commonModel)){
+			line = "";
+		} else {
+			line = "<hr><h1>项目API公用模型</h1>";
+		}	
+		
+		setText(commonDesc+line+commonModel);//
+		return SUCCESS;
+	}
 	//注意，file并不是指前端jsp上传过来的文件本身，而是文件上传过来存放在临时文件夹下面的文件
 	private File file;
 	//提交过来的file的名字

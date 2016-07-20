@@ -11,10 +11,10 @@
         <script src="${staticRoot}/js/util/jsformat.js"></script>
         
         <link href="${staticRoot}/css/json-s.css" type="text/css" rel="stylesheet"></link>
-		<script src="${staticRoot}/js/util/json-c.js" type="text/javascript"></script>		        
+		<script src="${staticRoot}/js/util/json-c.js" type="text/javascript"></script>
     </head>
     #if($accessable)
-    <body class="workspace #if(!$manageable)read-only#end">
+    <body class="workspace #if(!$manageable)read-only#end" oncontextmenu="ws.hideDefaultRightMenu()">
         #bodyNewStart(true)
         <div id="div-fixed-panel">
             <div class="clearfix">
@@ -696,6 +696,11 @@
     <script src="${staticRoot}/js/util/urchin.js" type="text/javascript"></script>
     <script src="${staticRoot}/js/util/json-m.js" type="text/javascript"></script>
     
+    <div id="rightmenu" style="display:none;border : 1px solid gray;background-color : #c0c0c0;padding : 2px;">
+        <div class="menuitems">
+            <a href="#" onclick="ws.insertParameter('request');">向上增加一个参数</a>
+        </div>
+    </div>    
     </body>
     #else
     <body>

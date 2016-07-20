@@ -489,8 +489,12 @@ public class ProjectMgrImpl implements ProjectMgr {
 		        	  commonModelField.setSort((int)(hssfCell.getNumericCellValue()));
 		          } else if (i == 1) {//字段名
 		        	  commonModelField.setIdentifier(hssfCell.getStringCellValue());
-		          } else if (i == 2) {//类型,强制转成小写
-		        	  commonModelField.setDatatype(hssfCell.getStringCellValue().toLowerCase());
+		          } else if (i == 2) {//类型
+		        	  if(hssfCell.getStringCellValue().contains("rray")){//如果是数组则保持原字段类型
+		        		  commonModelField.setDatatype(hssfCell.getStringCellValue());
+		        	  } else {//,强制转成小写
+		        		  commonModelField.setDatatype(hssfCell.getStringCellValue().toLowerCase());  
+		        	  }		        	  
 		          } else if (i == 3) {//必填
 		        	  String n = hssfCell.getStringCellValue();
 		        	  if ("y".equals(n.toLowerCase())){
@@ -562,7 +566,8 @@ public class ProjectMgrImpl implements ProjectMgr {
 			
 			json.append("\"dataType\":\"");
 			if (field.getDatatype().equals("int")||field.getDatatype().equals("long")||
-					field.getDatatype().equals("double")||field.getDatatype().equals("float")){
+					field.getDatatype().equals("double")||field.getDatatype().equals("float")
+					||field.getDatatype().equals("number")){
 				json.append("number\"");
 			} else if (field.getDatatype().equals("string")){
 				json.append("string\"");

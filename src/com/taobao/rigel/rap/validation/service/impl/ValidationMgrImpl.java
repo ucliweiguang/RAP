@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -98,7 +99,7 @@ public class ValidationMgrImpl implements ValidationMgr {
 		//List<Action> actions = getProjectDao().getMatchedActionList(projectId, requestUrl);//1256ms
 		Action action = projectDao.getActionByUrlAndProjectid(projectId, requestUrl);
 		
-		//System.out.println(action.getId());
+		//System.out.println("actionid:"+action.getId());
 		final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
 		//for (Action action : actions) {
 			if (action.getJsonschema() == null || "".equals(action.getJsonschema())) {
@@ -839,9 +840,99 @@ public class ValidationMgrImpl implements ValidationMgr {
 			if(mockdata ==null || "".equals(mockdata)){//避免因前面的错误导致破坏原有的数据
 				continue;
 			}
+			//插入公共模型的测试数据
+			Action action = getProjectDao().getAction(id);
+			List<Parameter> parameters = action.getResponseParameterListOrdered();
+			mockdata = recursiveParameter(parameters,mockdata,projectId);
+			//插入公共模型的测试数据end
+			
 			saveMockdata(id, com.taobao.rigel.rap.common.StringUtils.formatJSON(mockdata));
 		}
 		System.out.println("mockdata update ok.");
+	}
+	//遍历参数，将有公共模型的参数增加插入测试数据
+	private String recursiveParameter(List<Parameter> parameters,String mockdata,int projectId){
+		for(Parameter p : parameters){
+			if (p.getParameterListOrdered()==null ||p.getParameterListOrdered().size()==0){
+				//System.out.println("parameter:"+p.getName());
+				if (p.getName().contains("@model")){ //找到有引用公共模型的参数，准备插入测试数据
+					//System.out.println("p:"+p.getName());
+					String modelCode = p.getName().substring(p.getName().indexOf("@model")+7, p.getName().length()-1);
+					//System.out.println("modelCode:"+modelCode);
+					//System.out.println("p.type:"+p.getDataType());
+					if (p.getDataType().contains("array")){  //对象数据
+						String modeldata = "\""+p.getIdentifier()+"\":["+ constructModelMockData( projectId, modelCode);	
+						String target = "\""+p.getIdentifier()+"\":[";
+						mockdata = mockdata.replace(target, modeldata);
+						//System.out.println("mockdata:"+mockdata);
+					} else {  //单纯的对象
+						String modeldata = "\""+p.getIdentifier()+"\":{"+ constructModelMockData( projectId, modelCode);	
+						String target = "\""+p.getIdentifier()+"\":{";
+						mockdata = mockdata.replace(target, modeldata);
+						//System.out.println("mockdata:"+mockdata);
+					}					 
+				}
+			} else {
+				mockdata = recursiveParameter(p.getParameterListOrdered(),mockdata,projectId);
+			}			
+		}
+		return mockdata;
+	}
+	
+	//获取公共模型的mock数据，随机生成
+	private String constructModelMockData(int projectId,String modelCode){
+		StringBuilder mockdata = new StringBuilder("{");
+		//通过model的name和projectId获取model的id，并将model的所有字段获取
+		CommonModel model = this.projectMgr.getCommonModelByCode(projectId, modelCode);
+		List<CommonModelField> fields = model.getCommonModelFieldListOrdered();
+		//通过model的所有字段的集合，构造mock数据
+		for(CommonModelField field : fields){
+			mockdata.append("\"");
+			mockdata.append(field.getIdentifier());
+			mockdata.append("\":");
+			if("string".equals(field.getDatatype())){//字符串
+				mockdata.append("\"测试内容");
+				mockdata.append(getRandomNumbers());
+				mockdata.append("\",");
+			} else if("number".equals(field.getDatatype())||
+					"int".equals(field.getDatatype())|| 
+					"float".equals(field.getDatatype())||
+					"double".equals(field.getDatatype())||
+					"long".equals(field.getDatatype())){//数字型
+				mockdata.append(getRandomNumbers());
+				mockdata.append(",");
+			} else if("a".equals(field.getDatatype().substring(0, 1))||
+					"A".equals(field.getDatatype().substring(0, 1))){ //数组
+				if(field.getDatatype().contains("tring>")){ //字符串数组
+					mockdata.append("[\"测试内容");
+					mockdata.append(getRandomNumbers());
+					mockdata.append("\"],");
+				} else if(field.getDatatype().contains("rray<")){//具体类型的数组,Array<App>
+					String objCode = field.getDatatype().substring(6, field.getDatatype().length()-1);
+					mockdata.append("[");
+					mockdata.append(constructModelMockData(projectId,objCode));
+					mockdata.append("],");
+				} else {//模糊数组(数字数组)
+					mockdata.append("[");
+					mockdata.append(getRandomNumbers());
+					mockdata.append("],");
+				}
+			} else {//未知类型，暂时为字符串
+				mockdata.append("\"未知类型的测试内容");
+				mockdata.append(getRandomNumbers());
+				mockdata.append("\",");
+			}
+				
+		}
+		//去掉最后一个逗号
+		String result = mockdata.toString();
+		if ("".equals(result)) return "";		
+		return result.substring(0, result.length()-1)+"}";			
+	}
+	//随机生成一个1000-9999的整数
+	private int getRandomNumbers(){
+		Random r = new Random();
+		return r.nextInt(9999-1000+1)+1000;//为变量赋随机值1000-9999;
 	}
 	
 	private String generateMockdata(long actionId,int projectId,String path,String method){

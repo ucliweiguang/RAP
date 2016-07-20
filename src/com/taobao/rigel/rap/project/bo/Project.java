@@ -675,7 +675,8 @@ public class Project implements java.io.Serializable {
 			//.append("<td class=\"td-name\">" + levelMark(level) + StringUtils.escapeInH(p.getName()) + "</td>")
 			.append("<td class=\"td-identifier\">" + StringUtils.escapeInH(f.getIdentifier()) + "</td>")
 			.append("<td class=\"td-type\">" + StringUtils.escapeInH(f.getDatatype()) + "</td>")
-			.append("<td class=\"td-need\">" + StringUtils.escapeInH(f.getNeeded()) + "</td>")
+			//.append("<td class=\"td-need\">" + StringUtils.escapeInH(f.getNeeded()) + "</td>")
+			.append("<td class=\"td-need\">" + (f.getNeeded()==1?"是":"否") + "</td>")
 			.append("<td class=\"td-remark\">" + StringUtils.escapeInH(f.getDescription()) + "</td>")
 			.append("</tr>");
 			/*if (p.getParameterList() != null || p.getParameterList().size() > 0) {

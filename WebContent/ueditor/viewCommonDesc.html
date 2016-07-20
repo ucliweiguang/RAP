@@ -55,7 +55,7 @@
     window.onload=function(){
     	//获取项目对应的commonDesc，并显示到编辑器中
         $.ajax({
-    	  url : '../project/showCommonDesc.action',
+    	  url : '../project/showCommonDescWithModel.action',
     	  type : 'GET',
     	  dataType : 'text',//'json',
     	  data : { id : document.getElementById("projectId").value },
@@ -64,7 +64,7 @@
     		  //var commonDesc = JSON.stringify(response);
     		  var commonDesc = response;
     		  UE.getEditor('editor').setContent(commonDesc); 
-    		  console.log(commonDesc);    		     		  
+    		  //console.log(commonDesc);    		     		  
     	  }
     	});
     	
