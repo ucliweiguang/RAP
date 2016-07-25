@@ -690,19 +690,21 @@ function deepCopy(o) {
             // recursively update identifier
             var i;
             for (i = 0; i < obj.requestParameterList.length; i++) {
-                recurUpdateParamId(obj.requestParameterList[i]);
+                recurUpdateParamId(obj.requestParameterList[i],i+1);
             }
             for (i = 0; i < obj.responseParameterList.length; i++) {
-                recurUpdateParamId(obj.responseParameterList[i]);
+                recurUpdateParamId(obj.responseParameterList[i],i+1);
             }
         }
         this.getPage(obj.pageId).actionList.push(obj);
 
-        function recurUpdateParamId(param) {
-            param.id = generateId();
+        function recurUpdateParamId(param,t) {
+            param.id = generateId() + t*10  ;//让id不连续，方便插入
+            console.log("param.id:"+param.id);
+            console.log("param.identifier:"+param.identifier);
             if (param.parameterList) {
                 for (var i = 0; i < param.parameterList.length; i++) {
-                    recurUpdateParamId(param.parameterList[i]);
+                    recurUpdateParamId(param.parameterList[i],(i+1)*10);
                 }
             }
         }
@@ -1295,7 +1297,7 @@ function deepCopy(o) {
         TEMPLATE = {            // static template //modified by liwg 20150831:<td>必填</td>
 
             "REQUEST_BEGIN"                 : "<h2>请求参数列表</h2><table class=\"table-a\"><tr class=\"head\"><td class=\"head-expander\"></td><td class=\"head-identifier\">变量名</td><td class=\"head-name\">含义</td><td class=\"head-type\">类型</td><td class=\"head-remark\">备注</td></tr>",
-            "REQUEST_BEGIN_EDIT"            : "<h2>请求参数列表</h2><table class=\"table-a\"><tr class=\"head\"><td class=\"head-expander\"></td><td class=\"head-op\">OP</td><td class=\"head-identifier\">变量名</td><td class=\"head-name\">含义</td><td class=\"head-type\">类型</td><td class=\"head-remark\">备注</td></tr>",
+            "REQUEST_BEGIN_EDIT"            : "<h2>请求参数列表</h2><table class=\"table-a\" id=\"requestTable\" onmousedown=\"ws.righthit('request');\"><tr class=\"head\"><td class=\"head-expander\"></td><td class=\"head-op\">OP</td><td class=\"head-identifier\">变量名</td><td class=\"head-name\">含义</td><td class=\"head-type\">类型</td><td class=\"head-remark\">备注</td></tr>",
             "REQUEST_END"                   : "</table>",
             "REQUEST_PARAMETER_ADD_BUTTON"  : "<div class='btns-container'><a href=\"#\" class=\"btn btn-info btn-xs\" onclick=\"ws.addParam('request'); return false;\"><i class='glyphicon glyphicon-plus'></i>添加参数</a>&nbsp;&nbsp;<font size=1>手动添加参数很麻烦？试试右边的“<font color=red><b>导入URL</b></font>”</font>&nbsp;&nbsp;&nbsp;"+
             								  "<a href\"#\" class='btn btn-default btn-xs' onclick=\"ws.importURL(true); return false;\"><i class='glyphicon glyphicon-transfer'></i><b>导入URL</b></a>" +
@@ -1303,7 +1305,7 @@ function deepCopy(o) {
             								  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href\"#\" class='btn btn-default btn-xs' onclick=\"ws.importPB(true); return false;\"><i class='glyphicon glyphicon-transfer'></i>导入PB</a></div>",
 
             "RESPONSE_BEGIN"                : "<h2>响应参数列表</h2><table class=\"table-a\"><tr class=\"head\"><td class=\"head-expander\"></td><td class=\"head-identifier\">变量名</td><td class=\"head-name\">含义</td><td class=\"head-type\">类型</td><td class=\"head-remark\">备注</td></tr>",
-            "RESPONSE_BEGIN_EDIT"           : "<h2>响应参数列表</h2><div class='item'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"#\" onclick=\"ws.helpToWriteRules();\">(Tips:如何在\"含义\"栏写字段校验规则？)</a></div><table class=\"table-a\"><tr class=\"head\"><td class=\"head-expander\"></td><td class=\"head-op\">OP</td><td class=\"head-identifier\">变量名</td><td class=\"head-name\">含义</td><td class=\"head-type\">类型</td><td class=\"head-remark\">备注</td></tr>",
+            "RESPONSE_BEGIN_EDIT"           : "<h2>响应参数列表</h2><div class='item'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"#\" onclick=\"ws.helpToWriteRules();\">(Tips:如何在\"含义\"栏写字段校验规则？)</a></div><table class=\"table-a\" id=\"responseTable\" onmousedown=\"ws.righthit('response');\"><tr class=\"head\"><td class=\"head-expander\"></td><td class=\"head-op\">OP</td><td class=\"head-identifier\">变量名</td><td class=\"head-name\">含义</td><td class=\"head-type\">类型</td><td class=\"head-remark\">备注</td></tr>",
             "RESPONSE_END"                  : "</table>",
             "RESPONSE_PARAMETER_ADD_BUTTON" : "<div class='btns-container'><a href=\"#\" class=\"btn btn-info btn-xs\" onclick=\"ws.addParam('response'); return false;\"><i class='glyphicon glyphicon-plus'></i>添加参数</a>&nbsp;&nbsp;<font size=1>手动添加参数很麻烦？试试右边的“<font color=red><b>导入JSON</b></font>”</font>&nbsp;&nbsp;&nbsp;<a href\"#\" class='btn btn-default btn-xs' onclick=\"ws.importJSON(); return false;\"><i class='glyphicon glyphicon-transfer'></i>导入JSON</a>" +
             								  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href\"#\" class='btn btn-default btn-xs' onclick=\"ws.importPB(); return false;\"><i class='glyphicon glyphicon-transfer'></i>导入PB</a></div>",
@@ -1368,6 +1370,8 @@ function deepCopy(o) {
         };
 
 
+
+    
     /**
      * initialize run when dom ready
      */
@@ -1704,9 +1708,125 @@ function deepCopy(o) {
         if (newParamId > 0) {
             this.edit(newParamId, "param-identifier");
         }
+    };    
+
+   ////////////////////////////////////////////////   
+    /*显示菜单*/
+    function showMenu(newId,rowIndex,type) { 
+    	var rightmenu = document.getElementById('rightmenu');
+    	
+    	var insertParamDiv = document.getElementById("insertParam");
+    	insertParamDiv.newId = newId;
+    	insertParamDiv.rowIndex = rowIndex;
+    	insertParamDiv.type = type;
+    	
+    	var pos = [];
+    	pos = getMousePos(event);
+    	//console.log("pos[0]:"+pos[0]);
+    	//console.log("pos[1]:"+pos[1]);
+    	
+        var evt = event || window.event; 
+        /*否则，就定位菜单的左坐标为当前鼠标位置*/
+        rightmenu.style.position = "absolute";//设置绝对定位（或者相对定位）
+        rightmenu.style.left = pos[0]+ "px";//evt.screenX + "px";
+        //console.log("rightmenu.style.top:"+evt.screenY);        
+        rightmenu.style.top = pos[1]+ "px";//(evt.screenY ) + "px";
+             
+        /*设置菜单可见*/
+        //rightmenu.style.visibility = "visible";   
+        rightmenu.style.display="inline";        
+    }
+    /*隐藏菜单*/
+    ws.hideMenu =function() {
+    	//rightmenu.style.visibility = 'hidden';
+    	rightmenu.style.display="none";
     };
+    
+    function getMousePos(event) {
+        var e = event || window.event;
+        var scrollX = document.documentElement.scrollLeft || document.body.scrollLeft;
+        var scrollY = document.documentElement.scrollTop || document.body.scrollTop;
+        var x = e.pageX || e.clientX + scrollX;
+        var y = e.pageY || e.clientY + scrollY;
+        //alert('x: ' + x + '\ny: ' + y);
+        var result = [];
+        result[0] = x;
+        result[1] = y;
+        return result;
+}
+   //鼠标右键插入新的一行
+    ws.righthit= function(type){
+        if (event.button==2){
+        	var allow = 0;
+        	var allowProjects = [19,20,26,35,40,52,53,54];
+        	var ap;
+        	for (ap in allowProjects) {
+        		if(p.getId() == allowProjects[ap]){
+        			allow = 1;
+        			break;
+        		}
+        	}
+        	if(allow == 0) return;
+        	//console.log("id：" + (event.srcElement.parentNode.id));
+        	var newId = (event.srcElement.parentNode.id).substring(9);
+        	var rowIndex = event.srcElement.parentNode.rowIndex;
+        	//console.log("newId:"+newId);
+        	//console.log("rowIndex:"+rowIndex);
+        	showMenu(newId,rowIndex,type);
+         }     
+    };
+    
+    ws.insertParameter = function(newId,rowIndex,type){
+    	ws.hideMenu();
+    	var newParamId = -1;
+    	//var table = document.getElementById(type+"Table");
+    	//console.log("table："+table);
+    	//var rows = reqtable.rows;//获取所有行
+    	//console.log("rows.length:"+rows.length);
+    	//var td = event.srcElement; // 通过event.srcelement 获取激活事件的对象 td
+    	//console.log("行号：" + (table.rowIndex));
+    	//console.log("id：" + (event.srcElement.parentNode.id));//tr-param-828556083
+    	//console.log("id：" + (event.srcElement.parentNode.id).substring(9));//tr-param-828556083
+    	//var newId = (event.srcElement.parentNode.id).substring(9);
+    	//var rowIndex = event.srcElement.parentNode.rowIndex;   
+    	//console.log("newId:"+newId);
+    	//console.log("rowIndex:"+rowIndex);
+    	//console.log("type:"+type);
 
-
+        var pNew = newMyParameter(newId);
+        if (type == "request"){
+        	//console.log("request");
+        	p.getAction(_curActionId).requestParameterList.splice(rowIndex, 0, pNew);
+        } else if (type == "response"){
+        	//console.log("response");
+        	p.getAction(_curActionId).responseParameterList.splice(rowIndex, 0, pNew);
+        } 
+        newParamId =  pNew.id; 
+        console.log("newParamId:"+newParamId);
+        this.finishEdit();
+        this.switchA(_curActionId);
+        if (newParamId > 0) {
+            this.edit(newParamId, "param-identifier");
+        }
+    };
+    
+    function newMyParameter(newId) {
+        var obj = {};
+        obj.id = Number(newId)+1;//p.generateId();
+        obj.identifier = "";
+        obj.name = "";
+        obj.remark = "";
+        obj.validator = "";
+        obj.dataType = "";
+        obj.parameterList = [];
+        return obj;
+    }    
+    //屏蔽浏览器默认右键菜单
+    ws.hideDefaultRightMenu =  function(){  
+        window.event.returnValue=false;  
+        return false;  
+    };
+    ////////////////////////插入新参数end///////////////////////
     /**
      * remove current module
      */

@@ -12,6 +12,8 @@
         
         <link href="${staticRoot}/css/json-s.css" type="text/css" rel="stylesheet"></link>
 		<script src="${staticRoot}/js/util/json-c.js" type="text/javascript"></script>
+		
+		<script src="${staticRoot}/js/util/bindevent.js" type="text/javascript"></script>		
     </head>
     #if($accessable)
     <body class="workspace #if(!$manageable)read-only#end" oncontextmenu="ws.hideDefaultRightMenu()">
@@ -694,13 +696,17 @@
         #endFloater
     
     <script src="${staticRoot}/js/util/urchin.js" type="text/javascript"></script>
-    <script src="${staticRoot}/js/util/json-m.js" type="text/javascript"></script>
-    
+    <script src="${staticRoot}/js/util/json-m.js" type="text/javascript"></script>   
+
     <div id="rightmenu" style="display:none;border : 1px solid gray;background-color : #c0c0c0;padding : 2px;">
         <div class="menuitems">
-            <a href="#" onclick="ws.insertParameter('request');">向上增加一个参数</a>
+            <a href="#" id="insertParam" newId=0 rowIndex=0 type="">向下插入一个参数(暂只适用于<b>复制</b>接口的<b>顶层参数</b>)</a>
         </div>
-    </div>    
+        <div class="menuitems">
+            <a href="#" onclick="ws.hideMenu();">取消插入</a>
+        </div>
+	</div> 
+    	
     </body>
     #else
     <body>
