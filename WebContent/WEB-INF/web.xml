@@ -40,7 +40,7 @@
 		</init-param>
 		<init-param>
 			<param-name>EXCLUSIONS</param-name>
-			<param-value>/index.htm,/org/index.do,/platform/*,/account/*,*/img/*,*/css/*,*/js/*,*/fonts/*,/page.html,*/api/*,/rap.plugin.js,*/mockjsdata/*</param-value>
+			<param-value>/index.htm,/org/index.do,/platform/*,/account/*,*/img/*,*/css/*,*/js/*,*/fonts/*,/page.html,*/api/*,/rap.plugin.js,*/mockjsdata/*,*/mockjs/*,*/mock/*</param-value>
 		</init-param>
 
 		<init-param>
